@@ -68,6 +68,19 @@ export function wrapText(text: string, maxWidth: number, measure: (value: string
   return lines
 }
 
+// 长图 canvas 无 Markdown 渲染能力：导出前去掉渲染器支持的语法标记
+// （标题/列表/加粗/斜体/分隔线/表格，与 MiniMarkdown 语法子集一致）
+export function stripMarkdown(text: string): string {
+  return String(text || '')
+    .replace(/^\s{0,3}#{1,3}\s+/gm, '')
+    .replace(/^\s*[-*]\s+/gm, '· ')
+    .replace(/^\s*\|?[\s:|-]+\|?\s*$/gm, (match) => (match.includes('|') ? '' : match))
+    .replace(/\*\*([^*\n]+)\*\*/g, '$1')
+    .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1$2')
+    .replace(/^\s*-{3,}\s*$/gm, '')
+    .replace(/\s*\|\s*/g, '  ')
+}
+
 const COLORS = {
   background: '#FFFFFF',
   band: '#F5F2EC',

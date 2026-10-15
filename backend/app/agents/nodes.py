@@ -9,6 +9,7 @@ safety_agent 并行} → aggregate → output_filter。
 - llm_mock=True 时 Agent 节点直接从检索结果组装模板 blocks（不调网关）；
 - 单 Agent 超时由网关 timeout=12s 控制，失败输出 {"status": "fail"}。
 """
+import re
 import time
 from typing import Any, Dict, List, Optional
 
@@ -40,6 +41,37 @@ SAFETY_FALLBACK_TEXT = (
 
 # 冲突提示文案
 CONFLICT_NOTE = "育儿与宠物侧建议存在差异，请结合实际谨慎采纳"
+
+
+def _mock_markdown_advice(text: str) -> str:
+    """把知识条目正文转成渲染器支持的 Markdown（mock 演示口径）。
+
+    按句切分为要点列表，附固定提醒行；仅用于 llm_mock=True 的演示排版，
+    真实模式由模型按 system prompt 排版规则生成。
+    """
+    parts = [p.strip(" 。；;！!\n") for p in re.split(r"[。；;！!\n]+", text or "")]
+    parts = [p for p in parts if p]
+    # 不带「##」标题：block.title（建议要点）已单独展示
+    lines = [f"- {p}。" for p in parts] or ["- 暂无匹配的知识条目要点。"]
+    lines.append("")
+    lines.append("**提醒**：以上为知识库要点，请结合实际情况判断，异常情况及时咨询专业人士。")
+    return "\n".join(lines)
+
+
+def _mock_markdown_member(text: str) -> str:
+    """会员进阶块 mock 文案：正文列表 + 固定执行对照表（演示表格渲染）。"""
+    parts = [p.strip(" 。；;！!\n") for p in re.split(r"[。；;！!\n]+", text or "")]
+    parts = [p for p in parts if p]
+    # 不带「##」标题：block.title（会员进阶方案）已单独展示
+    lines = [f"- {p}。" for p in parts] or ["- 暂无进阶要点。"]
+    lines += [
+        "",
+        "| 场景 | 建议做法 |",
+        "|---|---|",
+        "| 日常执行 | 按上述要点坚持 1-2 周，观察变化 |",
+        "| 持续未改善 | 预约儿科医生或专业人士评估 |",
+    ]
+    return "\n".join(lines)
 
 
 def merge_dicts(left: Optional[dict], right: Optional[dict]) -> dict:
@@ -180,7 +212,7 @@ def route_after_risk(state: dict) -> str:
 # 节点：意图路由
 # ----------------------------------------------------------------------
 def intent_route_node(state: dict) -> dict:
-    """intent_route 节点：DeepSeek 意图分类（1s 超时），失败回退显式入口。
+    """intent_route 节点：DeepSeek 意图分类（8s 超时），失败回退显式入口。
 
     回退规则：entry=child → has_child_entity=True；entry=pet →
     has_pet_entity=True；family → 双实体 True；intent 取 entry。
@@ -197,7 +229,7 @@ def intent_route_node(state: dict) -> dict:
     entry = state.get("entry") or "child"
     try:
         resp = gateway.chat(
-            build_intent_messages(state["question"]), purpose="intent", timeout=1.0
+            build_intent_messages(state["question"]), purpose="intent", timeout=8.0
         )
         parsed = extract_json(resp["content"])
         if parsed is None:
@@ -216,7 +248,7 @@ def intent_route_node(state: dict) -> dict:
             "prompt_tokens": resp["prompt_tokens"],
             "completion_tokens": resp["completion_tokens"],
         }
-    except Exception:  # noqa: BLE001 — 1s 超时/失败回退显式入口，不阻断主流程
+    except Exception:  # noqa: BLE001 — 8s 超时/失败回退显式入口，不阻断主流程
         intent = entry
         has_child = entry in ("child", "family")
         has_pet = entry in ("pet", "family")
@@ -339,15 +371,18 @@ def _mock_agent_output(agent_id: str, state: dict, docs: List[dict]) -> dict:
     """
     if agent_id == "safety_agent":
         # 双实体 → 儿童-宠物共处安全提示；否则通用安全提示（1-2 句）
+        # 正文不再带「##」标题：block.title 已单独展示，避免标题重复
         if state.get("has_child_entity") and state.get("has_pet_entity"):
             content = (
-                "儿童与宠物共处安全提示：\n"
-                "- 婴幼儿与宠物共处须有成人在场陪护；\n"
-                "- 宠物食盆、猫砂盆放置在儿童不可触及区域；\n"
+                "- 婴幼儿与宠物共处须**有成人在场陪护**；\n"
+                "- 宠物食盆、猫砂盆放置在**儿童不可触及**区域；\n"
                 "- 教育孩子不打扰宠物进食与睡眠、不拉拽尾巴。"
             )
         else:
-            content = "通用家庭安全提示：保持看护人在场，危险物品妥善收纳，异常情况及时联系专业人士。"
+            content = (
+                "**保持看护人在场**，危险物品妥善收纳，"
+                "异常情况及时联系专业人士。"
+            )
         return {
             "title": SECTION_TITLES["safety"],
             "topic_key": "family_safety",
@@ -370,7 +405,7 @@ def _mock_agent_output(agent_id: str, state: dict, docs: List[dict]) -> dict:
             {
                 "block_key": "advice",
                 "title": "建议要点",
-                "content": first["content"],
+                "content": _mock_markdown_advice(first["content"]),
                 "access_tier": "free",
             }
         ]
@@ -382,7 +417,7 @@ def _mock_agent_output(agent_id: str, state: dict, docs: List[dict]) -> dict:
                 {
                     "block_key": "member_extra",
                     "title": "会员进阶方案",
-                    "content": second["content"],
+                    "content": _mock_markdown_member(second["content"]),
                     "access_tier": "block",
                 }
             )

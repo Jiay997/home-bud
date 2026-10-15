@@ -513,7 +513,7 @@ def test_lexicon(
             ValueError: 返回内容无法解析为 JSON。
         """
         resp = gateway.chat(
-            risk_engine.build_semantic_messages(text), purpose="semantic", timeout=3.0
+            risk_engine.build_semantic_messages(text), purpose="semantic", timeout=10.0
         )
         parsed = extract_json(resp["content"])
         if parsed is None or "score" not in parsed:

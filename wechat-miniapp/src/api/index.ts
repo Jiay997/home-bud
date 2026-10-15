@@ -112,6 +112,34 @@ export type MeView = {
   register_at: string | null
 }
 
+export type HealthRecordView = {
+  record_uid: string
+  subject_type: 'child' | 'pet'
+  subject_uid: string
+  record_date: string
+  title: string
+  next_checkup_date: string | null
+  due_status: 'overdue' | 'soon' | 'upcoming' | 'none'
+  has_file: boolean
+  file_url: string | null
+  updated_at: string | null
+  notes?: string | null
+  next_checkup_note?: string | null
+  file_name?: string | null
+  file_size?: number | null
+  created_at?: string | null
+}
+
+export type NoteView = {
+  note_uid: string
+  title: string
+  version: number
+  updated_at: string | null
+  excerpt?: string
+  content?: string
+  created_at?: string | null
+}
+
 export const api = {
   request,
   consentStatus: () => request<Record<string, { agreed: boolean; version?: string }>>('/consent/status'),
@@ -208,6 +236,42 @@ export const api = {
     ),
   deleteProfilePhoto: (kind: ProfileKind, uid: string, photoUid: string) =>
     request<{ deleted: boolean }>(`/profiles/${kind}/${uid}/photos/${photoUid}`, { method: 'DELETE' }),
+  // ---- 健康档案（甲方需求 2026-10-15：体检报告 + 纯应用内复查提醒） ----
+  healthRecords: (query: { subject_type?: 'child' | 'pet'; subject_uid?: string } = {}) =>
+    request<{ records: HealthRecordView[]; today: string }>('/health/records', { query }),
+  healthRecord: (uid: string) => request<{ record: HealthRecordView }>(`/health/records/${uid}`),
+  createHealthRecord: (body: {
+    subject_type: 'child' | 'pet'
+    subject_uid: string
+    record_date: string
+    title: string
+    notes?: string
+    next_checkup_date?: string
+    next_checkup_note?: string
+  }) => request<{ record: HealthRecordView }>('/health/records', { method: 'POST', body }),
+  updateHealthRecord: (uid: string, body: {
+    record_date: string
+    title: string
+    notes?: string
+    next_checkup_date?: string
+    next_checkup_note?: string
+  }) => request<{ record: HealthRecordView }>(`/health/records/${uid}`, { method: 'PUT', body }),
+  uploadHealthRecordFile: (uid: string, filePath: string) =>
+    // POST 而非 PUT：uploadFile 在开发者工具/部分基础库上会把 PUT 静默降级为 POST（实测）
+    upload<{ file_url: string; file_name: string; file_size: number }>(
+      `/health/records/${uid}/file`, filePath, { method: 'POST', timeout: 120000 }
+    ),
+  deleteHealthRecord: (uid: string) =>
+    request<{ deleted: boolean }>(`/health/records/${uid}`, { method: 'DELETE' }),
+  // ---- 个人笔记（甲方需求 2026-10-15：Markdown 知识手册，正文加密） ----
+  notes: (keyword?: string) =>
+    request<{ notes: NoteView[] }>('/notes', { query: keyword ? { keyword } : {} }),
+  note: (uid: string) => request<{ note: NoteView }>(`/notes/${uid}`),
+  createNote: (body: { title: string; content: string }) =>
+    request<{ note: NoteView }>('/notes', { method: 'POST', body }),
+  updateNote: (uid: string, body: { title: string; content: string; version: number }) =>
+    request<{ note: NoteView }>(`/notes/${uid}`, { method: 'PUT', body }),
+  deleteNote: (uid: string) => request<{ deleted: boolean }>(`/notes/${uid}`, { method: 'DELETE' }),
   agreeChildConsent: () => request('/consent/agree', { method: 'POST', body: { consent_type: 'child_personal_info' } }),
   feedback: (content: string) => request<{ feedback_no: string; receipt_hours: number; audit_result: string }>(
     '/feedback', { method: 'POST', body: { content } }

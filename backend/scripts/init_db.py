@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""建表脚本：按数据模型文档 V1.1 创建全部 35 张表与索引（幂等可重复执行）。
+"""建表脚本：按数据模型文档 V1.1 创建全部 37 张表与索引（幂等可重复执行）。
 
 用法：python scripts/init_db.py
 """
@@ -74,8 +74,8 @@ def init_tables() -> None:
         Exception: 建表失败（如数据库不可达、约束冲突）时抛出。
     """
     engine = get_engine()
-    # 校验模型数量与文档一致（数据模型文档定义 35 张表：34 + profile_photo）
-    assert len(ALL_MODELS) == 35, f"expect 35 tables, got {len(ALL_MODELS)}"
+    # 校验模型数量与文档一致（数据模型文档定义 37 张表：35 + health_record + note）
+    assert len(ALL_MODELS) == 37, f"expect 37 tables, got {len(ALL_MODELS)}"
     Base.metadata.create_all(engine, checkfirst=True)
     ensure_org_id_columns()
     ensure_profile_media_columns()

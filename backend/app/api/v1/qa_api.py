@@ -215,14 +215,18 @@ def _resolve_profile(db: Session, user: AppUser, session: QaSession) -> Tuple[bo
 
 
 def _gated_blocks(blocks: List[dict], member: bool) -> List[dict]:
-    """会员门控裁剪：非会员剔除 access_tier=block 块的 content 字段。
+    """会员门控：access_tier 输出为「对当前用户可见的档位」。
+
+    非会员：剔除 access_tier=block 块的 content 字段并标记 is_member_content；
+    会员：block 档位归一化为 free（两端客户端均按 access_tier=block 渲染解锁卡，
+    若不归一化会员会看到自己有权限的内容被锁）。
 
     Args:
         blocks: 分节 block 列表。
         member: 是否会员。
 
     Returns:
-        裁剪后的 block 列表（会员块仅去 content，标记 is_member_content）。
+        按用户档位处理后的 block 列表。
     """
     out: List[dict] = []
     for block in blocks:
@@ -231,7 +235,9 @@ def _gated_blocks(blocks: List[dict], member: bool) -> List[dict]:
             gated["is_member_content"] = True
             out.append(gated)
         else:
-            out.append(dict(block))
+            visible = dict(block)
+            visible["access_tier"] = "free"
+            out.append(visible)
     return out
 
 

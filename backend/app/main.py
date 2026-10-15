@@ -66,7 +66,7 @@ async def lifespan(app: FastAPI):
         pass
 
 
-# OpenAPI 文档分组标签（11 组，与各路由 tags 对应）
+# OpenAPI 文档分组标签（12 组，与各路由 tags 对应）
 OPENAPI_TAGS = [
     {"name": "系统", "description": "健康检查、合规文案下发、运行指标与告警"},
     {"name": "C端-认证同意", "description": "登录认证与用户协议/儿童信息分层同意、撤回"},
@@ -75,6 +75,7 @@ OPENAPI_TAGS = [
     {"name": "C端-测评", "description": "气质测评作答/提交/报告与历史记录查询"},
     {"name": "C端-商业化", "description": "商品、订单与会员权益"},
     {"name": "C端-权利反馈", "description": "个人信息权利请求与意见反馈"},
+    {"name": "C端-健康与笔记", "description": "孩子/宠物健康档案、体检报告上传与复查提醒、个人笔记知识手册"},
     {"name": "后台-知识库", "description": "知识条目 CRUD、审核发布、版本回滚与内容追溯"},
     {"name": "后台-词库", "description": "风险/敏感词库维护与规则配置、规则测试器"},
     {"name": "后台-处置", "description": "后台处置类操作（申诉复核、追溯处置等）"},
@@ -160,10 +161,21 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
     Returns:
         JSONResponse（422 包络）。
     """
+    # exc.errors() 可能带非可序列化值（multipart 的 loc 含 bytes、ctx 含异常对象），
+    # 原样塞进 JSONResponse 会让本处理器抛错，把 422 伪装成 500/1902。
+    errors = [
+        {
+            "loc": [x.decode("utf-8", "replace") if isinstance(x, (bytes, bytearray)) else str(x)
+                    for x in (e.get("loc") or [])],
+            "msg": str(e.get("msg", "")),
+            "type": str(e.get("type", "")),
+        }
+        for e in exc.errors()[:5]
+    ]
     body = envelope.fail(
         code=1001,
         message="参数校验失败",
-        error={"type": "validation", "retryable": False, "details": {"errors": exc.errors()[:5]}},
+        error={"type": "validation", "retryable": False, "details": {"errors": errors}},
     )
     return JSONResponse(status_code=422, content=body)
 
@@ -211,8 +223,8 @@ def _register_routers() -> None:
     """注册全部业务路由（集中装配，避免循环导入）。"""
     from .api.v1 import (
         admin_api, assessment_api, auth_api, billing_api, consent_api,
-        feedback_api, history_api, kb_api, lexicon_api, metrics_api,
-        profiles_api, qa_api, rights_api, risk_api, safety_api, texts_api,
+        feedback_api, health_api, history_api, kb_api, lexicon_api, metrics_api,
+        notes_api, profiles_api, qa_api, rights_api, risk_api, safety_api, texts_api,
     )
 
     prefix = "/api/v1"
@@ -220,6 +232,7 @@ def _register_routers() -> None:
     app.include_router(auth_api.router, prefix=prefix)
     app.include_router(consent_api.router, prefix=prefix)
     app.include_router(profiles_api.router, prefix=prefix)
+    app.include_router(health_api.router, prefix=prefix)
     app.include_router(qa_api.router, prefix=prefix)
     app.include_router(risk_api.router, prefix=prefix)
     app.include_router(assessment_api.router, prefix=prefix)
@@ -227,6 +240,7 @@ def _register_routers() -> None:
     app.include_router(billing_api.router, prefix=prefix)
     app.include_router(rights_api.router, prefix=prefix)
     app.include_router(feedback_api.router, prefix=prefix)
+    app.include_router(notes_api.router, prefix=prefix)
     # 后台路由
     app.include_router(admin_api.router, prefix=prefix)
     app.include_router(kb_api.router, prefix=prefix)

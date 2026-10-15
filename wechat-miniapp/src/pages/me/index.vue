@@ -51,6 +51,26 @@
           </view>
         </view>
 
+        <text class="group-title">{{ groupCare }}</text>
+        <view class="menu-card">
+          <view class="card-row" hover-class="row-pressed" @tap="goHealth">
+            <view class="row-icon icon-primary"><view class="glyph glyph-record" /></view>
+            <view class="row-main">
+              <text class="row-title">{{ rowHealth }}</text>
+            </view>
+            <text class="row-value">{{ enterValue }}</text>
+            <view class="row-arrow" />
+          </view>
+          <view class="card-row" hover-class="row-pressed" @tap="goNotes">
+            <view class="row-icon icon-info"><view class="glyph glyph-doc" /></view>
+            <view class="row-main">
+              <text class="row-title">{{ rowNotes }}</text>
+            </view>
+            <text class="row-value">{{ enterValue }}</text>
+            <view class="row-arrow" />
+          </view>
+        </view>
+
         <text class="group-title">{{ groupRecords }}</text>
         <view class="menu-card">
           <view class="card-row" hover-class="row-pressed" @tap="goRecords">
@@ -362,6 +382,7 @@ const baseConsentType = 'base'
 const childConsentType = 'child_personal_info'
 
 const groupArchive = '档案'
+const groupCare = '健康与笔记'
 const groupRecords = '记录'
 const groupMember = '会员'
 const groupRights = '个人信息权利'
@@ -369,6 +390,8 @@ const groupTerms = '协议与声明'
 const groupAccount = '账号'
 const rowChild = '孩子档案'
 const rowPet = '宠物档案'
+const rowHealth = '健康档案'
+const rowNotes = '我的笔记'
 const rowHistory = '历史问答与报告'
 const rowFeedback = '意见反馈'
 const rowMember = '会员与订单'
@@ -627,6 +650,12 @@ async function refreshConsents() {
 
 function goProfiles() {
   uni.redirectTo({ url: '/pages/profiles/index' })
+}
+function goHealth() {
+  uni.navigateTo({ url: '/pages/health/index' })
+}
+function goNotes() {
+  uni.navigateTo({ url: '/pages/notes/index' })
 }
 function goRecords() {
   uni.redirectTo({ url: '/pages/records/index' })

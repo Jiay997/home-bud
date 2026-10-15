@@ -2,11 +2,12 @@
 import { computed, getCurrentInstance, nextTick, ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { ApiError } from '../../platform/request'
-import { api, BASE_URL, TOKEN_KEY } from '../../api'
+import { activeBaseUrl, api, TOKEN_KEY } from '../../api'
 import MiniPageHeader from '../../components/MiniPageHeader.vue'
 import MiniComplianceBar from '../../components/MiniComplianceBar.vue'
 import MiniDialog from '../../components/MiniDialog.vue'
 import MiniActionSheet from '../../components/MiniActionSheet.vue'
+import MiniMarkdown from '../../components/MiniMarkdown.vue'
 import StateSkeleton from '../../components/StateSkeleton.vue'
 import ReportSheet from '../../components/ReportSheet.vue'
 import FeedbackSheet from '../../components/FeedbackSheet.vue'
@@ -24,7 +25,7 @@ import {
   type QaStreamSection,
   type QaStreamState
 } from '../../services/qa-stream'
-import { layoutLongImage, renderLongImage, type LongImageDoc, type LongImageLayout } from '../../services/image-export'
+import { layoutLongImage, renderLongImage, stripMarkdown, type LongImageDoc, type LongImageLayout } from '../../services/image-export'
 import { decodeRouteValue } from '../../services/route'
 import {
   isSafetyDegrade,
@@ -217,7 +218,7 @@ async function bootNew(question: string) {
     await loadBootstrap()
     void submitQuestion(question)
   } else {
-    inputFocus.value = true
+    // 不自动聚焦：真机键盘弹起会把 webview 整体上推，页头顶进状态栏（甲方需求 2026-10-15）
     void loadBootstrap()
   }
 }
@@ -458,7 +459,9 @@ function startStream(item: ChatItem) {
   const service = createQaStreamService({
     request: wxChunkedRequest,
     storage: { getStorageSync: (key: string) => uni.getStorageSync(key) },
-    baseUrl: BASE_URL,
+    // 流式请求必须与常规 API 同源：用 resolver 当前生效地址，而不是编译期 BASE_URL
+    // （BASE_URL 可能是真机预览用局域网地址，DevTools 内经代理访问会 502）
+    baseUrl: activeBaseUrl(),
     tokenKey: TOKEN_KEY
   })
   service.start(item.sessionUid, {
@@ -781,7 +784,7 @@ function buildAnswerDoc(item: ChatItem): LongImageDoc {
     if (section.access_tier === 'block') return []
     const body = section.blocks
       .filter((block) => block.access_tier !== 'block')
-      .map((block) => [block.title, block.content].filter(Boolean).join('\n'))
+      .map((block) => [block.title, stripMarkdown(block.content || '')].filter(Boolean).join('\n'))
       .filter(Boolean)
       .join('\n\n')
     if (!body) return []
@@ -1004,7 +1007,7 @@ function saveAnswerImage(item: ChatItem) {
                       </view>
                       <template v-else>
                         <text v-if="block.title" class="block-title">{{ block.title }}</text>
-                        <text v-if="block.content" class="block-content">{{ block.content }}</text>
+                        <MiniMarkdown v-if="block.content" :content="block.content" />
                         <StateSkeleton v-else-if="!section.done" mode="skeleton" />
                       </template>
                     </view>
@@ -1068,6 +1071,7 @@ function saveAnswerImage(item: ChatItem) {
           :show-confirm-bar="false"
           confirm-type="send"
           :focus="inputFocus"
+          :cursor-spacing="120"
           @confirm="send"
         />
         <button class="send-button" :class="{ disabled: !canSend }" :disabled="!canSend" hover-class="pressed" @tap="send">发送</button>

@@ -12,7 +12,19 @@ USER_VISIBLE_LANGUAGE_RULE = (
     "所有面向用户展示的标题与正文必须使用简体中文；仅 JSON 键名、枚举代码和数据标识保留英文。\n"
 )
 
-# 意图路由：判断问题意图与实体归属（1s 超时，失败回退显式入口）
+# 排版规则：content 为 Markdown，但仅限小程序渲染器支持的语法子集（甲方需求 2026-10-15 可读性）
+MARKDOWN_FORMAT_RULE = (
+    "排版要求：每个 block 的 content 用 Markdown 书写，但只允许以下语法——\n"
+    "要点列表行「- 」或「1. 」；加粗「**关键词**」；正文内部的小节用加粗短行单独成行"
+    "（如「**作息安排**」），不要用「##」井号标题，也不要在正文里重复 block 的 title；"
+    "分隔线「---」；对比、方案选择、分年龄段差异等结构化信息必须用表格表达"
+    "（首行「| 表头 | 表头 |」，第二行「|---|---|」，随后每行「| 内容 | 内容 |」，表格不超过 4 列）；\n"
+    "禁止使用代码块、引用块、链接、图片、HTML 以及以上未列出的任何 Markdown 语法。\n"
+    "可读性要求：每个 block 控制在 8 行以内；做与不做、不同选项对比优先用表格；"
+    "关键结论与注意事项用加粗突出；避免出现大段连续文字。\n"
+)
+
+# 意图路由：判断问题意图与实体归属（8s 超时，失败回退显式入口）
 INTENT_SYSTEM_PROMPT = (
     "你是家庭养育问答的意图路由器。分析用户问题，只输出一个 JSON 对象，"
     "不要输出其他文字：\n"
@@ -35,6 +47,7 @@ CHILD_AGENT_SYSTEM_PROMPT = (
     "blocks 必须覆盖：建议要点 / 适用前提 / 不建议做法 / 观察指标 / 何时咨询专业人士。\n"
     "红线：禁止疾病诊断断言、禁止用药剂量建议；evidence_ref 只能使用提供条目的 kb_id；"
     "进阶个性化内容用 access_tier=block。"
+    + MARKDOWN_FORMAT_RULE
 )
 
 # 宠物养护 Agent：猫狗饲养行为科普，急症红旗强制转介
@@ -53,6 +66,7 @@ PET_AGENT_SYSTEM_PROMPT = (
     "红线：不得做出疾病诊断；出现中毒、大出血、抽搐等急症红旗时 "
     "professional_referral 必须为 true；evidence_ref 只能使用提供条目的 kb_id；"
     "进阶个性化内容用 access_tier=block。"
+    + MARKDOWN_FORMAT_RULE
 )
 
 # 安全 Agent：儿童-宠物共处安全提示或通用家庭安全提示
@@ -67,6 +81,7 @@ SAFETY_AGENT_SYSTEM_PROMPT = (
     + '"content": "<Markdown 内容>", "access_tier": "free"}]}\n'
     "当问题同时涉及孩子与宠物时，生成儿童与宠物共处安全提示（2-4 条要点）；"
     "否则只生成 1-2 句通用家庭安全提示。内容必须简短、可执行、不引起恐慌。"
+    + MARKDOWN_FORMAT_RULE
 )
 
 # 各 Agent 系统提示词映射

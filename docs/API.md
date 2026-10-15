@@ -1,8 +1,8 @@
 # 小光景后端 API 接口文档
 
 > **生成信息**：由 `backend/scripts/export_api_doc.py` 自动生成（可重复执行，勿手改）
-> 生成时间：2026-10-14 20:45:50 ｜ 生成方式：优先抓取运行中服务 `http://127.0.0.1:8000/openapi.json`，失败则本地导入 `app.main.app.openapi()`
-> 端点总数：102 ｜ 分组：12 个 tag（11 个正式 tags + history 补充组）
+> 生成时间：2026-10-15 20:17:29 ｜ 生成方式：优先抓取运行中服务 `http://127.0.0.1:8000/openapi.json`，失败则本地导入 `app.main.app.openapi()`
+> 端点总数：113 ｜ 分组：13 个 tag（12 个正式 tags + history 补充组）
 
 **统一包络**：所有接口返回 `{code, message, data, request_id, trace_id}`；
 `code=0` 成功，非 0 为业务错误码（分段：1000 参数 / 1100 鉴权 / 1200 限流额度 / 1300 合规同意 / 1400 问答风险 / 1500 支付 / 1600 后台 / 1900 故障）。
@@ -44,6 +44,7 @@
 - [C端-测评](#C端-测评)（5 个端点）
 - [C端-商业化](#C端-商业化)（6 个端点）
 - [C端-权利反馈](#C端-权利反馈)（7 个端点）
+- [C端-健康与笔记](#C端-健康与笔记)（11 个端点）
 - [后台-知识库](#后台-知识库)（11 个端点）
 - [后台-词库](#后台-词库)（7 个端点）
 - [后台-处置](#后台-处置)（14 个端点）
@@ -764,6 +765,151 @@ upsert 即存即返；raw_score=null 表示跳题
 - **响应 data**：FileResponse 或纯文本下载地址（链接一次有效）
 - **主要错误码**：1002 不存在/越权/非导出类/未生成/已下载/已过期（其余见「通用错误码」）
 
+# C端-健康与笔记
+
+## GET /api/v1/health/records
+
+**健康记录列表**
+
+按体检日期倒序；每条含复查提醒状态 due_status（overdue/soon/upcoming/none）
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **查询参数**：
+  - `subject_type`（，可选）
+  - `subject_uid`（，可选）
+- **响应 data**：统一包络 data（详见端点 docstring）
+
+## POST /api/v1/health/records
+
+**新建健康记录**
+
+JSON 体：档案主体 + 体检信息；报告文件创建后经 /file 端点单独上传。儿童主体需儿童信息同意有效
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **请求体**（application/json）：
+  - `subject_type`（string，必填）：档案主体类型
+  - `subject_uid`（string，必填）：档案对外标识
+  - `record_date`（string，必填）：体检日期 YYYY-MM-DD
+  - `title`（string，必填）：记录标题
+  - `notes`（，可选）：医生建议/备注
+  - `next_checkup_date`（，可选）：下次复查日期
+  - `next_checkup_note`（，可选）：复查项目说明
+- **响应 data**：统一包络 data（详见端点 docstring）
+
+## DELETE /api/v1/health/records/{record_uid}
+
+**删除健康记录**
+
+软删并清理报告文件
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`record_uid`（string，必填）
+- **响应 data**：统一包络 data（详见端点 docstring）
+
+## GET /api/v1/health/records/{record_uid}
+
+**健康记录详情**
+
+解密返回医生建议与复查说明
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`record_uid`（string，必填）
+- **响应 data**：统一包络 data（详见端点 docstring）
+
+## PUT /api/v1/health/records/{record_uid}
+
+**更新健康记录**
+
+JSON 全量替换可编辑字段（体检日期/标题/备注/复查计划）
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`record_uid`（string，必填）
+- **请求体**（application/json）：
+  - `record_date`（string，必填）：体检日期 YYYY-MM-DD
+  - `title`（string，必填）：记录标题
+  - `notes`（，可选）：医生建议/备注
+  - `next_checkup_date`（，可选）：下次复查日期
+  - `next_checkup_note`（，可选）：复查项目说明
+- **响应 data**：统一包络 data（详见端点 docstring）
+
+## POST /api/v1/health/records/{record_uid}/file
+
+**替换报告文件**
+
+multipart 单文件（file 字段），覆盖旧的自动删除。用 POST 而非 PUT：微信 uploadFile 在开发者工具/部分基础库上会把 PUT 静默降级为 POST（2026-10-14 实测）
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`record_uid`（string，必填）
+- **响应 data**：统一包络 data（详见端点 docstring）
+
+## GET /api/v1/notes
+
+**笔记列表**
+
+按更新时间倒序，返回标题+摘要；keyword 按标题过滤
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **查询参数**：
+  - `keyword`（，可选）
+- **响应 data**：统一包络 data（详见端点 docstring）
+
+## POST /api/v1/notes
+
+**新建笔记**
+
+正文 Markdown 加密落库；本地敏感词前置检查（命中推广引流词拒绝）
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **请求体**（application/json）：
+  - `title`（string，必填）：笔记标题
+  - `content`（string，必填）：笔记正文 Markdown
+- **响应 data**：统一包络 data（详见端点 docstring）
+
+## DELETE /api/v1/notes/{note_uid}
+
+**删除笔记**
+
+软删
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`note_uid`（string，必填）
+- **响应 data**：统一包络 data（详见端点 docstring）
+
+## GET /api/v1/notes/{note_uid}
+
+**笔记详情**
+
+解密返回正文 Markdown 与乐观锁版本号
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`note_uid`（string，必填）
+- **响应 data**：统一包络 data（详见端点 docstring）
+
+## PUT /api/v1/notes/{note_uid}
+
+**更新笔记**
+
+乐观锁更新：version 不一致返回 1003；保存前同样过敏感词检查
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`note_uid`（string，必填）
+- **请求体**（application/json）：
+  - `title`（string，必填）：笔记标题
+  - `content`（string，必填）：笔记正文 Markdown
+  - `version`（integer，必填）：乐观锁版本号
+- **响应 data**：统一包络 data（详见端点 docstring）
+
 # 后台-知识库
 
 ## GET /api/v1/admin/kb/entries
@@ -1453,7 +1599,7 @@ term_hash 去重，明文加密落库，删词库缓存快照
 
 # history
 
-> 补充分组：4 个历史端点在 OpenAPI 中使用独立 `history` tag（未列入 11 个正式 tags），建议后续任务归并至 C端-问答 或补登正式 tag。
+> 补充分组：4 个历史端点在 OpenAPI 中使用独立 `history` tag（未列入 12 个正式 tags），建议后续任务归并至 C端-问答 或补登正式 tag。
 
 ## GET /api/v1/history
 
@@ -1519,4 +1665,4 @@ term_hash 去重，明文加密落库，删词库缓存快照
 - **主要错误码**：1001 非 report 类型(422)；1002 不存在或越权（其余见「通用错误码」）
 
 ---
-*本文档由脚本自动生成于 2026-10-14 20:45:50，共 102 个端点。*
+*本文档由脚本自动生成于 2026-10-15 20:17:29，共 113 个端点。*

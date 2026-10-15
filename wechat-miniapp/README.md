@@ -14,9 +14,9 @@ npm run dev:mp-weixin
 
 微信开发者工具基础库版本固定为 `3.17.4`。本机曾在 `3.17.3` 下遇到 `Cannot read property 'subPackages' of undefined`；固定版本后，本轮重构产物已在模拟器中完整跑通（含下文「验证状态」的自动化逐页走查）。该配置用于稳定开发预览，不代表生产兼容性已覆盖所有基础库版本。
 
-## 页面与导航范围（11 页）
+## 页面与导航范围（15 页）
 
-底部四 Tab 顺序：**首页 / 档案 / 记录 / 我的**（自定义 `MiniTabBar`，通过 `redirectTo` 切换；页内页不显示 Tab）。十一个页面均为自定义导航（`navigationStyle: custom`）。
+底部四 Tab 顺序：**首页 / 档案 / 记录 / 我的**（自定义 `MiniTabBar`，通过 `redirectTo` 切换；页内页不显示 Tab）。十五个页面均为自定义导航（`navigationStyle: custom`）。
 
 | 页面 | 路由 | 进入方式 |
 | --- | --- | --- |
@@ -31,16 +31,22 @@ npm run dev:mp-weixin
 | 会员权益 | `pages/member/index` | 首页额度卡与会员卡、我的页会员行 |
 | 档案详情 | `pages/profile-detail/index` | 档案列表卡点击（孩子 / 宠物，`kind` 与 `uid` 入参） |
 | 相册 | `pages/profile-album/index` | 档案详情「相册」缩略条「查看全部」/ ＋ 添加（`kind`、`uid` 与 `name` 入参） |
+| 健康档案 | `pages/health/index` | 「我的」页「健康档案」入口（孩子 / 宠物分组列表 + 顶部「待复查」卡） |
+| 健康档案编辑 | `pages/health/edit` | 健康档案「新建」或记录行点击（`uid` 可选入参，空为新建） |
+| 笔记 | `pages/notes/index` | 「我的」页「笔记」入口（标题 + 摘要列表） |
+| 笔记编辑 | `pages/notes/edit` | 笔记「新建」或行点击（`uid` 可选入参，空为新建） |
 
 档案列表卡仅展示头像、姓名与一行 meta（孩子如「30 个月 · 女孩」、宠物如「猫 · 成年 · 绝育情况未填写」）；头像支持设置（`ProfileAvatar` 共享组件，列表与详情同口径）、编辑（详情页右上角编辑入口）、删除与「设为当前观察对象」均在详情页完成，编辑保存后详情页即时同步（含从相册页返回时缩略条与计数经 `onShow` 自动刷新）；「当前」徽标经本地存储 `jiaban_current_profile` 跨会话保持。相册为每档案 30 张上限的方图网格（`＋` 瓦片添加、点按 `previewImage` 全屏、长按管理/删除），详情页保留横向缩略条（前 4 张 + 计数 + 查看全部）。
+
+健康档案（孩子 / 宠物）：列表按档案分组并置顶「待复查」卡（`due_status` 由服务端按上海时区当天计算——overdue / soon≤7 天 / upcoming / none，行内附提醒徽标）；编辑页支持体检日期、标题、备注、复查计划与电子版报告上传（PDF ≤10MB 按 `%PDF-` 魔数校验 / JPG / PNG，预览 / 替换 / 删除同步清理磁盘文件）；复查提醒为**纯应用内**展示（不接 agent、不做推送）。笔记：Markdown 形态的知识手册（查看态经 `MiniMarkdown` 渲染、右上角切换 textarea 编辑态），正文加密落库、乐观锁 `version` 冲突提示刷新（1003）、保存前本地敏感词前置检查（1303），不公开分享。
 
 ## 视觉与组件口径
 
 - 色板与圆角/阴影 tokens 定义在 `src/App.vue` 的 `page` 选择器：`--bg #F4F3F0`、`--surface`、`--surface-warm`、`--ink-1/2/3`、`--primary #7C9082`、`--info`、`--warn`、`--danger` 及对应 `-soft` 底；圆角 `--r-card 24rpx` / `--r-control 999rpx` / `--r-inner 16rpx`。旧深色 `--jb-*` 变量已全量删除。
 - 纸纹：`npm run gen:texture` 由 Node 内置 zlib 生成 128×128 透明底噪点 PNG（固定随机种子），base64 内嵌到 `src/styles/texture.css` 的全局 `.tex` 类，挂在页面外层与色带卡（`background-color` + `.tex` 叠加，透明度约 1–5%）。
 - 图形零位图（纸纹除外）、禁 emoji：全部插画/图标/对勾均用 CSS 绘制；勾选角为 `.check-tick`。
-- 共享组件：`MiniPageHeader`（推入页返回头 / 首页品牌头）、`MiniTabBar`、`MiniComplianceBar`（Tab 页常驻两行合规提示 + AI 标识 pill）、`MiniDialog`（品牌弹窗：信息/确认/危险态/输入式二次确认）、`MiniActionSheet`（品牌操作面板，含危险选项态）、`ReportSheet`（举报四分类弹层，`POST /reports`，问答/报告页使用）、`StateSkeleton`（骨架/空态/降级条）、`FeedbackSheet`（问答/报告页意见反馈弹层）、`ProfileFormSheet`（档案创建/编辑共享表单弹层，含 1302 同意流与 1003 冲突处理）、`ProfileAvatar`（档案头像：已设置显示图片、未设置回退 CSS 字形插画，列表卡与详情 hero 共用，含相机角标态）；「我的」页的权利中心/账号安全/意见反馈为页内面板实现。
-- 弹窗调用口径：页面经 `services/dialog.ts` 的 `useDialog`/`useActionSheet`（Promise 化）触发品牌弹窗，替代原生 `wx.showModal`/`wx.showActionSheet`（源码零残留）；11 页内 21 处弹窗调用点 + 4 处 ActionSheet（含本轮新增档案详情头像面板、相册页管理面板与各自危险确认）全部由 `MiniDialog`/`MiniActionSheet` 承接（含档案详情页删除确认、移除头像确认、相册照片删除确认与档案表单弹层同意流）。
+- 共享组件：`MiniPageHeader`（推入页返回头 / 首页品牌头）、`MiniTabBar`、`MiniComplianceBar`（Tab 页常驻两行合规提示 + AI 标识 pill）、`MiniDialog`（品牌弹窗：信息/确认/危险态/输入式二次确认）、`MiniActionSheet`（品牌操作面板，含危险选项态）、`ReportSheet`（举报四分类弹层，`POST /reports`，问答/报告页使用）、`StateSkeleton`（骨架/空态/降级条）、`FeedbackSheet`（问答/报告页意见反馈弹层）、`ProfileFormSheet`（档案创建/编辑共享表单弹层，含 1302 同意流与 1003 冲突处理）、`ProfileAvatar`（档案头像：已设置显示图片、未设置回退 CSS 字形插画，列表卡与详情 hero 共用，含相机角标态）、`MiniMarkdown`（无状态纯函数 Markdown 子集渲染器：块级 h/p/ul/ol/table/hr + 行内粗斜体；AI 回答与笔记查看态共用，流式 partial 每 chunk 全量重算、表格未完整时整段降级为段落）；「我的」页的权利中心/账号安全/意见反馈为页内面板实现。
+- 弹窗调用口径：页面经 `services/dialog.ts` 的 `useDialog`/`useActionSheet`（Promise 化）触发品牌弹窗，替代原生 `wx.showModal`/`wx.showActionSheet`（源码零残留）；15 页内 **24 处 `openDialog` 调用点**（含健康档案编辑页删除记录危险确认、笔记编辑页 1003 冲突提示与删除笔记危险确认）+ 2 处 `openActionSheet` 调用（`MiniActionSheet` 组件于 4 页渲染：我的 / 档案详情 / 相册 / 问答），全部由 `MiniDialog`/`MiniActionSheet` 承接（含档案详情页删除确认、移除头像确认、相册照片删除确认与档案表单弹层同意流）。
 - 测试硬约束：`tests/route.test.mjs` 校验路由清单与「模板静态可见文案无连续拉丁字母」——AI、iOS、价格等文案一律放 `<script>` 常量经 `{{ }}` 插值；模板属性表达式内不得出现 `<`/`>`。
 
 ## 基线与占位项取值记录（2026-10-13 重构）
@@ -73,16 +79,16 @@ npm run dev:mp-weixin
 ## 验证
 
 ```powershell
-npm test           # node --test，79 项
+npm test           # node --test，92 项
 npm run type-check # vue-tsc
 npm run build:mp-weixin
 ```
 
-## 验证状态（2026-10-13 重构后；2026-10-14 弹窗品牌化轮、全面模拟测试轮、连接鲁棒性 / 档案卡排版轮、档案详情轮与档案头像 / 相册轮增补）
+## 验证状态（2026-10-13 重构后；2026-10-14 弹窗品牌化轮、全面模拟测试轮、连接鲁棒性 / 档案卡排版轮、档案详情轮与档案头像 / 相册轮；2026-10-15 甲方四条需求轮增补）
 
 **已通过（本轮实测）**
 
-- `npm test` 79 项全绿：SSE 帧解析与 UTF-8 跨块解码、流式状态机、问答降级文案映射、问答对象、测评断点镜像、长图文本折行、路由清单与模板中文约束、端点解析（候选顺序 / 探测顺延 / 覆盖独占 / 失效重探）与请求层接线、上传客户端（`wx.uploadFile` 包络字符串解析 / 顺序上传 / 部分失败汇总）、`mediaUrl` 相对路径拼接、相册页逻辑与「当前档案」本地存储。
+- `npm test` 92 项全绿：SSE 帧解析与 UTF-8 跨块解码、流式状态机、问答降级文案映射、问答对象、测评断点镜像、长图文本折行、路由清单（15 页）与模板中文约束、端点解析（候选顺序 / 探测顺延 / 覆盖独占 / 失效重探）与请求层接线、上传客户端（`wx.uploadFile` 包络字符串解析 / 顺序上传 / 部分失败汇总）、`mediaUrl` 相对路径拼接、媒体图片管道（下载缓存去重 / 并发共享 / 失败重试与占位降级 / 本地优先回退 / URL 变更重置）、相册页逻辑与「当前档案」本地存储。
 - `npm run type-check`、`npm run build:mp-weixin` 通过；编译产物抽查：浅色 tokens 与 `.tex` 已进 app.wxss/页面 wxss，`.check-tick` 与 `background-color` 落位正确，旧深色变量、旧品牌名「家伴」、emoji/对勾字符在 `src/` 零残留。
 - 微信开发者工具（基础库 3.17.4）自动化逐页走查：首页（额度卡、测评 hero 已完成态、三入口、会员卡）、记录（列表与空态、单行 chips）、问答（新会话页含对象 pill 与额度行、历史只读页含会员门控块与操作条）、测评引导（边界说明卡/题量行/主按钮）、测评作答（第 1/16 题与李克特选项）、观察报告（历史模式：类型 hero、四维档位条、解读卡、只读标注）、会员权益（对照表、价格卡、退款勾选、iOS 说明位）、家庭档案（儿童信息同意卡与空态）、我的（目录分组与会员行）。截图存档于 `walkthrough/`。
 - 真实链路：经 `POST /qa/sessions` + `POST /qa/sessions/{uid}/stream` 由本地后端完成一次真实流式生成（约 41s，`section_delta`/`section_done`/`completed` 帧完整，落库 `done` 并出现在记录页）；测评 start → 16 题作答 → submit → 报告全链路经真实 API 验证并渲染报告页。
@@ -92,12 +98,16 @@ npm run build:mp-weixin
 - 连接鲁棒性与档案卡排版轮（2026-10-14）：`npm test` 56 项全绿（新增端点解析 9 例、请求接线 2 例）+ `vue-tsc` + `build:mp-weixin` 通过；**连接自愈实证**——把 `.env.development.local` 两个变量改为不可达地址并重建，开发者工具硬重启后首页仍就绪（经回环 `127.0.0.1` 探测命中，`dbg_heal_home.png`），`jiaban_last_api_base` 记为该回环地址；**调试弹窗走查**——不可达态首页出现「调试连接」→ 弹窗展示当前生效与探测诊断 → 手填保存后恢复就绪（覆盖值经规范化写入）→ 留空清除后再次恢复（`dbg_error/dbg_dialog/dbg_override_applied/dbg_dialog_clear/dbg_override_cleared.png`）；**生产零残留**——`dist/build/mp-weixin` 内 `jiaban_debug_api_base`、`jiaban_last_api_base`、`VITE_API_BASE_URLS`、`createEndpointResolver`、「调试连接」grep 零命中；**档案卡排版**——标签/数值两列栅格 + 过敏整行 + 超长值省略，390/375/320 三设备档与宠物卡截图无溢出（`card_390*/card_375*/card_320*/card_pet_320/card_pet_390/card_cleanup.png`），长昵称、4 项过敏、无身高、长主粮等字段组合以临时档案实测后清理；`impeccable detect` 对两个改动文件零发现。
 - 档案列表简化与详情页轮（2026-10-14）：`npm test` 56→**59** 全绿（新增 `profile-current` 本地存储 3 例）+ `vue-tsc` + `build:mp-weixin` 通过；列表卡简化至「头像 + 姓名 + 一行 meta」并整卡进详情（`detail_list_child_pet.png`、`detail_list_pet_tab.png`）；详情页完整字段栅格 + 出生日期脱敏切换（`detail_child_birth_revealed.png` → `detail_child_birth_toggle2.png`）；**编辑即时同步实证**——身高 111→110 保存后详情页即时更新、二次保存还原 111（`detail_child_after_save_toast/settled.png`、`detail_child_height_restored.png`），宠物编辑弹层预填走查（`detail_pet_sheet_edit.png`）；删除孩子走昵称匹配拦截（输入错误昵称确认后弹窗关闭、档案完好，`detail_delete_dialog.png`、`detail_delete_mismatch_toast*.png`）；设为当前后返回列表徽标同步且跨硬重启保持（`detail_set_current.png`、`detail_list_current_badge.png`、`detail_390_list_final.png`）；伪 uid 未找到空态兜底（`detail_missing_state.png`）；iPhone 5 320 窄屏列表/详情/弹层无溢出（`detail_320_*.png`）；`impeccable detect` 对三个改动文件零发现；生产构建抽查含新页 `pages/profile-detail/index`。
 - 档案头像与相册轮（2026-10-14）：`npm test` 59→**79** 全绿（新增上传客户端包络解析、`mediaUrl` 拼接、相册页逻辑等 20 例）+ `vue-tsc` + `build:mp-weixin` 通过。**详情页 v2**——hero 暖底「档案卡」置顶（头像 152rpx 白圈 + 相机角标、姓名 + 当前徽标、月龄段 + 性别），相册缩略条浮于底色（150rpx 方图 + ＋ 瓦片 + 「查看全部」），信息卡分区标题 + 记录行排版（出生日期脱敏按钮改版为柔雾圆盘 + 右缘对齐，`detail_eye_v2.png`/`detail_eye_v2_revealed.png` 双态实证）；**头像全链路实证**——`mockWxMethod chooseMedia` + `USER_DATA_PATH` 测试图模拟选图 → 真实上传 → hero/列表卡展示，ActionSheet（相册/拍照/查看大图/移除头像）逐项走查；替换后旧文件已从 `data/uploads/` 删除（服务端实测）、移除头像回字形兜底并弹危险确认（`media_avatar_sheet/replaced/remove_confirm/removed/final_390.png`、`media_list_avatar_390.png`）；**相册全链路实证**——详情缩略条 ＋ → 新相册页（第 11 页）真实上传 → 2/30 网格 → `previewImage` 全屏 → 长按管理删除；**onShow 修复闭环**——相册页加图返回详情，计数「相册 · 2 张」与缩略条自动刷新（`media_album_before/after_add_390.png`、`media_detail_after_back_390.png`）；宠物档案同能力对称走查（`media_pet_detail_390.png`、`media_pet_avatar_390.png`）；390/375/320 三设备档详情页与相册页无溢出（`media_detail_375/320.png`、`media_album_375/320.png`）；生产构建零残留；`impeccable detect` 对三个改动 UI 文件零发现。
+- 甲方四条需求轮（2026-10-15）：①**输入显示**——问答页去自动聚焦 + 输入框 `:cursor-spacing="120"`（新建健康/笔记 4 页输入一律不自动聚焦；真机键盘避让待复核）；②**回答可读性**——后端 `MARKDOWN_FORMAT_RULE`（对比/方案类必须用表格 + 语法子集）+ mock 分支同步 Markdown 化；走查实证表格（表头底色 / 边框 / 多列对齐）与加粗/列表渲染正确、`**` 语法标记不再上屏（`qa-v2-answer/qa-v2-table*/qa-member*`），流式中途表格未完整时整段降级为段落、chunk 到位后重算；会员内容块复验为正文（非解锁卡）；③**健康档案**——「我的」页入口 + 列表（孩子/宠物分组 + 待复查卡 + 徽标）+ 新建/编辑（报告上传/预览/替换/删除清盘），提醒流转实证（「还有 3 天复查」出现 → 改期后提醒卡消失）；④**笔记**——「我的」页入口 + 列表（摘要去语法、空态）+ 查看态 Markdown + textarea 编辑（`version` 1→2→3 乐观锁）→ 删除（列表 0 / 详情 1002）；⑤回归：首页与记录页走查无回归（`regress-home/records`）；`npm test` **92** 全绿（路由白名单同步 15 页）+ `vue-tsc` + `build:mp-weixin`；走查 21 张存档 `walkthrough/`；专项报告 `../docs/测试报告_小程序端甲方需求验收测试_2026-10-15.md`。
 - 自动化手段备注：`scripts/shot.mjs`（miniprogram-automator 0.12.1 + `cli auto --auto-port 9420`）。已知环境坑：Git Bash 会改写 `/pages/...` 参数（需 `MSYS_NO_PATHCONV=1`）；截图要求开发者工具窗口处于前台（脚本内自激活）；元素查询会挂起，走 `reLaunch` + 截图。全面模拟测试轮增补可复用脚本：`scripts/compat-shoot.mjs`（多设备逐页走查 + sysinfo 存档）、`scripts/err-mock.mjs`（断网故障注入与重试实证）、`scripts/win-focus.py`（截图前置前，规避遮挡节流），`dt-*.py`（屏幕抓取/按钮定位/真实点击）为其 Windows 辅助件。
 
 **未验证（待人工/真机，上线前必查）**
 
 - ~~问答页在模拟器内「发送 → 分块渐进渲染」的交互未由自动化驱动实测~~ —— ✅ 已闭环（2026-10-14 全面模拟测试轮）：模拟器内真实驱动发送，分块渐进渲染 3s 首段 → 13s 分节 → 约 41s 完成落库（`walkthrough/t_qa_send_3s/13s/48s.png`）。
 - `wx.request({ enableChunked })` 分块流式在开发者工具与真机的实际表现未实测；不可用时自动回落轮询（`triggerQaGeneration + pollQaSession`），功能不减。
+- 真机软键盘避让：输入显示修复（去自动聚焦 + `cursor-spacing`）代码与编译产物已核验，但「输入时页面不被顶飞」需 iOS/Android 真机复核（本轮未动 `100vh` 布局结构，属求稳取舍）。
+- 真机 `wx.chooseMessageFile` 文件选择交互：健康档案报告上传在模拟器不可自动化（本轮以 API 直传 + 页面可见实证）。
+- 真实模型排版遵守率：DeepSeek 充值后切 `LLM_MOCK=false` 复跑，确认稳定输出表格/列表语法（mock 分支已同构，渲染层不受影响）。
 - canvas 长图 `saveImageToPhotosAlbum` 的**真机**相册授权流程未验证（模拟器内已实证双路径：DevTools 会弹原生「另存为」对话框——保存=成功 toast「已保存到相册」、取消=按失败处理弹「需要相册权限」引导；真机默认直存相册、无此对话框）。
 - 微信支付未接线：会员按钮点击仅提示「微信支付接入后开放」，订单状态机等后端能力就绪。
 - 档案头像/相册的真机相册、拍照授权流程未验证（模拟器内已以 `mockWxMethod chooseMedia` + 真实上传验证全链路）；`/media` 静态服务为 MVP 口径**无鉴权**（uuid 文件名防枚举），生产需切 OSS + 签名 URL，且真机要求与 API 同域（HTTPS + request 合法域名白名单）。
@@ -116,3 +126,4 @@ npm run build:mp-weixin
 - 2026-10-14（连接鲁棒性与档案卡排版轮）：①调试连接彻底修复——dev 构建改为**运行时端点解析**（新增 `src/platform/endpoint.ts`：候选烧入 + 按序 `/health` 探测 1.5s 超时 + 上次成功缓存 + 手动覆盖独占；失败自动顺延、全部失败回落首选；模拟器恒先 `127.0.0.1` 自愈）；`lan-ip.mjs` 收集全量网卡 IP（排除 WSL 虚拟网卡、保留 `192.168.137.*` 热点段）经 `VITE_API_BASE_URLS` 烧入构建；错误页新增 dev 专用「调试连接」弹窗（手填地址 / 留空清除 / 探测诊断）；实测：把预置地址改为不可达并重建后，开发者工具硬重启首页仍经回环自愈就绪。②档案卡信息区结构升级（用户实机反馈）——标签 22rpx 弱化、数值 27rpx·600 强调的两列栅格，过敏整行、超长值省略号；390/375/320 三档与宠物卡走查无溢出。③`npm test` 45→56、`vue-tsc`、`build:mp-weixin` 通过；生产产物 grep 抽查零残留；证据存档 `walkthrough/`（dbg_* / card_*）。
 - 2026-10-14（档案列表简化与详情页轮）：①列表卡简化——档案卡仅保留头像、姓名与一行 meta（孩子「30 个月 · 女孩」、宠物「猫 · 成年 · 绝育情况未填写」），字段明细与操作全部迁出；②新增档案详情页 `pages/profile-detail/index`（`kind` + `uid` 入参，孩子/宠物对称），含完整字段栅格、出生日期脱敏切换、右上角编辑入口（共享表单弹层 `ProfileFormSheet`，创建/编辑两处复用，含 1302 同意流与 1003 冲突处理）、删除（孩子昵称匹配拦截 / 宠物危险确认）与「设为当前观察对象」；③页数 9→10、「当前」徽标持久化至本地存储 `jiaban_current_profile`（DI store + 3 例单测）；④`npm test` 56→59 全绿 + `vue-tsc` + `build:mp-weixin` 通过；走查证据 24 张存档 `walkthrough/`（detail_*）；`impeccable detect` 三个改动文件零发现。
 - 2026-10-14（档案头像与相册轮，甲方需求）：①**后端媒体链路从零落地**——`ChildProfile`/`PetProfile` 增 `avatar_path`、新增 `ProfilePhoto` 表（34→35 张，init_db 幂等补列）、`services/media_store.py`（Pillow EXIF 旋转/限长边/JPEG q85、uuid 文件名、锚定 backend 目录）、`/media` 静态挂载、档案媒体端点族（`PUT|DELETE /profiles/{kind}/{uid}/avatar`、`GET|POST /profiles/{kind}/{uid}/photos`、`DELETE .../photos/{photo_uid}`，孩子档过 1302 门禁、格式/大小 1001、上限 30 张 1007/409）；删除档案（purge/仅档案两模式）同步清媒体文件与行、回执含媒体条目；②**详情页 v2 美化**（用户反馈「太简陋」）——hero 暖底档案卡（头像 + 相机角标 + 姓名 + 当前徽标 + 月龄段/性别）、相册缩略条（150rpx 方图 + ＋ 瓦片 + 查看全部）、信息卡分区标题 + 记录行排版（出生日期脱敏按钮改版为柔雾圆盘 + 右缘对齐）、危险操作下沉；③新增相册页 `pages/profile-album/index`（3 列网格、N/30 计数、`previewImage` 全屏、长按管理删除、空态/满态），页数 10→11；新增共享组件 `ProfileAvatar` 与上传服务 `services/profile-media.ts`（chooseMedia `sizeType: compressed` + 顺序上传 + 部分失败汇总）；④修复详情页 `onShow` 未刷新——相册页加图返回后计数与缩略条自动更新（走查闭环实证）；⑤`npm test` 59→79 全绿（上传客户端包络解析、`mediaUrl`、相册逻辑等 20 例）+ `vue-tsc` + `build:mp-weixin` 通过；走查证据 16 张 `media_*` 存档 `walkthrough/`（头像全链路含服务端文件增删实证、390/375/320 三档、宠物对称）；`impeccable detect` 三个改动 UI 文件零发现。偏差记录：信息卡最终采用记录行列表（非计划两列栅格）；本地联调口径 `/media` 无鉴权（uuid 防枚举，生产切 OSS + 签名 URL）；详见计划与评估文档 v5.13。
+- 2026-10-15（甲方四条需求轮）：①输入显示——问答页去自动聚焦 + 输入框 `:cursor-spacing="120"`（新建 4 页一律不自动聚焦）；②回答可读性——后端 `MARKDOWN_FORMAT_RULE` 注入儿童/宠物 Agent + mock 分支 Markdown 化 + `MiniMarkdown` 渲染器（问答/笔记共用）+ `stripMarkdown` 长图去语法；③健康档案——新表 `health_record` + 6 端点（`due_status` 上海时区三态）+ `pages/health/index|edit` +「我的」页入口，复查提醒纯应用内；④笔记——新表 `note`（正文加密 + 乐观锁 1003 + 敏感词 1303）+ 5 端点 + `pages/notes/index|edit` + 入口；⑤本轮修复 6 项缺陷（含 RB-06 儿童同意撤回后健康档案未同步停展）；`npm test` 79→92 全绿（路由白名单同步 15 页）+ `vue-tsc` + `build:mp-weixin`；走查 21 张存档 `walkthrough/`；专项报告 `../docs/测试报告_小程序端甲方需求验收测试_2026-10-15.md`；页数 11→15、组件 10→11。

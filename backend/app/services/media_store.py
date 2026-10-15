@@ -17,6 +17,8 @@ from app.core.config import get_settings
 # 允许的上传格式（Pillow 识别结果）与体积上限
 ALLOWED_FORMATS = {"JPEG", "PNG", "WEBP"}
 MAX_UPLOAD_BYTES = 8 * 1024 * 1024
+# 体检报告文档上限（甲方需求 2026-10-15）：PDF 10MB；图片走 save_image 的 8MB
+DOCUMENT_MAX_BYTES = 10 * 1024 * 1024
 # 规范化后的最长边：头像（圆形小图）/ 相册照片
 AVATAR_MAX_SIDE = 512
 PHOTO_MAX_SIDE = 1280
@@ -104,6 +106,44 @@ def save_image(data: bytes, subdir: str, max_side: int) -> Tuple[str, int, int, 
     img.save(target, format="JPEG", quality=JPEG_QUALITY, optimize=True)
     width, height = img.size
     return f"{subdir}/{filename}", width, height, target.stat().st_size
+
+
+def save_document(data: bytes, subdir: str, filename: str) -> Tuple[str, int]:
+    """校验并保存健康档案报告文档（PDF 原样落盘，图片复用图片规范化）。
+
+    PDF 按 %PDF- 魔数校验（扩展名须一致），原字节直存；jpg/png/webp 委托
+    save_image 规范化（长边 1280 / JPEG q85，体积上限 8MB）。统一 uuid
+    命名防枚举；原文件名不入盘，由调用方入库仅作展示。
+
+    Args:
+        data: 原始上传字节。
+        subdir: 相对子目录（经 _safe_subdir 校验，如 "health"）。
+        filename: 上传原始文件名（判断扩展名用）。
+
+    Returns:
+        (相对路径, 字节数)；相对路径即入库的 file_path。
+
+    Raises:
+        MediaValidationError: 空文件/超体积/格式不支持/魔数不符。
+        ValueError: 子目录非法。
+    """
+    if not data:
+        raise MediaValidationError("empty upload")
+    if len(data) > DOCUMENT_MAX_BYTES:
+        raise MediaValidationError("file too large")
+    lower = (filename or "").lower()
+    if lower.endswith(".pdf") or data[:5] == b"%PDF-":
+        if not (lower.endswith(".pdf") and data.startswith(b"%PDF-")):
+            raise MediaValidationError("invalid pdf")
+        target_dir = media_root() / _safe_subdir(subdir)
+        target_dir.mkdir(parents=True, exist_ok=True)
+        name = f"{uuid.uuid4().hex}.pdf"
+        target = target_dir / name
+        target.write_bytes(data)
+        return f"{subdir}/{name}", target.stat().st_size
+    # 其余按图片处理（save_image 校验 jpeg/png/webp 与 8MB 上限）
+    rel, _width, _height, size = save_image(data, subdir, PHOTO_MAX_SIDE)
+    return rel, size
 
 
 def delete_file(rel_path: str) -> bool:

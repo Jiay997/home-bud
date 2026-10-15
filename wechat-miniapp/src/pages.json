@@ -71,6 +71,32 @@
         "navigationStyle": "custom",
         "enablePullDownRefresh": true
       }
+    },
+    {
+      "path": "pages/health/index",
+      "style": {
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/health/edit",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/notes/index",
+      "style": {
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/notes/edit",
+      "style": {
+        "navigationStyle": "custom"
+      }
     }
   ],
   "subPackages": [],

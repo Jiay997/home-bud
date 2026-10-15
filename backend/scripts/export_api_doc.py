@@ -29,10 +29,11 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 DOC_PATH = os.path.join(ROOT_DIR, "docs", "API.md")
 OPENAPI_URL = "http://127.0.0.1:8000/openapi.json"
 
-# OpenAPI 正式 tags（与 app/main.py OPENAPI_TAGS 对应，共 11 组）
+# OpenAPI 正式 tags（与 app/main.py OPENAPI_TAGS 对应，共 12 组）
 FORMAL_TAGS = [
     "系统", "C端-认证同意", "C端-档案", "C端-问答", "C端-测评", "C端-商业化",
-    "C端-权利反馈", "后台-知识库", "后台-词库", "后台-处置", "后台-配置",
+    "C端-权利反馈", "C端-健康与笔记",
+    "后台-知识库", "后台-词库", "后台-处置", "后台-配置",
 ]
 # history_api 4 个端点使用独立 history tag（未入正式 tags），作为补充分组保留
 EXTRA_TAGS = ["history"]
@@ -457,7 +458,7 @@ def build_markdown(spec: dict) -> str:
     out.append("")
     out.append("> **生成信息**：由 `backend/scripts/export_api_doc.py` 自动生成（可重复执行，勿手改）")
     out.append(f"> 生成时间：{now} ｜ 生成方式：优先抓取运行中服务 `{OPENAPI_URL}`，失败则本地导入 `app.main.app.openapi()`")
-    out.append(f"> 端点总数：{total} ｜ 分组：{len(groups)} 个 tag（11 个正式 tags + history 补充组）")
+    out.append(f"> 端点总数：{total} ｜ 分组：{len(groups)} 个 tag（{len(FORMAL_TAGS)} 个正式 tags + history 补充组）")
     out.append("")
     out.append("**统一包络**：所有接口返回 `{code, message, data, request_id, trace_id}`；")
     out.append("`code=0` 成功，非 0 为业务错误码（分段：1000 参数 / 1100 鉴权 / 1200 限流额度 / 1300 合规同意 / 1400 问答风险 / 1500 支付 / 1600 后台 / 1900 故障）。")
@@ -505,7 +506,7 @@ def build_markdown(spec: dict) -> str:
         out.append(f"# {tag}")
         out.append("")
         if tag == "history":
-            out.append("> 补充分组：4 个历史端点在 OpenAPI 中使用独立 `history` tag（未列入 11 个正式 tags），建议后续任务归并至 C端-问答 或补登正式 tag。")
+            out.append(f"> 补充分组：4 个历史端点在 OpenAPI 中使用独立 `history` tag（未列入 {len(FORMAL_TAGS)} 个正式 tags），建议后续任务归并至 C端-问答 或补登正式 tag。")
             out.append("")
         for method, path, op in groups[tag]:
             out.extend(_render_endpoint(spec, method, path, op))

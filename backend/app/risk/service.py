@@ -146,7 +146,7 @@ class RiskService:
     ) -> dict:
         """两级风险扫描入口：先于一切生成动作执行。
 
-        一级未命中时调 DeepSeek 语义分类（3s 超时，异常按命中保守处理）；
+        一级未命中时调 DeepSeek 语义分类（10s 超时，异常按命中保守处理）；
         命中时写 RiskEvent 并将 qa_session 置 blocked/high。
 
         Args:
@@ -163,7 +163,7 @@ class RiskService:
         gateway = get_gateway()
 
         def semantic_fn(text: str) -> dict:
-            """语义分类闭包：3s 超时，JSON 解析失败视为异常（保守命中）。
+            """语义分类闭包：10s 超时，JSON 解析失败视为异常（保守命中）。
 
             Args:
                 text: 待分类文本。
@@ -176,7 +176,7 @@ class RiskService:
                 ValueError: 返回内容无法解析为 JSON。
             """
             resp = gateway.chat(
-                engine.build_semantic_messages(text), purpose="semantic", timeout=3.0
+                engine.build_semantic_messages(text), purpose="semantic", timeout=10.0
             )
             parsed = extract_json(resp["content"])
             if parsed is None or "score" not in parsed:

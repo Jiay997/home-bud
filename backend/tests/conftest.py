@@ -539,4 +539,4 @@ def db_query_user_id(user_uid: str):
 
 
 # 保证导入面完整（供 pytest fixture 发现；ALL_MODELS 用于断言表数量）
-assert len(ALL_MODELS) == 35
+assert len(ALL_MODELS) == 37

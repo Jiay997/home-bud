@@ -133,7 +133,7 @@ class LlmGateway:
             messages: OpenAI 兼容消息列表 [{"role": ..., "content": ...}]。
             purpose: 调用用途（intent/semantic/child_agent/pet_agent/safety_agent），
                 决定采样温度与 mock 分支。
-            timeout: 上游超时秒数（语义风险用 3s，意图用 1s，Agent 用 12s）。
+            timeout: 上游超时秒数（语义风险用 10s，意图用 8s，Agent 用 30s）。
 
         Returns:
             归一化结果 {"content": str, "prompt_tokens": int,
@@ -163,6 +163,11 @@ class LlmGateway:
             "messages": messages,
             "temperature": PURPOSE_TEMPERATURE.get(purpose, 0.3),
         }
+        # deepseek-flash（V4.1-Flash）为推理模型，默认 effort=high 时推理段会显著
+        # 拉长生成耗时（实测结构化 JSON 输出可超 30s 预算）；Agent 生成用途固定
+        # low 档保证在节点超时内稳定返回，分类用途耗时不受 effort 影响、保持原样
+        if purpose in ("child_agent", "pet_agent", "safety_agent"):
+            payload["effort"] = "low"
         try:
             resp = httpx.post(url, headers=headers, json=payload, timeout=timeout)
         except Exception as exc:  # 网络异常/超时统一包装

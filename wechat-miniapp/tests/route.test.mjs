@@ -48,7 +48,11 @@ test('all declared mini-program routes point to existing page files', () => {
     'pages/report/index',
     'pages/member/index',
     'pages/profile-detail/index',
-    'pages/profile-album/index'
+    'pages/profile-album/index',
+    'pages/health/index',
+    'pages/health/edit',
+    'pages/notes/index',
+    'pages/notes/edit'
   ]
 
   assert.deepEqual(pages, expected)
