@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>会员权益 · 解锁深度养育内容</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=-apple-system,+BlinkMacSystemFont,+PingFang+SC,+system-ui,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-high": "#e6e9e7",
+            "background": "#f7faf8",
+            "on-secondary-fixed-variant": "#384a47",
+            "ink-2": "#455754",
+            "tertiary": "#723622",
+            "bg": "#F2F5F4",
+            "on-surface": "#181c1b",
+            "warn": "#7A5600",
+            "error": "#ba1a1a",
+            "line": "#D5DEDB",
+            "ink-1": "#0F1E1C",
+            "accent": "#0A6B60",
+            "on-primary-fixed-variant": "#005048",
+            "surface-dim": "#d7dbd9",
+            "on-accent": "#FFFFFF",
+            "line-strong": "#B4C3BF",
+            "surface-variant": "#e0e3e1",
+            "on-tertiary": "#ffffff",
+            "surface-2": "#E9EFED",
+            "surface": "#FFFFFF",
+            "accent-line": "#8FBFB7",
+            "tertiary-fixed-dim": "#ffb59d",
+            "on-primary": "#ffffff",
+            "danger-soft": "#F7E4E2",
+            "on-secondary": "#ffffff",
+            "tertiary-container": "#8f4d37",
+            "inverse-primary": "#85d5c7",
+            "on-tertiary-fixed-variant": "#713621",
+            "outline": "#6f7976",
+            "on-secondary-container": "#566865",
+            "on-tertiary-container": "#ffcfc0",
+            "tertiary-fixed": "#ffdbd0",
+            "ink-3": "#5F6F6C",
+            "surface-container-low": "#f1f4f2",
+            "on-surface-variant": "#3e4946",
+            "surface-container-highest": "#e0e3e1",
+            "primary-fixed-dim": "#85d5c7",
+            "inverse-surface": "#2d3130",
+            "error-container": "#ffdad6",
+            "accent-press": "#074E46",
+            "danger": "#A8231B",
+            "on-error-container": "#93000a",
+            "surface-container": "#ebefec",
+            "secondary-fixed-dim": "#b7cbc7",
+            "primary-fixed": "#a1f1e3",
+            "secondary-container": "#d3e7e2",
+            "inverse-on-surface": "#eef1ef",
+            "on-primary-fixed": "#00201c",
+            "secondary-fixed": "#d3e7e2",
+            "warn-soft": "#F6EDD8",
+            "secondary": "#50625f",
+            "on-error": "#ffffff",
+            "surface-tint": "#086a5f",
+            "accent-soft": "#E1EFEC",
+            "on-secondary-fixed": "#0d1f1c",
+            "surface-container-lowest": "#ffffff",
+            "on-background": "#181c1b",
+            "on-primary-container": "#98e8da",
+            "primary": "#005148",
+            "surface-bright": "#f7faf8",
+            "on-tertiary-fixed": "#390c00",
+            "outline-variant": "#bec9c5",
+            "primary-container": "#0a6b60"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "6px",
+            "margin": "16px",
+            "space-xl": "32px",
+            "gutter": "16px",
+            "space-sm": "8px",
+            "space-md": "16px",
+            "space-xxl": "48px",
+            "space-lg": "24px"
+          },
+          "fontFamily": {
+            "title": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "sub": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "caption": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "body": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "display": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "numeric": ["\"ui-monospace, SF Mono, Consolas, monospace\""]
+          },
+          "fontSize": {
+            "title": ["19px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "sub": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "caption": ["12px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "body": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "display": ["23px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "numeric": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .ruler-ticks {
+      background-image: repeating-linear-gradient(
+        to right,
+        #B4C3BF 0px,
+        #B4C3BF 1px,
+        transparent 1px,
+        transparent 8px
+      );
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-dim font-body text-ink-1 flex justify-center items-start min-h-screen p-0 m-0">
+<!-- 小程序主画布 (375x812 移动规范视口) -->
+<div class="relative w-[375px] h-[812px] bg-bg overflow-hidden shadow-2xl flex flex-col justify-between select-none">
+<!-- 顶部小程序胶囊与导航栏 (Shared Component: TopAppBar) -->
+<header class="bg-surface text-primary border-b border-line flex justify-between items-center w-full px-4 h-12 z-10 shrink-0">
+<div class="flex items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined text-primary text-[20px]">chevron_left</span>
+<span class="font-caption text-caption text-ink-2">返回</span>
+</div>
+<div class="font-title text-title text-primary tracking-tight font-bold">微信小程序</div>
+<div class="flex items-center justify-end">
+<span class="material-symbols-outlined text-ink-2 text-[20px]">more_horiz</span>
+</div>
+</header>
+<!-- 底层页面内容（半透明置底 + 暗化模糊滤镜，呈现 iOS 规范权益底版） -->
+<div class="flex-1 overflow-y-auto px-4 pt-3 pb-24 opacity-40 blur-[0.4px] pointer-events-none">
+<!-- 刻度基准顶栏装饰 -->
+<div class="flex items-center justify-between mb-2 px-1">
+<span class="font-caption text-caption text-ink-3">刻度标识：标定层级-21</span>
+<span class="font-caption text-caption text-ink-3 font-numeric">编号-21 / 系统状态</span>
+</div>
+<!-- 主标题区 -->
+<div class="bg-surface rounded-xl p-4 border border-line mb-3">
+<div class="flex items-center gap-2 mb-1">
+<span class="h-4 w-1 bg-accent rounded-full inline-block"></span>
+<h1 class="font-title text-title text-ink-1 font-bold tracking-tight">会员权益 · 解锁深度养育内容</h1>
+</div>
+<p class="font-sub text-sub text-ink-2 leading-tight mt-1">依托科学量具刻度模型，全维度跟踪爱宠成长健康曲线</p>
+</div>
+<!-- 规范表格卡片：免费 vs 会员对比 -->
+<div class="bg-surface rounded-xl border border-line p-3 mb-3">
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-line">
+<div class="font-title text-title text-ink-1 font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-accent text-[18px]">scale</span>
+<span>权益对比基准</span>
+</div>
+<div class="flex items-center gap-4 text-ink-3 font-caption text-caption">
+<span class="w-12 text-center">基础版</span>
+<span class="w-16 text-center text-accent font-semibold">会员计划</span>
+</div>
+</div>
+<!-- 表格行：深度养育方案 -->
+<div class="flex items-center justify-between py-2 border-b border-surface-container-high">
+<div class="flex flex-col">
+<span class="font-body text-body text-ink-1 font-medium">深度养育方案</span>
+<span class="font-caption text-caption text-ink-3">多阶体况动态评估</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="w-12 text-center font-caption text-caption text-ink-3">简要概要</span>
+<span class="w-16 text-center font-caption text-caption text-accent font-semibold bg-accent-soft rounded py-0.5">全量模型</span>
+</div>
+</div>
+<!-- 表格行：月度计划 -->
+<div class="flex items-center justify-between py-2 border-b border-surface-container-high">
+<div class="flex flex-col">
+<span class="font-body text-body text-ink-1 font-medium">月度计划</span>
+<span class="font-caption text-caption text-ink-3">周期性喂养与运动调整</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="w-12 text-center font-caption text-caption text-ink-3">基础频次</span>
+<span class="w-16 text-center font-caption text-caption text-accent font-semibold bg-accent-soft rounded py-0.5">动态复查</span>
+</div>
+</div>
+<!-- 表格行：宠物长期规划 -->
+<div class="flex items-center justify-between py-2 border-b border-surface-container-high">
+<div class="flex flex-col">
+<span class="font-body text-body text-ink-1 font-medium">宠物长期规划</span>
+<span class="font-caption text-caption text-ink-3">全生命周期阶段里程碑</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="w-12 text-center font-caption text-caption text-ink-3">未开放</span>
+<span class="w-16 text-center font-caption text-caption text-accent font-semibold bg-accent-soft rounded py-0.5">专家追踪</span>
+</div>
+</div>
+<!-- 表格行：复合场景方案 -->
+<div class="flex items-center justify-between py-2">
+<div class="flex flex-col">
+<span class="font-body text-body text-ink-1 font-medium">复合场景方案</span>
+<span class="font-caption text-caption text-ink-3">换粮/术后/应激专属方案</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="w-12 text-center font-caption text-caption text-ink-3">单项参考</span>
+<span class="w-16 text-center font-caption text-caption text-accent font-semibold bg-accent-soft rounded py-0.5">多场景支持</span>
+</div>
+</div>
+</div>
+<!-- iOS 系统规范提示卡片 -->
+<div class="bg-surface rounded-xl border border-line-strong p-3.5 mb-2">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-ink-2 text-[20px] mt-0.5">info</span>
+<div class="flex-1">
+<div class="font-body text-body text-ink-1 font-semibold">服务说明</div>
+<p class="font-caption text-caption text-ink-2 mt-1 leading-normal">
+              当前设备暂不支持购买，可在 Android 设备开通（iOS 端不开放虚拟支付入口）
+            </p>
+<div class="mt-2.5">
+<button class="px-3 py-1.5 rounded-lg border border-line text-ink-1 font-caption text-caption bg-surface-container-low">
+                查看权益说明
+              </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 刻度系统暗色半透明遮罩背景 -->
+<div class="absolute inset-0 bg-ink-1/40 backdrop-blur-[1px] pointer-events-none z-20"></div>
+<!-- 前置全宽底部弹窗（额度用尽强提醒模态卡） -->
+<div class="absolute bottom-0 left-0 w-full bg-surface rounded-t-full border-t border-line-strong shadow-2xl z-30 flex flex-col pt-3 pb-5 px-4 animate-in slide-in-from-bottom duration-300">
+<!-- 模态顶部拖拽条 & 量具刻度纹理顶饰 -->
+<div class="w-10 h-1 bg-line-strong rounded-full mx-auto mb-3"></div>
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-warn"></div>
+<span class="font-caption text-caption text-warn font-medium tracking-tight">标定预警 · 用量上限</span>
+</div>
+<div class="font-caption text-caption text-ink-3 font-numeric">刻度标尺：0/0</div>
+</div>
+<!-- 刻度尺指示器 (标尺刻度纹理视觉) -->
+<div class="h-2 w-full ruler-ticks mb-3 border-y border-line-strong opacity-80"></div>
+<!-- 弹窗标题 -->
+<div class="flex items-center gap-2 mb-2">
+<div class="w-8 h-8 rounded-lg bg-warn-soft flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-warn text-[20px]">hourglass_empty</span>
+</div>
+<h2 class="font-display text-display text-ink-1 tracking-tight font-bold">今日免费额度已用完</h2>
+</div>
+<!-- 规则说明信息行卡片 -->
+<div class="bg-surface-container-low rounded-xl border border-line p-3 my-2 space-y-2.5">
+<!-- 免费额度项 -->
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-ink-2 text-[18px] shrink-0 mt-0.5">event_repeat</span>
+<div class="flex-1">
+<span class="font-body text-body text-ink-1 font-semibold block leading-tight">免费额度：每日 3-5 次</span>
+<span class="font-caption text-caption text-ink-3 mt-0.5 block leading-normal">每日零点（次日 00:00）系统刻度归位后自动恢复使用</span>
+</div>
+</div>
+<div class="h-px bg-line w-full"></div>
+<!-- 会员用户项 -->
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-accent text-[18px] shrink-0 mt-0.5">verified</span>
+<div class="flex-1">
+<span class="font-body text-body text-accent font-semibold block leading-tight">会员用户：不受提问额度限制</span>
+<span class="font-caption text-caption text-ink-2 mt-0.5 block leading-normal">享用全生命周期评估报告与无限制科学分析</span>
+</div>
+</div>
+</div>
+<!-- 引导提示条 -->
+<div class="bg-accent-soft rounded-lg px-3 py-2 border border-accent-line my-1.5 flex items-start gap-2">
+<span class="material-symbols-outlined text-accent text-[16px] shrink-0 mt-0.5">task_alt</span>
+<p class="font-caption text-caption text-ink-1 leading-snug">
+          您今天仍可浏览历史档案、查看已生成测评报告与知识库。
+        </p>
+</div>
+<!-- 双操作按钮组 -->
+<div class="grid grid-cols-2 gap-3 mt-3">
+<!-- 次按钮：知道了 -->
+<button class="h-11 rounded-lg border border-line bg-surface text-ink-1 font-body text-body font-medium flex items-center justify-center active:scale-[0.98] transition-all duration-200">
+          知道了
+        </button>
+<!-- 主按钮：查看权益说明 -->
+<button class="h-11 rounded-lg bg-accent text-on-accent font-body text-body font-medium flex items-center justify-center active:bg-accent-press active:scale-[0.98] transition-all duration-200 shadow-sm">
+          查看权益说明
+        </button>
+</div>
+<!-- 底部常驻合规说明 -->
+<div class="mt-3.5 pt-2 border-t border-line text-center">
+<p class="font-caption text-caption text-ink-3">
+          AI 生成内容，仅供参考，不替代医生诊断
+        </p>
+</div>
+</div>
+<!-- 微信小程序底部安全区域虚拟占位 (34px) -->
+<div class="w-full h-[env(safe-area-inset-bottom,20px)] bg-surface shrink-0 z-40"></div>
+</div>
+</body></html>

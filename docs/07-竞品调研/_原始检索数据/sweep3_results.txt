@@ -1,0 +1,43 @@
+﻿SEARCH PASS 3
+=== Q: llm-guard user:protectai | total=1 ===
+protectai/llm-guard | stars=3216 | pushed=2026-07-08T23:58:40Z | lic=MIT | lang=Python | The Security Toolkit for LLM Interactions
+=== Q: PurpleLlama user:meta-llama | total=1 ===
+meta-llama/PurpleLlama | stars=4423 | pushed=2026-09-29T23:08:52Z | lic=NOASSERTION | lang=Python | Set of tools to assess and improve LLM security.
+=== Q: ShieldLM user:thu-coai | total=1 ===
+thu-coai/ShieldLM | stars=231 | pushed=2024-09-29T09:37:45Z | lic=MIT | lang=Python | ShieldLM: Empowering LLMs as Aligned, Customizable and Explainable Safety Detectors [EMNLP 2024 Findings]
+=== Q: Safety-Prompts user:thu-coai | total=1 ===
+thu-coai/Safety-Prompts | stars=1222 | pushed=2024-02-27T08:42:12Z | lic=Apache-2.0 | lang= | Chinese safety prompts for evaluating and improving the safety of LLMs. 中文安全prompts，用于评估和提升大模型的安全性。
+=== Q: BeaverTails user:PKU-Alignment | total=1 ===
+PKU-Alignment/beavertails | stars=184 | pushed=2023-10-27T19:47:48Z | lic=Apache-2.0 | lang=Makefile | BeaverTails is a collection of datasets designed to facilitate research on safety alignment in large language models (LLMs).
+=== Q: growthstandards user:nutriverse | total=0 ===
+=== Q: zscorer user:nutriverse | total=2 ===
+nutriverse/zscorer | stars=15 | pushed=2023-02-17T15:30:16Z | lic=AGPL-3.0 | lang=R | Anthropometric z-score calculator
+nutriverse/zscorer2 | stars=0 | pushed=2025-09-09T08:00:25Z | lic=NONE | lang= | 
+=== Q: MedMCQA | total=54 ===
+medmcqa/medmcqa | stars=303 | pushed=2022-11-28T15:35:35Z | lic=MIT | lang=Jupyter Notebook | A large-scale (194k), Multiple-Choice Question Answering (MCQA) dataset designed to address realworld medical entrance exam questions.
+medmcqa/medmcqa.github.io | stars=2 | pushed=2023-01-25T07:59:31Z | lic=NONE | lang=JavaScript | 
+Imouto36/medmcqa-trainer | stars=2 | pushed=2026-02-23T17:49:59Z | lic=GPL-3.0 | lang=JavaScript | PWA for practicing MCQs for medical entrance exams like NEET PG, etc, completely offline. Uses JSON from MedMCQA dataset for actual data.
+akansh30/Medmcqa-Chatbot | stars=1 | pushed=2025-07-01T18:22:41Z | lic=NONE | lang=Python | 
+UNHSAILLab/MedMCQA-Robustness-Study | stars=1 | pushed=2026-06-17T22:50:19Z | lic=MIT | lang=Python | A comprehensive research framework for evaluating the robustness of large language models on medical multiple-choice question (MCQ) tasks. This project systematically tests how prompt configurations, option ordering, evidence cont
+beepboop2025/medprep-ai | stars=1 | pushed=2026-10-02T08:42:56Z | lic=MIT | lang=TypeScript | Medical exam practice app with 4,183 MedMCQA questions and an optional retrieval-grounded tutor.
+siroxou/medical-lora-finetune | stars=1 | pushed=2026-07-23T02:53:08Z | lic=NONE | lang=JavaScript | Local LoRA fine-tune of a 1.5B model on medical MCQ (MedMCQA) — does perplexity improvement translate to accuracy? Trained with the Local Language Machine app; includes a multiple-choice accuracy scorer.
+siroxou/medical-lora-qwen2.5-3b | stars=1 | pushed=2026-07-23T03:52:17Z | lic=NONE | lang=JavaScript | Local LoRA fine-tune of Qwen2.5-3B-Instruct on medical MCQ (MedMCQA). Part of a size-scaling series: perplexity drops sharply but accuracy doesn't improve. Trained with the Local Language Machine app.
+=== Q: medical QA dataset Chinese | total=10 ===
+fighting41love/funNLP | stars=83744 | pushed=2024-05-10T07:38:24Z | lic=NONE | lang=Python | 中英文敏感词、语言检测、中外手机/电话归属地/运营商查询、名字推断性别、手机号抽取、身份证抽取、邮箱抽取、中日文人名库、中文缩写库、拆字词典、词汇情感值、停用词、反动词表、暴恐词表、繁简体转换、英文模拟中文发音、汪峰歌词生成器、职业名称词库、同义词库、反义词库、否定词库、汽车品牌词库、汽车零件词库、连续英文切割、各种中文词向量、公司名字大全、古诗词库、IT词库、财经词库、成语词库、地名词库、历史名人词库、诗词词库、医学词库、饮食词库、法律词库、汽车词库、动
+GanjinZero/awesome_Chinese_medical_NLP | stars=2644 | pushed=2024-01-17T06:47:55Z | lic=NONE | lang= | 中文医学NLP公开资源整理：术语集/语料库/词向量/预训练模型/知识图谱/命名实体识别/QA/信息抽取/模型/论文/etc
+zhangsheng93/cMedQA2 | stars=393 | pushed=2019-01-09T01:09:09Z | lic=GPL-3.0 | lang= | This is updated version of the dataset for Chinese community medical question answering.
+FreedomIntelligence/Huatuo-26M | stars=352 | pushed=2024-03-14T04:54:23Z | lic=NONE | lang= | The Largest-scale Chinese Medical QA Dataset： with 26,000,000 question answer pairs.
+zhangsheng93/cMedQA | stars=115 | pushed=2019-10-22T08:03:29Z | lic=NONE | lang= | This is the dataset for Chinese community medical question answering. 
+flyyuan/Chinese-Medical-QA-Data | stars=74 | pushed=2020-02-06T12:03:36Z | lic=NONE | lang= | 中文疾病诊断数据集（百万条），可用于中国人疾病分析、疾病诊断。
+hejunqing/webMedQA | stars=72 | pushed=2020-01-14T03:50:32Z | lic=Apache-2.0 | lang= | A Chinese medical question answering dataset
+IMU-MachineLearningSXD/CMID | stars=44 | pushed=2022-12-19T06:46:03Z | lic=NONE | lang= | This dataset is used for Chinese medical QA intent understanding task.
+=== Q: developmental milestones dataset | total=0 ===
+=== Q: child safety dataset | total=6 ===
+salman5876/Chils-Safety-System-FYP | stars=2 | pushed=2024-02-07T20:33:32Z | lic=NONE | lang=Jupyter Notebook | Advanced AI-based Child Safety System, utilizing a dataset of 13 classes for object detection, classification, and leverage object interaction. Python scripts were employed for data preprocessing, standardizing images etc. Deliver
+NguyenTriBaoThang/Childsafenet | stars=2 | pushed=2026-09-15T03:26:08Z | lic=MIT | lang=Jupyter Notebook | ChildSafeNet – An AI-driven Internet Safety System for Children. The platform integrates Machine Learning, real-time browser extension filtering, secure backend services, and automated dataset retraining to provide intelligent web
+palakbhardwaj/Child-Abuse-Meme-Detection-Using-CLIP-ResNet50-and-VGG16-in-Zero-Shot-One-Shot-and-Few-Shot-Lear | stars=2 | pushed=2026-07-04T08:42:59Z | lic=NONE | lang= | Developed a child abuse meme detection system using CLIP, ResNet50, and VGG16 in Zero-Shot, One-Shot, and Few-Shot learning settings. A self-curated dataset was used to evaluate the models' ability to identify harmful and non-harm
+deveshwaripujari/Women-Children-Safety-Application | stars=0 | pushed=2024-07-09T18:54:32Z | lic=NONE | lang= | User friendly application to highlight the areas of danger based on legal dataset.
+FavourMtshali/Diabetes_Analysis-and-Child-safety | stars=0 | pushed=2025-03-20T20:50:23Z | lic=NONE | lang=Jupyter Notebook | Created python notebooks to analyse simple datasets, to enhance the most basic skills of data analysis.
+KingRex04/SafeChat | stars=0 | pushed=2026-09-12T20:58:41Z | lic=NONE | lang=TypeScript | SafeChat is an AI-powered digital safety & support ecosystem designed for child protection (Bal Suraksha). Features multi-tier conversational screening, local dataset pattern detection (English, Hindi, Emoji), explainable risk sco
+=== Q: suicide risk detection Chinese dataset | total=0 ===
+DONE3

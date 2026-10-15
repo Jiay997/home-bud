@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>家伴后台管理系统 - 知识库条目编辑与版本回滚</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=-apple-system,+BlinkMacSystemFont,+PingFang+SC,+system-ui,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-container": "#ffcfc0",
+            "surface-container-highest": "#e0e3e1",
+            "on-primary": "#ffffff",
+            "inverse-primary": "#85d5c7",
+            "primary-container": "#0a6b60",
+            "on-secondary-container": "#566865",
+            "accent-line": "#8FBFB7",
+            "on-tertiary-fixed": "#390c00",
+            "surface-bright": "#f7faf8",
+            "on-primary-container": "#98e8da",
+            "error-container": "#ffdad6",
+            "secondary": "#50625f",
+            "accent-soft": "#E1EFEC",
+            "ink-2": "#455754",
+            "ink-3": "#5F6F6C",
+            "on-surface-variant": "#3e4946",
+            "ink-1": "#0F1E1C",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed-dim": "#ffb59d",
+            "warn": "#7A5600",
+            "on-primary-fixed-variant": "#005048",
+            "primary-fixed-dim": "#85d5c7",
+            "outline-variant": "#bec9c5",
+            "accent": "#0A6B60",
+            "warn-soft": "#F6EDD8",
+            "secondary-fixed-dim": "#b7cbc7",
+            "error": "#ba1a1a",
+            "primary-fixed": "#a1f1e3",
+            "outline": "#6f7976",
+            "surface": "#FFFFFF",
+            "on-secondary-fixed-variant": "#384a47",
+            "on-primary-fixed": "#00201c",
+            "inverse-on-surface": "#eef1ef",
+            "secondary-fixed": "#d3e7e2",
+            "surface-2": "#E9EFED",
+            "surface-container": "#ebefec",
+            "surface-variant": "#e0e3e1",
+            "background": "#f7faf8",
+            "inverse-surface": "#2d3130",
+            "on-tertiary-fixed-variant": "#713621",
+            "on-accent": "#FFFFFF",
+            "bg": "#F2F5F4",
+            "on-background": "#181c1b",
+            "secondary-container": "#d3e7e2",
+            "surface-container-low": "#f1f4f2",
+            "on-secondary-fixed": "#0d1f1c",
+            "danger": "#A8231B",
+            "on-error-container": "#93000a",
+            "tertiary": "#723622",
+            "surface-dim": "#d7dbd9",
+            "accent-press": "#074E46",
+            "primary": "#005148",
+            "surface-tint": "#086a5f",
+            "surface-container-high": "#e6e9e7",
+            "line": "#D5DEDB",
+            "on-surface": "#181c1b",
+            "danger-soft": "#F7E4E2",
+            "tertiary-fixed": "#ffdbd0",
+            "tertiary-container": "#8f4d37",
+            "line-strong": "#B4C3BF",
+            "on-secondary": "#ffffff",
+            "on-error": "#ffffff",
+            "on-tertiary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin": "16px",
+            "space-sm": "8px",
+            "space-xxl": "48px",
+            "space-xl": "32px",
+            "gutter": "16px",
+            "space-md": "16px",
+            "space-lg": "24px",
+            "space-xs": "6px"
+          },
+          "fontFamily": {
+            "display": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "title": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "numeric": ["\"ui-monospace, SF Mono, Consolas, monospace\""],
+            "sub": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "body": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "caption": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""]
+          },
+          "fontSize": {
+            "display": ["23px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "title": ["19px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "numeric": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "sub": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "body": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "caption": ["12px", { "lineHeight": "1.5", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg bg-bg text-ink-1 font-body text-body antialiased min-h-screen flex selection:bg-accent-soft selection:text-accent">
+<!-- 左侧固定 240px 导航栏 (Shared Component: SideNavBar) -->
+<aside class="w-60 h-screen fixed left-0 top-0 flex flex-col justify-between py-space-lg px-space-md border-r border-line bg-surface z-30">
+<div class="flex flex-col gap-space-md">
+<!-- 品牌标识与平台定位 -->
+<div class="px-space-sm pb-space-sm border-b border-line">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-on-accent font-title text-title font-semibold shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="health_metrics">health_metrics</span>
+</div>
+<div>
+<h1 class="font-title text-title font-semibold text-ink-1 tracking-tight leading-none">家伴管理中心</h1>
+<p class="font-caption text-caption text-ink-3 mt-1">临床级智能监护平台</p>
+</div>
+</div>
+</div>
+<!-- 主快捷 CTA -->
+<div class="px-space-xs">
+<button class="w-full flex items-center justify-center gap-space-xs py-2 px-space-md rounded-lg bg-accent text-on-accent font-sub text-sub font-medium hover:bg-accent-press transition-colors duration-150 shadow-sm cursor-pointer">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+<span>新建知识文档</span>
+</button>
+</div>
+<!-- 核心导航项 (7 项) -->
+<nav class="flex flex-col gap-1 mt-1">
+<!-- 激活项: 知识库管理 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg bg-accent-soft text-accent font-medium cursor-pointer" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="auto_stories">auto_stories</span>
+<span class="font-sub text-sub">知识库管理</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="spellcheck">spellcheck</span>
+<span class="font-sub text-sub">词库维护</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="terminal">terminal</span>
+<span class="font-sub text-sub">Agent调用日志</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="flag">flag</span>
+<span class="font-sub text-sub">反馈与举报</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="warning">warning</span>
+<span class="font-sub text-sub">高风险事件</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="shield_person">shield_person</span>
+<span class="font-sub text-sub">权利请求</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="tune">tune</span>
+<span class="font-sub text-sub">系统开关与配置</span>
+</a>
+</nav>
+</div>
+<!-- 底部辅助区 -->
+<div class="flex flex-col gap-1 border-t border-line pt-space-sm">
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="history">history</span>
+<span class="font-sub text-sub">审计记录</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="monitoring">monitoring</span>
+<span class="font-sub text-sub">系统监控</span>
+</a>
+</div>
+</aside>
+<!-- 顶部导航栏 (Shared Component: TopNavBar) -->
+<header class="fixed top-0 right-0 left-60 h-16 px-space-lg flex justify-between items-center bg-surface border-b border-line z-20">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-2">
+<span class="font-sub text-sub text-ink-3">系统路径 /</span>
+<span class="font-sub text-sub font-medium text-ink-1">家伴后台管理系统</span>
+<span class="font-sub text-sub text-ink-3">/</span>
+<span class="font-sub text-sub font-semibold text-accent">条目编辑与版本回滚</span>
+</div>
+<div class="relative ml-4">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-ink-3 text-[18px]" data-icon="search">search</span>
+<input class="h-9 pl-9 pr-4 w-72 rounded-lg bg-surface-2 border border-line text-ink-1 placeholder-ink-3 text-sub font-sub focus:outline-none focus:border-accent" placeholder="全局检索标准库条目、实体编码..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-1 border-r border-line pr-space-md">
+<button class="p-2 text-ink-2 hover:bg-surface-2 rounded-lg transition-colors cursor-pointer" title="通知消息">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-ink-2 hover:bg-surface-2 rounded-lg transition-colors cursor-pointer" title="操作帮助">
+<span class="material-symbols-outlined text-[20px]" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-accent-soft text-accent flex items-center justify-center font-sub text-sub font-bold border border-accent-line">
+          管
+        </div>
+<div class="flex items-center gap-2">
+<span class="font-numeric text-sub text-ink-1 font-medium">admin@jiaban</span>
+<span class="text-line-strong">·</span>
+<span class="font-caption text-caption px-2 py-0.5 rounded bg-surface-2 text-ink-2 font-medium">内容运营</span>
+<span class="text-line-strong">·</span>
+<button class="font-sub text-sub text-danger hover:underline cursor-pointer font-medium ml-1">退出登录</button>
+</div>
+</div>
+</div>
+</header>
+<!-- 主体工作区容器 (居中，最大宽度 1200px) -->
+<main class="ml-60 pt-16 flex-1 min-h-screen bg-bg">
+<div class="max-w-[1200px] mx-auto p-space-lg">
+<!-- 双栏编辑与追溯工作台布局 -->
+<div class="flex gap-space-lg items-start">
+<!-- 左侧主体编辑区（约占宽度的68%） -->
+<section class="w-[68%] flex flex-col gap-space-md">
+<!-- 标题栏与顶级动作按钮 -->
+<div class="bg-surface rounded-xl p-space-md border border-line flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-sm">
+<span class="px-2.5 py-1 rounded bg-surface-2 text-ink-2 font-numeric text-sub font-medium border border-line">KB-001</span>
+<h2 class="font-title text-title font-semibold text-ink-1">幼儿睡眠引导</h2>
+<span class="px-2 py-0.5 rounded-full bg-accent-soft text-accent font-caption text-caption font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>已发布状态
+              </span>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="h-10 px-4 rounded-lg border border-line bg-surface hover:bg-surface-2 text-ink-2 font-sub text-sub font-medium transition-colors cursor-pointer">
+                保存草稿
+              </button>
+<button class="h-10 px-5 rounded-lg bg-accent hover:bg-accent-press text-on-accent font-sub text-sub font-medium transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer">
+<span class="material-symbols-outlined text-[18px]" data-icon="task_alt">task_alt</span>
+                提交审核
+              </button>
+</div>
+</div>
+<!-- 元数据配置行 -->
+<div class="bg-surface rounded-xl p-space-md border border-line flex flex-col gap-space-md shadow-sm">
+<div class="grid grid-cols-3 gap-space-md">
+<div class="flex flex-col gap-1.5">
+<label class="font-sub text-sub font-medium text-ink-2 flex items-center gap-1">
+                  领域归属
+                </label>
+<div class="relative">
+<select class="w-full h-10 px-3 bg-surface border border-line rounded-lg font-sub text-sub text-ink-1 focus:outline-none focus:border-accent appearance-none cursor-pointer">
+<option selected="">育儿</option>
+<option>儿童营养</option>
+<option>情绪发展</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-3 pointer-events-none text-[18px]" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-sub text-sub font-medium text-ink-2 flex items-center gap-1">
+                  适用月龄
+                </label>
+<div class="relative">
+<select class="w-full h-10 px-3 bg-surface border border-line rounded-lg font-sub text-sub text-ink-1 focus:outline-none focus:border-accent appearance-none cursor-pointer">
+<option selected="">6-12 月</option>
+<option>0-3 月</option>
+<option>3-6 月</option>
+<option>12-24 月</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-3 pointer-events-none text-[18px]" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-sub text-sub font-medium text-ink-2 flex items-center gap-1">
+                  宠物类型
+                </label>
+<div class="relative">
+<input class="w-full h-10 px-3 bg-surface-2 border border-line rounded-lg font-sub text-sub text-ink-3 cursor-not-allowed" disabled="" type="text" value="--"/>
+<span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-3 text-[18px]" data-icon="block">block</span>
+</div>
+</div>
+</div>
+<!-- 标签行 -->
+<div class="flex items-center gap-2 pt-2 border-t border-line">
+<span class="font-caption text-caption text-ink-3 font-medium">条目标签：</span>
+<div class="flex items-center gap-2 flex-wrap">
+<span class="h-6 px-2.5 rounded bg-surface-2 text-ink-2 font-caption text-caption flex items-center gap-1 border border-line">
+                  睡眠
+                  <span class="material-symbols-outlined text-[14px] text-ink-3 hover:text-danger cursor-pointer" data-icon="close">close</span>
+</span>
+<span class="h-6 px-2.5 rounded bg-surface-2 text-ink-2 font-caption text-caption flex items-center gap-1 border border-line">
+                  夜醒
+                  <span class="material-symbols-outlined text-[14px] text-ink-3 hover:text-danger cursor-pointer" data-icon="close">close</span>
+</span>
+<span class="h-6 px-2.5 rounded bg-surface-2 text-ink-2 font-caption text-caption flex items-center gap-1 border border-line">
+                  抱睡
+                  <span class="material-symbols-outlined text-[14px] text-ink-3 hover:text-danger cursor-pointer" data-icon="close">close</span>
+</span>
+<button class="h-6 px-2.5 rounded border border-dashed border-accent-line text-accent hover:bg-accent-soft font-caption text-caption flex items-center gap-1 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[14px]" data-icon="add">add</span>
+                  添加标签
+                </button>
+</div>
+</div>
+</div>
+<!-- Markdown 正文编辑区 -->
+<div class="bg-surface rounded-xl border border-line flex flex-col shadow-sm overflow-hidden">
+<!-- 工具栏 -->
+<div class="px-space-md py-2 bg-surface-bright border-b border-line flex items-center justify-between">
+<div class="flex items-center gap-1">
+<button class="p-1.5 rounded hover:bg-surface-2 text-ink-2 hover:text-ink-1 cursor-pointer" title="加粗"><span class="material-symbols-outlined text-[18px]" data-icon="format_bold">format_bold</span></button>
+<button class="p-1.5 rounded hover:bg-surface-2 text-ink-2 hover:text-ink-1 cursor-pointer" title="斜体"><span class="material-symbols-outlined text-[18px]" data-icon="format_italic">format_italic</span></button>
+<button class="p-1.5 rounded hover:bg-surface-2 text-ink-2 hover:text-ink-1 cursor-pointer" title="一级标题"><span class="material-symbols-outlined text-[18px]" data-icon="format_h1">format_h1</span></button>
+<button class="p-1.5 rounded hover:bg-surface-2 text-ink-2 hover:text-ink-1 cursor-pointer" title="二级标题"><span class="material-symbols-outlined text-[18px]" data-icon="format_h2">format_h2</span></button>
+<div class="w-px h-4 bg-line mx-1"></div>
+<button class="p-1.5 rounded hover:bg-surface-2 text-ink-2 hover:text-ink-1 cursor-pointer" title="有序列表"><span class="material-symbols-outlined text-[18px]" data-icon="format_list_numbered">format_list_numbered</span></button>
+<button class="p-1.5 rounded hover:bg-surface-2 text-ink-2 hover:text-ink-1 cursor-pointer" title="无序列表"><span class="material-symbols-outlined text-[18px]" data-icon="format_list_bulleted">format_list_bulleted</span></button>
+<button class="p-1.5 rounded hover:bg-surface-2 text-ink-2 hover:text-ink-1 cursor-pointer" title="引用"><span class="material-symbols-outlined text-[18px]" data-icon="format_quote">format_quote</span></button>
+<button class="p-1.5 rounded hover:bg-surface-2 text-ink-2 hover:text-ink-1 cursor-pointer" title="代码块"><span class="material-symbols-outlined text-[18px]" data-icon="code">code</span></button>
+<div class="w-px h-4 bg-line mx-1"></div>
+<button class="p-1.5 rounded hover:bg-surface-2 text-ink-2 hover:text-ink-1 cursor-pointer" title="插入临床引用"><span class="material-symbols-outlined text-[18px]" data-icon="bookmark">bookmark</span></button>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-numeric text-caption text-ink-3">字数: 628</span>
+<span class="font-caption text-caption text-accent font-medium bg-accent-soft px-2 py-0.5 rounded">Markdown 视图</span>
+</div>
+</div>
+<!-- 编辑输入与结构化排版文本展示 -->
+<div class="p-space-md">
+<textarea class="w-full font-numeric text-sub text-ink-1 leading-relaxed bg-surface focus:outline-none resize-y border-0 p-0" placeholder="请输入知识库正文 Markdown 内容..." rows="11">## 6-12月龄宝宝夜醒常见原因排查指南
+
+在针对6-12月龄婴儿开展夜间啼哭与频发夜醒的临床建议时，应引导照护者遵循**自下而上的生理到心理排除法**：
+
+1. **基础生理需求检查（初阶筛查）**
+   - **饥饿评估**：确认最近一次母乳或配方奶喂养时间是否超过3-4小时；排查日间辅食能量摄入是否充足。
+   - **室温与包被**：睡眠环境最佳温度应为 20-22°C。颈背部温热无汗为准，过热是频醒高发诱因。
+   - **尿布状态**：排查尿湿感与红臀刺痛，推荐使用高吸水性夜用透气纸尿裤。
+
+2. **睡眠联想与安抚模式排查（进阶干预）**
+   - 排除饥饿与身体不适后，应聚焦于“入睡联想”。若宝宝在睡前完全依赖抱摇、奶睡入眠，夜间微觉醒时将无法自主接觉。
+   - 建议在宝宝昏昏欲睡但仍清醒时放入小床，逐步建立自主入睡能力。
+
+> 注意：如出现异常高热、持续剧烈哭闹无法安抚、肠绞痛体征，须及时就医。每日 3 次，每次 5ml 的非处方止咳糖浆切勿自行给药。</textarea>
+</div>
+</div>
+<!-- 发布前校验面板（实底白卡） -->
+<div class="bg-surface rounded-xl p-space-md border border-line shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-2 border-b border-line">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-accent text-[20px]" data-icon="fact_check">fact_check</span>
+<h3 class="font-sub text-sub font-semibold text-ink-1">发布前合规与模式校验</h3>
+</div>
+<span class="font-caption text-caption text-ink-3">临床知识库规则引擎 v4.2 实时检验中</span>
+</div>
+<div class="flex flex-col gap-3">
+<!-- 第一项：敏感词检测 -->
+<div class="p-3 rounded-lg bg-surface-bright border border-line flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-accent text-[20px]" data-icon="check_circle">check_circle</span>
+<span class="font-sub text-sub text-ink-1">敏感词检测</span>
+<span class="text-ink-3 text-caption font-caption">— OK 通过 0 命中</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-accent-soft text-accent font-caption text-caption font-semibold">
+                  验证通过
+                </span>
+</div>
+<!-- 第二项：医疗/兽药模式规则 -->
+<div class="p-3.5 rounded-lg bg-warn-soft/40 border border-warn/30 flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-warn text-[20px]" data-icon="warning">warning</span>
+<span class="font-sub text-sub font-medium text-ink-1">医疗/兽药模式规则</span>
+<span class="text-warn text-caption font-caption font-semibold">— !! 1 命中</span>
+</div>
+<span class="px-2.5 py-0.5 rounded bg-warn-soft text-warn font-caption text-caption font-bold border border-warn/30">
+                    触发处方合规拦截
+                  </span>
+</div>
+<!-- 命中片段与处置动作 -->
+<div class="bg-surface rounded p-2.5 border border-warn/30 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-caption text-caption text-ink-3">命中片段：</span>
+<code class="font-numeric text-sub text-danger bg-danger-soft px-1.5 py-0.5 rounded font-medium">每日 3 次，每次 5ml</code>
+<span class="font-caption text-caption text-ink-3">(严禁在通用知识中提供剂量指示)</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="h-7 px-2.5 rounded bg-surface hover:bg-surface-2 border border-line text-accent font-caption text-caption font-medium cursor-pointer transition-colors">
+                      改写
+                    </button>
+<button class="h-7 px-2.5 rounded bg-surface hover:bg-surface-2 border border-line text-danger font-caption text-caption font-medium cursor-pointer transition-colors">
+                      删除
+                    </button>
+<button class="h-7 px-2.5 rounded bg-warn-soft hover:bg-warn-soft/80 border border-warn/40 text-warn font-caption text-caption font-medium cursor-pointer transition-colors">
+                      标记为专家复核
+                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 变更说明输入框（必填项） -->
+<div class="bg-surface rounded-xl p-space-md border border-line shadow-sm flex flex-col gap-2">
+<label class="font-sub text-sub font-medium text-ink-1 flex items-center gap-1">
+<span>变更说明</span>
+<span class="text-danger font-bold">*</span>
+<span class="font-caption text-caption text-ink-3 font-normal">(必填，用于版本审计追踪)</span>
+</label>
+<textarea class="w-full px-3 py-2 bg-surface-bright border border-line rounded-lg font-sub text-sub text-ink-1 placeholder-ink-3 focus:outline-none focus:border-accent" placeholder="变更说明（必填）：请输入本次版本修改核心摘要，说明优化背景与排查步骤更新依据..." rows="3"></textarea>
+</div>
+</section>
+<!-- 右侧版本历史与追溯抽屉/面板（约占宽度的32%） -->
+<aside class="w-[32%] flex flex-col gap-space-md">
+<!-- 并发锁提示卡 -->
+<div class="bg-surface rounded-xl p-3.5 border border-line shadow-sm flex items-center gap-2.5">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
+</span>
+<div class="flex-1">
+<p class="font-caption text-caption font-medium text-ink-1">并发锁正常</p>
+<p class="font-caption text-caption text-ink-3">当前由 <span class="font-numeric font-medium text-accent">admin@jiaban</span> 独占编辑</p>
+</div>
+<span class="material-symbols-outlined text-ink-3 text-[18px]" data-icon="lock">lock</span>
+</div>
+<!-- 版本历史与追溯面板 -->
+<div class="bg-surface rounded-xl p-space-md border border-line shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-2 border-b border-line">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-ink-2 text-[20px]" data-icon="history">history</span>
+<h3 class="font-sub text-sub font-semibold text-ink-1">版本历史与内容追溯</h3>
+</div>
+<span class="font-numeric text-caption text-ink-3 font-medium">3 个版本存档</span>
+</div>
+<!-- 版本历史列表 -->
+<div class="relative pl-5 border-l-2 border-line space-y-5 my-1 ml-1">
+<!-- v3 当前版本 -->
+<div class="relative group">
+<div class="absolute -left-[27px] top-1 w-3.5 h-3.5 rounded-full bg-accent border-2 border-surface"></div>
+<div class="flex flex-col gap-1 p-2.5 rounded-lg bg-accent-soft/50 border border-accent-line/40">
+<div class="flex items-center justify-between">
+<span class="font-numeric text-sub font-bold text-accent">v3</span>
+<span class="px-1.5 py-0.5 rounded bg-accent text-on-accent font-caption text-[11px] font-medium leading-none">当前版本</span>
+</div>
+<div class="flex items-center gap-2 font-caption text-caption text-ink-3">
+<span class="font-medium text-ink-2">专家A</span>
+<span>·</span>
+<span class="font-numeric">2026-09-28</span>
+</div>
+<p class="font-sub text-sub text-ink-1 font-medium mt-0.5">补充夜醒排查顺序</p>
+</div>
+</div>
+<!-- v2 历史版本 -->
+<div class="relative group">
+<div class="absolute -left-[27px] top-1 w-3.5 h-3.5 rounded-full bg-line-strong border-2 border-surface"></div>
+<div class="flex flex-col gap-1 p-2.5 rounded-lg bg-surface hover:bg-surface-2 border border-line transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-numeric text-sub font-semibold text-ink-1">v2</span>
+<button class="font-caption text-caption text-accent hover:underline cursor-pointer">对比差异</button>
+</div>
+<div class="flex items-center gap-2 font-caption text-caption text-ink-3">
+<span class="font-medium text-ink-2">运营C</span>
+<span>·</span>
+<span class="font-numeric">2026-09-15</span>
+</div>
+<p class="font-sub text-sub text-ink-2 mt-0.5">调整适用月龄区间</p>
+</div>
+</div>
+<!-- v1 历史版本 -->
+<div class="relative group">
+<div class="absolute -left-[27px] top-1 w-3.5 h-3.5 rounded-full bg-line-strong border-2 border-surface"></div>
+<div class="flex flex-col gap-1 p-2.5 rounded-lg bg-surface hover:bg-surface-2 border border-line transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-numeric text-sub font-semibold text-ink-1">v1</span>
+<button class="font-caption text-caption text-accent hover:underline cursor-pointer">对比差异</button>
+</div>
+<div class="flex items-center gap-2 font-caption text-caption text-ink-3">
+<span class="font-medium text-ink-2">专家A</span>
+<span>·</span>
+<span class="font-numeric">2026-09-01</span>
+</div>
+<p class="font-sub text-sub text-ink-2 mt-0.5">首次上架</p>
+</div>
+</div>
+</div>
+<!-- 危险回滚操作区 -->
+<div class="border-t border-line pt-space-md flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-caption text-caption font-semibold text-danger flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="published_with_changes">published_with_changes</span>
+                  高敏感版本更替
+                </span>
+<span class="font-caption text-caption text-ink-3">需二级审计</span>
+</div>
+<!-- 回滚按钮（危险红字幽灵按钮，红色细边框） -->
+<button class="w-full h-10 rounded-lg border border-danger/60 bg-surface hover:bg-danger-soft/50 text-danger font-sub text-sub font-medium transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer">
+<span class="material-symbols-outlined text-[18px]" data-icon="replay">replay</span>
+                回滚到 v2
+              </button>
+<!-- 重要合规注脚（黄底浅色说明条） -->
+<div class="p-3 rounded-lg bg-warn-soft text-warn border border-warn/30 flex items-start gap-2">
+<span class="material-symbols-outlined text-[18px] shrink-0 mt-0.5" data-icon="info">info</span>
+<p class="font-caption text-caption leading-relaxed">
+                  回滚后触发内容追溯处置；历史问答不重写正文，仅追加提示
+                </p>
+</div>
+</div>
+</div>
+<!-- 临床数据刻度标准说明卡 (贯彻量具刻度设计规范) -->
+<div class="bg-surface rounded-xl p-space-md border border-line shadow-sm flex flex-col gap-2">
+<h4 class="font-caption text-caption font-semibold text-ink-2 uppercase tracking-wider">质控标尺参考度量</h4>
+<div class="space-y-2 mt-1">
+<div>
+<div class="flex justify-between font-caption text-caption text-ink-3 mb-1">
+<span>临床循证支撑等级</span>
+<span class="font-numeric font-medium text-accent">Level A (高)</span>
+</div>
+<div class="w-full h-1.5 bg-surface-2 rounded-full overflow-hidden flex">
+<div class="w-4/5 bg-accent h-full"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-caption text-caption text-ink-3 mb-1">
+<span>用户可执行安全性评级</span>
+<span class="font-numeric font-medium text-warn">94%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-2 rounded-full overflow-hidden flex">
+<div class="w-[94%] bg-accent h-full"></div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</main>
+</body></html>

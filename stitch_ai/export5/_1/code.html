@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>家伴 - 家庭综合问答</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "warn-soft": "#F6EDD8",
+            "secondary": "#50625f",
+            "ink-3": "#5F6F6C",
+            "inverse-primary": "#85d5c7",
+            "ink-1": "#0F1E1C",
+            "ink-2": "#455754",
+            "line": "#D5DEDB",
+            "surface": "#FFFFFF",
+            "inverse-on-surface": "#eef1ef",
+            "on-tertiary-fixed-variant": "#713621",
+            "accent-line": "#8FBFB7",
+            "surface-container-low": "#f1f4f2",
+            "surface-container": "#ebefec",
+            "on-surface": "#181c1b",
+            "on-surface-variant": "#3e4946",
+            "on-tertiary": "#ffffff",
+            "on-error-container": "#93000a",
+            "error": "#ba1a1a",
+            "on-secondary-fixed": "#0d1f1c",
+            "surface-2": "#E9EFED",
+            "outline-variant": "#bec9c5",
+            "on-primary": "#ffffff",
+            "inverse-surface": "#2d3130",
+            "primary-fixed": "#a1f1e3",
+            "tertiary-fixed-dim": "#ffb59d",
+            "on-secondary": "#ffffff",
+            "warn": "#7A5600",
+            "on-primary-fixed-variant": "#005048",
+            "bg": "#F2F5F4",
+            "accent": "#0A6B60",
+            "on-error": "#ffffff",
+            "surface-variant": "#e0e3e1",
+            "accent-press": "#074E46",
+            "on-tertiary-container": "#ffcfc0",
+            "on-secondary-fixed-variant": "#384a47",
+            "accent-soft": "#E1EFEC",
+            "tertiary": "#723622",
+            "on-primary-container": "#98e8da",
+            "on-tertiary-fixed": "#390c00",
+            "on-accent": "#FFFFFF",
+            "primary-container": "#0a6b60",
+            "secondary-container": "#d3e7e2",
+            "tertiary-container": "#8f4d37",
+            "on-secondary-container": "#566865",
+            "primary-fixed-dim": "#85d5c7",
+            "error-container": "#ffdad6",
+            "secondary-fixed-dim": "#b7cbc7",
+            "primary": "#005148",
+            "outline": "#6f7976",
+            "surface-container-lowest": "#ffffff",
+            "danger-soft": "#F7E4E2",
+            "surface-tint": "#086a5f",
+            "surface-dim": "#d7dbd9",
+            "secondary-fixed": "#d3e7e2",
+            "surface-container-high": "#e6e9e7",
+            "on-background": "#181c1b",
+            "danger": "#A8231B",
+            "surface-bright": "#f7faf8",
+            "background": "#f7faf8",
+            "tertiary-fixed": "#ffdbd0",
+            "line-strong": "#B4C3BF",
+            "surface-container-highest": "#e0e3e1",
+            "on-primary-fixed": "#00201c"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xl": "32px",
+            "gutter": "16px",
+            "margin": "16px",
+            "space-lg": "24px",
+            "space-sm": "8px",
+            "space-md": "16px",
+            "space-xs": "6px",
+            "space-xxl": "48px"
+          },
+          "fontFamily": {
+            "title": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "caption": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "body": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "display": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "sub": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "numeric": [
+              "\"ui-monospace, SF Mono, Consolas, monospace\""
+            ]
+          },
+          "fontSize": {
+            "title": [
+              "19px",
+              {
+                "lineHeight": "1.3",
+                "fontWeight": "600"
+              }
+            ],
+            "caption": [
+              "12px",
+              {
+                "lineHeight": "1.5",
+                "fontWeight": "400"
+              }
+            ],
+            "body": [
+              "16px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "display": [
+              "23px",
+              {
+                "lineHeight": "1.3",
+                "fontWeight": "600"
+              }
+            ],
+            "sub": [
+              "14px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "numeric": [
+              "16px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    /* Scale tick line pattern for clinical gauge aesthetics */
+    .scale-ticks {
+      background-image: repeating-linear-gradient(to right, #B4C3BF 0, #B4C3BF 1px, transparent 1px, transparent 8px);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-bg text-ink-1 font-body text-body antialiased flex justify-center selection:bg-accent-soft selection:text-accent">
+<!-- Mobile Viewport Frame (375x812 Exact standard for SC-10) -->
+<div class="w-[375px] min-h-[812px] bg-bg flex flex-col relative overflow-hidden shadow-2xl">
+<!-- 1. 微信小程序顶部状态与导航栏 -->
+<header class="sticky top-0 z-40 bg-surface/95 backdrop-blur-sm border-b border-line">
+<!-- 模拟 iOS 状态栏 -->
+<div class="h-6 w-full flex justify-between items-center px-4 pt-1 text-[11px] font-numeric text-ink-2">
+<span>09:41</span>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined !text-[13px]">signal_cellular_4_bar</span>
+<span class="material-symbols-outlined !text-[13px]">wifi</span>
+<span class="material-symbols-outlined !text-[13px]">battery_full</span>
+</div>
+</div>
+<!-- 导航栏主体 + 微信小程序胶囊 -->
+<div class="h-11 px-3 flex items-center justify-between">
+<div class="flex items-center gap-1 cursor-pointer active:opacity-70 transition-opacity">
+<span class="material-symbols-outlined text-ink-1 !text-[20px]">chevron_left</span>
+<h1 class="font-title text-title text-ink-1 tracking-tight">家庭综合问答</h1>
+</div>
+<!-- 微信官方标准功能胶囊结构 (87x32) -->
+<div class="w-[87px] h-[32px] rounded-full border border-line bg-surface flex items-center justify-evenly px-1">
+<button aria-label="小程序选项" class="w-7 h-7 flex items-center justify-center text-ink-1 hover:bg-surface-2 rounded-full transition-colors" type="button">
+<span class="material-symbols-outlined !text-[16px]">more_horiz</span>
+</button>
+<div class="w-[1px] h-[16px] bg-line"></div>
+<button aria-label="关闭小程序" class="w-7 h-7 flex items-center justify-center text-ink-1 hover:bg-surface-2 rounded-full transition-colors" type="button">
+<span class="material-symbols-outlined !text-[15px]">radio_button_checked</span>
+</button>
+</div>
+</div>
+</header>
+<!-- 2. 问答对象指示栏（范围行）与精密刻度基准 -->
+<section class="bg-surface border-b border-line px-4 py-2 flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-line bg-surface-2 text-ink-1 font-caption text-caption">
+<span class="material-symbols-outlined text-accent !text-[14px]">tune</span>
+            标尺范畴
+          </span>
+<span class="font-sub text-sub font-semibold text-ink-1">问答对象：宝宝 A + 咪咪</span>
+</div>
+<span class="font-caption text-caption text-accent bg-accent-soft px-2 py-0.5 rounded font-numeric">SC-10</span>
+</div>
+<div class="flex items-center justify-between text-ink-2 font-caption text-caption">
+<span class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+          同时涉及儿童与宠物 → 三 Agent 协同
+        </span>
+<span class="font-numeric text-[11px] text-ink-3">校验基准: ISO-9241</span>
+</div>
+<!-- 量具刻度槽线装点 -->
+<div class="w-full h-1 scale-ticks mt-0.5 opacity-60"></div>
+</section>
+<!-- 3. 对话与决策区域 (可滚动主体) -->
+<main class="flex-1 overflow-y-auto px-4 py-4 space-y-4 pb-32">
+<!-- 时间戳戳记 -->
+<div class="flex justify-center">
+<span class="font-caption text-caption text-ink-3 bg-surface-2 px-2.5 py-0.5 rounded-full border border-line font-numeric">
+          今天 09:41:08 · 量度序列 #1042
+        </span>
+</div>
+<!-- 用户提问气泡 (右对齐深色墨青背景，纯正色调无渐变) -->
+<div class="flex flex-col items-end">
+<div class="max-w-[280px] bg-accent text-on-accent rounded-[12px] rounded-tr-[2px] p-3 shadow-none border border-accent-press">
+<p class="font-body text-body leading-relaxed text-white">3 岁宝宝总追猫，猫常哈气怎么办？</p>
+</div>
+<span class="font-caption text-caption text-ink-3 mt-1 mr-1 font-numeric">09:41 · 已派发至调度总线</span>
+</div>
+<!-- 调度进度卡片（Dispatch progress） -->
+<div class="bg-surface rounded-[12px] border border-line p-3.5 space-y-3">
+<div class="flex items-center justify-between pb-2 border-b border-line">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-accent !text-[17px]">hub</span>
+<span class="font-sub text-sub font-semibold text-ink-1">调度中（并行 ≤15s）</span>
+</div>
+<span class="font-numeric text-sub font-semibold text-accent">9.4s</span>
+</div>
+<!-- 调度进度刻度条 -->
+<div class="space-y-1">
+<div class="flex justify-between font-caption text-caption text-ink-3 font-numeric text-[11px]">
+<span>0.0s 触发</span>
+<span>中位数 7.5s</span>
+<span>阈值 15.0s</span>
+</div>
+<div class="w-full h-2 bg-surface-2 rounded border border-line overflow-hidden relative">
+<div class="h-full bg-accent rounded" style="width: 62%;"></div>
+<div class="absolute top-0 bottom-0 left-1/2 w-[1px] bg-line-strong"></div>
+</div>
+</div>
+<!-- 三 Agent 并行状态列表 -->
+<div class="space-y-2 pt-1">
+<!-- Agent 1 -->
+<div class="flex items-center justify-between bg-surface-2/60 border border-line px-2.5 py-1.5 rounded-[8px]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-accent !text-[15px]">child_care</span>
+<span class="font-sub text-sub text-ink-1">0-6 岁育儿 Agent</span>
+</div>
+<div class="flex items-center gap-1 text-accent font-caption text-caption">
+<span class="font-numeric">3.2s</span>
+<span>完成</span>
+<span class="material-symbols-outlined !text-[15px] font-bold">check</span>
+</div>
+</div>
+<!-- Agent 2 -->
+<div class="flex items-center justify-between bg-surface-2/60 border border-line px-2.5 py-1.5 rounded-[8px]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-accent !text-[15px]">pets</span>
+<span class="font-sub text-sub text-ink-1">宠物养育 Agent</span>
+</div>
+<div class="flex items-center gap-1 text-accent font-caption text-caption">
+<span class="font-numeric">2.8s</span>
+<span>完成</span>
+<span class="material-symbols-outlined !text-[15px] font-bold">check</span>
+</div>
+</div>
+<!-- Agent 3 -->
+<div class="flex items-center justify-between bg-accent-soft/40 border border-accent-line px-2.5 py-1.5 rounded-[8px]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-accent !text-[15px]">health_and_safety</span>
+<span class="font-sub text-sub text-ink-1 font-medium">家庭安全 Agent</span>
+</div>
+<div class="flex items-center gap-1.5 text-accent font-caption text-caption">
+<span>生成中</span>
+<span class="material-symbols-outlined animate-spin !text-[15px]">progress_activity</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 回答卡片（完整结构化卡片 12px 圆角 + 1px 细边框） -->
+<article class="bg-surface rounded-[12px] border border-line overflow-hidden divide-y divide-line">
+<!-- 置顶安全提示（pinned，实底 #E1EFEC 铺满无左侧条，墨青标题） -->
+<section class="bg-accent-soft p-4 space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-accent !text-[18px]">verified_user</span>
+<h2 class="font-title text-sub font-bold text-accent">家庭安全提示 · 置顶</h2>
+</div>
+<span class="font-caption text-caption text-accent border border-accent-line bg-surface px-1.5 py-0.2 rounded font-numeric">优先级 01</span>
+</div>
+<div class="space-y-2 pt-0.5">
+<div class="flex items-start gap-2 bg-surface/80 p-2.5 rounded border border-accent-line/60">
+<span class="font-numeric font-semibold text-accent text-sub">1.</span>
+<p class="font-sub text-sub text-ink-1 leading-snug">
+<span class="font-semibold text-accent">全程视线监护：</span>
+                孩子与猫处于同空间互动时，必须由成年人保持全程在场监护，切勿使幼童与猫单独封闭共处。
+              </p>
+</div>
+<div class="flex items-start gap-2 bg-surface/80 p-2.5 rounded border border-accent-line/60">
+<span class="font-numeric font-semibold text-accent text-sub">2.</span>
+<p class="font-sub text-sub text-ink-1 leading-snug">
+<span class="font-semibold text-accent">创伤应急就医：</span>
+                一旦发生抓伤或咬伤见血情况，请立即流动清水冲洗，并第一时间就医进行规范医学处置。
+              </p>
+</div>
+</div>
+</section>
+<!-- 育儿侧建议分节 -->
+<section class="p-4 space-y-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-3.5 bg-accent rounded-sm"></span>
+<h3 class="font-title text-sub font-bold text-ink-1">育儿侧建议</h3>
+</div>
+<span class="font-caption text-caption text-ink-2 bg-surface-2 px-2 py-0.5 rounded border border-line font-numeric">
+              育儿 Agent · 3.2s
+            </span>
+</div>
+<p class="font-sub text-sub text-ink-1 leading-relaxed text-justify">
+            3 岁幼儿追逐猫咪通常属于“因果机制探索”与动作模仿，并非恶意攻击。此阶段直接使用“别追”等否定词效果有限，应使用<strong class="text-accent font-semibold">替代动作引导</strong>：
+          </p>
+<ul class="space-y-1.5 bg-surface-2/60 p-3 rounded-[8px] border border-line font-sub text-sub text-ink-2">
+<li class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+<span><strong>示范轻柔抚触：</strong>大人握住孩子的手掌轻轻顺毛示范“慢一点摸”。</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+<span><strong>退后让路礼仪：</strong>当猫走过时，引导孩子停住脚步并退后一步让路。</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+<span><strong>转移玩具投射：</strong>用逗猫棒等长柄玩具介入，替代直接贴身追逐。</span>
+</li>
+</ul>
+<div class="flex items-center gap-2 text-ink-2 font-caption text-caption bg-surface-container-low px-2.5 py-1.5 rounded border border-line">
+<span class="material-symbols-outlined text-ink-3 !text-[15px]">info</span>
+<span>适用前提：孩子目前能听懂并执行连续两步指令（如“停下并拿逗猫棒”）。</span>
+</div>
+</section>
+<!-- 宠物侧建议分节 -->
+<section class="p-4 space-y-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-3.5 bg-accent rounded-sm"></span>
+<h3 class="font-title text-sub font-bold text-ink-1">宠物侧建议</h3>
+</div>
+<span class="font-caption text-caption text-ink-2 bg-surface-2 px-2 py-0.5 rounded border border-line font-numeric">
+              宠物 Agent · 2.8s
+            </span>
+</div>
+<p class="font-sub text-sub text-ink-1 leading-relaxed text-justify">
+            猫哈气、飞机耳与竖毛是高度明确的<span class="text-ink-1 font-semibold">防御回避信号</span>，表明其领地压力已达阈值。严禁强行按压猫与孩子和解，当务之急是进行物理空间改动：
+          </p>
+<div class="grid grid-cols-2 gap-2 text-ink-2 font-sub text-sub">
+<div class="p-2.5 rounded-[8px] bg-surface-2/60 border border-line">
+<div class="font-semibold text-ink-1 mb-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-accent !text-[15px]">stairs</span>
+                设立高处避难所
+              </div>
+<p class="font-caption text-caption text-ink-2">安装 1.2m 以上猫爬架或高柜落脚点，幼童身高不可触及。</p>
+</div>
+<div class="p-2.5 rounded-[8px] bg-surface-2/60 border border-line">
+<div class="font-semibold text-ink-1 mb-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-accent !text-[15px]">door_front</span>
+                独立逃生动线
+              </div>
+<p class="font-caption text-caption text-ink-2">房门安装幼童防挤门卡，保留猫体型能穿透的窄缝通道。</p>
+</div>
+</div>
+</section>
+<!-- 冲突标注提示条（实底 #F6EDD8，陈黄文字 #7A5600，无渐变） -->
+<section class="bg-warn-soft p-3.5 border-t border-b border-line">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-warn !text-[18px] shrink-0 mt-0.5">warning</span>
+<div class="space-y-1">
+<div class="font-sub text-sub font-bold text-warn flex items-center gap-1">
+<span>观点存在差异，建议多方参考</span>
+<span class="font-caption text-caption font-normal bg-surface/60 text-warn px-1 rounded border border-line">跨领域标定</span>
+</div>
+<p class="font-caption text-caption text-warn leading-relaxed">
+                育儿侧主张先教导孩子行为、培养互动规则；宠物侧主张先改动物理环境让猫避险。专家综合建议：<strong>首日先布置高处逃生动线避免抓咬伤，次日起开展孩子行为替换。</strong>
+</p>
+</div>
+</div>
+</section>
+<!-- 渐进生成中的分节 -->
+<section class="p-4 space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-3.5 bg-line-strong rounded-sm"></span>
+<h3 class="font-title text-sub font-semibold text-ink-2">何时需咨询专业人士</h3>
+</div>
+<div class="flex items-center gap-1 font-caption text-caption text-accent">
+<span>正在生成</span>
+<span class="material-symbols-outlined animate-spin !text-[13px]">sync</span>
+</div>
+</div>
+<!-- 骨架屏脉冲动画条 (量具标尺风格) -->
+<div class="space-y-2 animate-pulse">
+<div class="h-3.5 bg-surface-2 rounded border border-line w-11/12"></div>
+<div class="h-3.5 bg-surface-2 rounded border border-line w-4/5"></div>
+<div class="h-3.5 bg-surface-2 rounded border border-line w-9/12"></div>
+</div>
+</section>
+</article>
+<!-- 底部可折叠栏：协同 Agent 详情 -->
+<details class="group bg-surface rounded-[8px] border border-line p-3 cursor-pointer">
+<summary class="list-none flex items-center justify-between font-caption text-caption text-ink-2 select-none">
+<span class="flex items-center gap-1.5 font-medium">
+<span class="material-symbols-outlined text-ink-3 !text-[15px] group-open:rotate-90 transition-transform">play_arrow</span>
+            本次参与协同的 Agent（展开显示耗时与状态）
+          </span>
+<span class="font-numeric text-accent font-semibold">3 项在线</span>
+</summary>
+<div class="mt-2.5 pt-2 border-t border-line space-y-1.5 font-caption text-caption text-ink-2">
+<div class="flex justify-between items-center py-0.5">
+<span class="font-mono text-ink-1">agent-pediatrics-v2</span>
+<span class="font-numeric text-ink-3">耗时 3218ms · 权重 0.40</span>
+</div>
+<div class="flex justify-between items-center py-0.5">
+<span class="font-mono text-ink-1">agent-felinelife-v1</span>
+<span class="font-numeric text-ink-3">耗时 2844ms · 权重 0.35</span>
+</div>
+<div class="flex justify-between items-center py-0.5">
+<span class="font-mono text-ink-1">agent-homesafety-core</span>
+<span class="font-numeric text-accent">耗时 9410ms (执行中) · 权重 0.25</span>
+</div>
+</div>
+</details>
+</main>
+<!-- 4. 底部输入栏 + 5. 常驻合规行 (固定在底部) -->
+<footer class="sticky bottom-0 z-40 bg-surface border-t border-line px-3 pt-2 pb-5 space-y-2 shadow-[0_-2px_10px_rgba(0,0,0,0.02)]">
+<!-- 输入交互行 -->
+<div class="flex items-center gap-2">
+<!-- 语音按钮 (置灰并明确禁用说明) -->
+<button class="h-[40px] px-2.5 rounded-[8px] border border-line bg-surface-2 text-ink-3 flex items-center gap-1 cursor-not-allowed opacity-75 shrink-0" disabled="" title="语音本期不支持" type="button">
+<span class="material-symbols-outlined !text-[18px]">mic_off</span>
+<span class="font-caption text-[11px] whitespace-nowrap">语音暂不支持</span>
+</button>
+<!-- 输入框 -->
+<div class="flex-1 relative">
+<input class="w-full h-[40px] px-3 rounded-[8px] bg-bg border border-line text-ink-1 font-body text-sub placeholder-ink-3 focus:outline-none focus:border-accent focus:bg-surface transition-colors" placeholder="输入你的问题..." type="text"/>
+</div>
+<!-- 墨青色高保真发送按钮 (44px/40px 规范体系) -->
+<button aria-label="发送问题" class="h-[40px] px-3.5 rounded-[8px] bg-accent active:bg-accent-press text-white flex items-center justify-center shrink-0 shadow-none transition-colors" type="button">
+<span class="material-symbols-outlined !text-[18px]">send</span>
+</button>
+</div>
+<!-- 5. 页面底部常驻合规行 -->
+<div class="flex items-center justify-center gap-1 text-center">
+<span class="material-symbols-outlined text-ink-3 !text-[13px]">shield</span>
+<p class="font-caption text-caption text-ink-3 text-[11px]">
+          AI 生成内容，仅供参考，不替代医生诊断
+        </p>
+</div>
+</footer>
+</div>
+</body></html>

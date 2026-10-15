@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>风险提示 - 拦截后回流与误报申诉</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-high": "#e6e9e7",
+            "background": "#f7faf8",
+            "on-secondary-fixed-variant": "#384a47",
+            "ink-2": "#455754",
+            "tertiary": "#723622",
+            "bg": "#F2F5F4",
+            "on-surface": "#181c1b",
+            "warn": "#7A5600",
+            "error": "#ba1a1a",
+            "line": "#D5DEDB",
+            "ink-1": "#0F1E1C",
+            "accent": "#0A6B60",
+            "on-primary-fixed-variant": "#005048",
+            "surface-dim": "#d7dbd9",
+            "on-accent": "#FFFFFF",
+            "line-strong": "#B4C3BF",
+            "surface-variant": "#e0e3e1",
+            "on-tertiary": "#ffffff",
+            "surface-2": "#E9EFED",
+            "surface": "#FFFFFF",
+            "accent-line": "#8FBFB7",
+            "tertiary-fixed-dim": "#ffb59d",
+            "on-primary": "#ffffff",
+            "danger-soft": "#F7E4E2",
+            "on-secondary": "#ffffff",
+            "tertiary-container": "#8f4d37",
+            "inverse-primary": "#85d5c7",
+            "on-tertiary-fixed-variant": "#713621",
+            "outline": "#6f7976",
+            "on-secondary-container": "#566865",
+            "on-tertiary-container": "#ffcfc0",
+            "tertiary-fixed": "#ffdbd0",
+            "ink-3": "#5F6F6C",
+            "surface-container-low": "#f1f4f2",
+            "on-surface-variant": "#3e4946",
+            "surface-container-highest": "#e0e3e1",
+            "primary-fixed-dim": "#85d5c7",
+            "inverse-surface": "#2d3130",
+            "error-container": "#ffdad6",
+            "accent-press": "#074E46",
+            "danger": "#A8231B",
+            "on-error-container": "#93000a",
+            "surface-container": "#ebefec",
+            "secondary-fixed-dim": "#b7cbc7",
+            "primary-fixed": "#a1f1e3",
+            "secondary-container": "#d3e7e2",
+            "inverse-on-surface": "#eef1ef",
+            "on-primary-fixed": "#00201c",
+            "secondary-fixed": "#d3e7e2",
+            "warn-soft": "#F6EDD8",
+            "secondary": "#50625f",
+            "on-error": "#ffffff",
+            "surface-tint": "#086a5f",
+            "accent-soft": "#E1EFEC",
+            "on-secondary-fixed": "#0d1f1c",
+            "surface-container-lowest": "#ffffff",
+            "on-background": "#181c1b",
+            "on-primary-container": "#98e8da",
+            "primary": "#005148",
+            "surface-bright": "#f7faf8",
+            "on-tertiary-fixed": "#390c00",
+            "outline-variant": "#bec9c5",
+            "primary-container": "#0a6b60"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "6px",
+            "margin": "16px",
+            "space-xl": "32px",
+            "gutter": "16px",
+            "space-sm": "8px",
+            "space-md": "16px",
+            "space-xxl": "48px",
+            "space-lg": "24px"
+          },
+          "fontFamily": {
+            "title": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "sub": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "caption": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "body": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "display": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "numeric": [
+              "\"ui-monospace, SF Mono, Consolas, monospace\""
+            ]
+          },
+          "fontSize": {
+            "title": [
+              "19px",
+              {
+                "lineHeight": "1.3",
+                "fontWeight": "600"
+              }
+            ],
+            "sub": [
+              "14px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "caption": [
+              "12px",
+              {
+                "lineHeight": "1.5",
+                "fontWeight": "400"
+              }
+            ],
+            "body": [
+              "16px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "display": [
+              "23px",
+              {
+                "lineHeight": "1.3",
+                "fontWeight": "600"
+              }
+            ],
+            "numeric": [
+              "16px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* 刻度线纹理 */
+    .scale-ticks {
+      background-image: repeating-linear-gradient(
+        to right,
+        #B4C3BF 0px,
+        #B4C3BF 1px,
+        transparent 1px,
+        transparent 8px
+      );
+    }
+    .scale-ruler {
+      background-image: repeating-linear-gradient(
+        to bottom,
+        #D5DEDB 0px,
+        #D5DEDB 1px,
+        transparent 1px,
+        transparent 6px
+      );
+    }
+  </style>
+</head>
+<body class="bg-bg text-on-surface antialiased flex justify-center selection:bg-accent-soft selection:text-primary">
+<!-- 375x812 移动端基准视窗容器 -->
+<div class="w-[375px] min-h-[812px] bg-background flex flex-col relative shadow-2xl overflow-x-hidden border-x border-line">
+<!-- 微信小程序标准顶部状态栏 & 导航栏 -->
+<header class="sticky top-0 z-40 bg-surface/95 backdrop-blur-sm border-b border-line">
+<!-- 模拟微信顶部状态条 -->
+<div class="h-6 px-4 flex justify-between items-center text-ink-3">
+<span class="font-numeric text-caption font-medium tracking-tight">09:41</span>
+<div class="flex items-center space-x-1">
+<span class="material-symbols-outlined text-[14px]">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[14px]">wifi</span>
+<span class="material-symbols-outlined text-[14px]">battery_full</span>
+</div>
+</div>
+<!-- TopAppBar：小程序胶囊与标题 -->
+<div class="h-12 px-3 flex items-center justify-between relative">
+<button aria-label="返回" class="p-1.5 -ml-1 text-ink-1 hover:bg-surface-2 rounded transition-all duration-200 active:scale-95" onclick="history.back()">
+<span class="material-symbols-outlined text-[22px]">chevron_left</span>
+</button>
+<!-- 页面标题 -->
+<h1 class="font-title text-title text-ink-1 tracking-tight text-center flex-1 pr-2">
+          风险提示
+        </h1>
+<!-- 微信小程序标配右侧胶囊按钮 -->
+<div class="flex items-center bg-surface border border-line-strong rounded-full px-2 py-1 shadow-sm h-7 space-x-2">
+<button aria-label="菜单" class="text-ink-1 hover:text-accent p-0.5 flex items-center">
+<span class="material-symbols-outlined text-[16px]">more_horiz</span>
+</button>
+<div class="w-[1px] h-3 bg-line-strong"></div>
+<button aria-label="关闭" class="text-ink-1 hover:text-accent p-0.5 flex items-center">
+<span class="material-symbols-outlined text-[15px]">radio_button_checked</span>
+</button>
+</div>
+</div>
+<!-- 顶部精密校准度量带 -->
+<div class="w-full h-1 bg-surface-2 relative overflow-hidden">
+<div class="absolute inset-y-0 left-0 bg-accent w-2/5"></div>
+<div class="absolute inset-y-0 right-0 w-3/5 scale-ticks opacity-40"></div>
+</div>
+</header>
+<!-- 主滚动内容区域 -->
+<main class="flex-1 px-4 py-4 space-y-3.5 pb-36">
+<!-- 1. 拦截说明卡 (Calibrated Safety Surface) -->
+<section class="bg-surface rounded-xl border border-line overflow-hidden shadow-sm relative">
+<!-- 卡片顶部刻度线指示 -->
+<div class="flex items-center justify-between px-4 py-1.5 bg-accent-soft/60 border-b border-accent-line/40">
+<div class="flex items-center space-x-1.5">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
+<span class="font-numeric text-caption text-primary font-medium tracking-tight">标定校准协议 · 守卫模式</span>
+</div>
+<span class="font-numeric text-caption text-ink-3">阶数：一级拦截</span>
+</div>
+<div class="p-4 space-y-3">
+<div class="flex items-start space-x-3">
+<div class="w-8 h-8 rounded-lg bg-danger-soft flex items-center justify-center shrink-0 border border-danger/20 text-danger mt-0.5">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+</div>
+<div>
+<h2 class="font-title text-title text-ink-1 tracking-tight">本次提问已被安全拦截</h2>
+<p class="font-sub text-sub text-ink-2 mt-1">
+                为保护孩子与家人，本次不生成回答。情况紧急请立即联系线下专业机构。
+              </p>
+</div>
+</div>
+<!-- 等宽刻度数据舱 -->
+<div class="bg-surface-2 rounded-lg p-3 border border-line space-y-2 relative font-numeric">
+<div class="absolute right-0 top-0 bottom-0 w-2 scale-ruler opacity-40 pointer-events-none"></div>
+<div class="flex justify-between items-center text-sub border-b border-line/60 pb-1.5">
+<span class="text-ink-3 text-caption font-sub">拦截记录编号</span>
+<span class="text-ink-1 font-numeric text-caption font-semibold tracking-wider bg-surface px-1.5 py-0.5 rounded border border-line">
+                RISK-20260918-0042
+              </span>
+</div>
+<div class="flex justify-between items-center text-sub pt-0.5">
+<span class="text-ink-3 text-caption font-sub">命中参考类别</span>
+<span class="text-primary font-sub text-caption font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>
+                儿童安全类（脱敏）
+              </span>
+</div>
+</div>
+<!-- 脱敏安全免责标注 -->
+<div class="flex items-center space-x-1.5 px-1 text-ink-3">
+<span class="material-symbols-outlined text-[15px] shrink-0 text-outline">verified_user</span>
+<p class="font-caption text-caption leading-relaxed">
+              不展示你的原始提问文本，也不回显命中的具体词条。
+            </p>
+</div>
+</div>
+</section>
+<!-- 2. 误报说明折叠卡 -->
+<section class="bg-surface rounded-xl border border-line overflow-hidden transition-all duration-200">
+<button aria-expanded="false" class="w-full p-4 flex items-center justify-between text-left hover:bg-surface-2/40 transition-colors" id="toggleFoldBtn" onclick="toggleCollapse()">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-[18px] text-accent">rule</span>
+<span class="font-sub text-sub font-semibold text-ink-1">这可能是一次误报</span>
+</div>
+<div class="flex items-center space-x-1 text-primary font-caption text-caption">
+<span id="foldLabel">展开</span>
+<span class="material-symbols-outlined text-[16px] transition-transform duration-200" id="foldIcon">expand_more</span>
+</div>
+</button>
+<div class="hidden px-4 pb-4 pt-1 border-t border-line/60 bg-surface-bright" id="foldContent">
+<div class="p-3 bg-surface rounded-lg border border-line-strong/60 space-y-2">
+<p class="font-sub text-sub text-ink-2 leading-relaxed">
+              误报＝正常养育提问被误判。提交申诉后转人工复核，默认 24 小时内出结论；申诉不占用免费额度，也不触发生成。
+            </p>
+<div class="flex items-center justify-between text-caption font-caption text-ink-3 pt-1 border-t border-line/40">
+<span>人工专席：优先队列</span>
+<span>复核效能：高精准级</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. 补充说明表单卡 -->
+<section class="bg-surface rounded-xl border border-line p-4 space-y-3 shadow-sm">
+<div class="flex items-center justify-between">
+<label class="font-sub text-sub font-semibold text-ink-1 flex items-center gap-1.5" for="appealNote">
+<span>补充说明（选填）</span>
+</label>
+<span class="font-numeric text-caption text-ink-3" id="charCounter">0 / 500</span>
+</div>
+<div class="relative">
+<textarea class="w-full bg-surface-bright border border-line rounded-lg p-3 text-ink-1 font-body text-sub placeholder:text-outline/70 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent resize-none transition-all" id="appealNote" maxlength="500" oninput="handleInput(this)" placeholder="请在此描述你的实际提问意图或场景背景，以便审核员更准确评估…" rows="3"></textarea>
+</div>
+<!-- 附件操作条与安全辅助提示 -->
+<div class="space-y-2 pt-1">
+<div class="flex items-center justify-between">
+<button class="h-9 px-3 border border-line-strong rounded-lg bg-surface hover:bg-surface-2 text-ink-1 font-sub text-caption flex items-center space-x-1.5 transition-colors active:scale-95" onclick="triggerUpload()" type="button">
+<span class="material-symbols-outlined text-[16px] text-accent">add_photo_alternate</span>
+<span>+ 附件：截图（选填）</span>
+</button>
+<span class="hidden text-caption text-primary font-numeric bg-accent-soft px-2 py-0.5 rounded" id="uploadBadge">已就绪 1 张</span>
+</div>
+<div class="flex items-start space-x-1.5 text-ink-3 bg-surface-2/60 p-2 rounded border border-line/60">
+<span class="material-symbols-outlined text-[15px] text-warn shrink-0 mt-0.5">privacy_tip</span>
+<p class="font-caption text-caption text-ink-2">
+              截图请先遮盖孩子可识别信息（如面部特写、姓名、证件及就诊卡号）。
+            </p>
+</div>
+</div>
+</section>
+<!-- 4. 申诉状态卡 (Audit Gauge Status) -->
+<section class="bg-surface rounded-xl border border-line p-4 space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-[18px] text-primary">hourglass_top</span>
+<h3 class="font-sub text-sub font-semibold text-ink-1">申诉状态</h3>
+</div>
+<!-- 墨青浅色背景状态胶囊 -->
+<span class="bg-accent-soft text-accent font-sub text-caption px-2.5 py-0.5 rounded-full border border-accent-line/60 font-medium">
+            已受理
+          </span>
+</div>
+<!-- 刻度分段卡信息 -->
+<div class="bg-surface-bright rounded-lg border border-line p-3 space-y-2">
+<div class="flex justify-between items-center text-caption font-numeric">
+<span class="text-ink-3 font-sub">受理编号</span>
+<span class="text-ink-1 font-medium bg-surface px-1.5 py-0.5 rounded border border-line">
+              APL-20260918-0042
+            </span>
+</div>
+<div class="flex justify-between items-center text-caption">
+<span class="text-ink-3 font-sub">预计复核时限</span>
+<span class="text-ink-1 font-numeric font-medium">24 小时内</span>
+</div>
+</div>
+<!-- 规范说明条 -->
+<div class="border-l-2 border-accent pl-2.5 py-1 bg-surface-2/40 rounded-r">
+<p class="font-caption text-caption text-ink-2 leading-relaxed">
+            已受理：停留本页，不放行、不回会话；复核通过后主动重新提交
+          </p>
+</div>
+</section>
+<!-- 5. 底部危机渠道快捷入口 -->
+<section class="bg-surface rounded-xl border border-line p-3.5 flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<div class="w-6 h-6 rounded-full bg-warn-soft text-warn flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[15px]">emergency</span>
+</div>
+<span class="font-sub text-sub font-medium text-ink-1">求助渠道</span>
+</div>
+<button class="flex items-center space-x-0.5 text-accent hover:text-accent-press font-sub text-caption">
+<span>更多</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</section>
+</main>
+<!-- 6. 底部主操作区固定面板 (无边框阴影分离) -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-[375px] bg-surface/95 backdrop-blur-md px-4 pt-3 pb-5 space-y-2.5 shadow-[0_-8px_20px_rgba(0,0,0,0.04)] z-50">
+<!-- 按钮操作组 -->
+<div class="flex flex-col space-y-2">
+<!-- 主按钮：墨青色背景，44px高，8px圆角 -->
+<button class="w-full h-[44px] rounded-xl bg-accent hover:bg-accent-press active:bg-accent-press text-on-accent font-sub text-sub font-medium flex items-center justify-center space-x-1.5 transition-all duration-200 active:scale-[0.98] shadow-sm" id="submitAppealBtn" onclick="handleAppealSubmit()">
+<span class="material-symbols-outlined text-[18px]">send</span>
+<span>提交申诉</span>
+</button>
+<!-- 次按钮：幽灵描边按钮，44px高 -->
+<button class="w-full h-[44px] rounded-xl bg-transparent border border-line-strong hover:bg-surface-2 text-ink-1 font-sub text-sub font-medium flex items-center justify-center space-x-1.5 transition-all duration-200 active:scale-[0.98]" onclick="handleBackToChat()">
+<span class="material-symbols-outlined text-[18px] text-ink-3">arrow_back</span>
+<span>返回会话</span>
+</button>
+</div>
+<!-- 底部常驻合规说明 -->
+<p class="text-center font-caption text-caption text-outline/80 tracking-tight pt-0.5 select-none">
+        AI 生成内容，仅供参考，不替代医生诊断
+      </p>
+<!-- 微信底部主屏幕手势条模拟 -->
+<div class="w-32 h-1 bg-line-strong/60 rounded-full mx-auto mt-1"></div>
+</div>
+<!-- 轻量交互确认浮层 (Toast 弹窗) -->
+<div class="fixed top-16 left-1/2 -translate-x-1/2 bg-ink-1 text-on-accent px-4 py-2 rounded-lg font-caption text-caption shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none flex items-center space-x-1.5 z-50" id="toastNotification">
+<span class="material-symbols-outlined text-[16px] text-primary-fixed">check_circle</span>
+<span id="toastMsg">申诉已提交人工复核</span>
+</div>
+</div>
+<script>
+    // 误报说明折叠控制
+    function toggleCollapse() {
+      const content = document.getElementById('foldContent');
+      const label = document.getElementById('foldLabel');
+      const icon = document.getElementById('foldIcon');
+      const btn = document.getElementById('toggleFoldBtn');
+      
+      const isExpanded = !content.classList.contains('hidden');
+      if (isExpanded) {
+        content.classList.add('hidden');
+        label.textContent = '展开';
+        icon.classList.remove('rotate-180');
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        content.classList.remove('hidden');
+        label.textContent = '收起';
+        icon.classList.add('rotate-180');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    }
+
+    // 字数动态统计
+    function handleInput(textarea) {
+      const currentLength = textarea.value.length;
+      document.getElementById('charCounter').textContent = currentLength + ' / 500';
+    }
+
+    // 附件模拟上传
+    function triggerUpload() {
+      const badge = document.getElementById('uploadBadge');
+      badge.classList.remove('hidden');
+      showToast('已添加附件截图');
+    }
+
+    // 提交申诉
+    function handleAppealSubmit() {
+      const note = document.getElementById('appealNote').value;
+      const submitBtn = document.getElementById('submitAppealBtn');
+      submitBtn.classList.add('opacity-75');
+      submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span><span>正在提交…</span>';
+      
+      setTimeout(() => {
+        submitBtn.classList.remove('opacity-75');
+        submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">done</span><span>已重新提交</span>';
+        showToast('申诉单已转入人工队列');
+      }, 700);
+    }
+
+    // 返回会话
+    function handleBackToChat() {
+      showToast('正在返回会话界面…');
+      setTimeout(() => {
+        if (window.history.length > 1) {
+          window.history.back();
+        }
+      }, 500);
+    }
+
+    // 提示条轻交互
+    function showToast(text) {
+      const toast = document.getElementById('toastNotification');
+      const msg = document.getElementById('toastMsg');
+      msg.textContent = text;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 2200);
+    }
+  </script>
+</body></html>

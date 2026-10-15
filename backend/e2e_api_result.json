@@ -1,0 +1,598 @@
+{
+  "base": "http://localhost:8000",
+  "executed_at": "2026-10-14 14:40:18",
+  "duration_seconds": 141.4,
+  "openapi": {
+    "tags": [
+      "系统",
+      "C端-认证同意",
+      "C端-档案",
+      "C端-问答",
+      "C端-测评",
+      "C端-商业化",
+      "C端-权利反馈",
+      "后台-知识库",
+      "后台-词库",
+      "后台-处置",
+      "后台-配置"
+    ],
+    "endpoint_count": 97
+  },
+  "summary": {
+    "total": 63,
+    "passed": 63,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "exception_total": 12,
+    "exception_block_rate": 1.0
+  },
+  "cases": [
+    {
+      "no": "ENV01",
+      "name": "健康检查",
+      "steps": "GET /api/v1/health",
+      "expected": "code=0 且 DB 连通",
+      "actual": "db=True",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "ENV02",
+      "name": "Swagger 文档",
+      "steps": "GET /docs",
+      "expected": "200 可渲染",
+      "actual": "docs_ok=True",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "ENV03",
+      "name": "OpenAPI 契约",
+      "steps": "GET /openapi.json",
+      "expected": "11 tags 且端点≥90",
+      "actual": "tags=11, endpoints=97",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "ENV04",
+      "name": "契约快照校验",
+      "steps": "python scripts/contract_check.py",
+      "expected": "0 漂移（退出码 0）",
+      "actual": "exit=0, 提取调用 85 处（admin.ts 45、client.ts 39、stream.ts 1）；OpenAPI 路径 87 个",
+      "status": "PASS",
+      "evidence": "结果：PASS（无漂移）"
+    },
+    {
+      "no": "C01",
+      "name": "设备码登录",
+      "steps": "POST /auth/dev-login {device_id}",
+      "expected": "code=0 且含 access_token/user_uid",
+      "actual": "code=0",
+      "status": "PASS",
+      "evidence": "{\"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjZDE5OTk2Ni0zZTRmLTQ2NzYtYjE0Yy0yO"
+    },
+    {
+      "no": "C02",
+      "name": "登录幂等（同设备同用户）",
+      "steps": "同 device_id 再次登录",
+      "expected": "user_uid 与首次一致",
+      "actual": "uid_equal=True",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C03",
+      "name": "合规文案批量下发",
+      "steps": "GET /texts?ids=3 个文案 ID",
+      "expected": "code=0 且 texts 含 3 项",
+      "actual": "count=3",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C04",
+      "name": "基础协议同意",
+      "steps": "POST /consent/agree base",
+      "expected": "code=0",
+      "actual": "code=0",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C05",
+      "name": "未单独同意建档被拒",
+      "steps": "未同意 child_personal_info 直接建档",
+      "expected": "code=1302 不落库",
+      "actual": "code=1302",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C06",
+      "name": "儿童信息单独同意（监护留痕）",
+      "steps": "POST /consent/agree child_personal_info",
+      "expected": "code=0 且 guardian_verified=true",
+      "actual": "code=0",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C07",
+      "name": "建档成功+派生列",
+      "steps": "POST /profiles/children birth=2025-04-08",
+      "expected": "code=0, age_months=18, age_band=1-3y",
+      "actual": "months=18, band=1-3y",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C08",
+      "name": "档案列表含新档案",
+      "steps": "GET /profiles/children",
+      "expected": "列表含刚创建档案",
+      "actual": "found=True",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C09",
+      "name": "乐观锁冲突",
+      "steps": "PUT 带过期 version=999",
+      "expected": "code=1003 http 409",
+      "actual": "code=1003",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C10",
+      "name": "宠物建档",
+      "steps": "POST /profiles/pets",
+      "expected": "code=0",
+      "actual": "code=0",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C11",
+      "name": "创建问答会话",
+      "steps": "POST /qa/sessions（正常问题）",
+      "expected": "code=0 且 session_uid/status=pending",
+      "actual": "code=0, uid=True",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C12",
+      "name": "真实问答 SSE 帧序",
+      "steps": "POST /qa/sessions/{uid}/stream 消费至 completed",
+      "expected": "started→section_delta/section_done→completed 序列完整",
+      "actual": "events=['started', 'section_delta', 'section_done', 'completed']",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C13",
+      "name": "安全分节返回且置顶语义",
+      "steps": "检查 section_done 载荷",
+      "expected": "safety 节存在且 pinned=true（或首节为 safety）",
+      "actual": "safety_pinned=True",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C14",
+      "name": "会员门控服务端裁剪",
+      "steps": "免费用户问答响应",
+      "expected": "access_tier=block 的块不含 content 字段",
+      "actual": "gated_ok=True",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C15",
+      "name": "额度计次",
+      "steps": "GET /billing/quota",
+      "expected": "code=0 且 used≥1（问答计次）",
+      "actual": "used=1",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C16",
+      "name": "幂等回放",
+      "steps": "同 client_request_id 重新提交",
+      "expected": "code=0 且 idempotent_replay=true 不重复扣额度",
+      "actual": "replay=True",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C17",
+      "name": "高危词拦截（硬类别）",
+      "steps": "提交含一级词库命中问题并消费流",
+      "expected": "blocked 帧且无任何正文分节帧",
+      "actual": "events=['started', 'blocked']",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C18",
+      "name": "误报申诉受理",
+      "steps": "POST /risk/appeals",
+      "expected": "code=0 且返回 APL 编号与 24h SLA",
+      "actual": "appeal_no=APL202610141438346391",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C19",
+      "name": "危机渠道卡（含犬伤门诊）",
+      "steps": "GET /risk/channels?category=animal_bite",
+      "expected": "code=0 且含 rabies_clinic 渠道",
+      "actual": "n=1, rabies=True",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C20",
+      "name": "测评题库 16 题",
+      "steps": "GET /assessment/questions",
+      "expected": "code=0 且 16 题（PRD 冻结口径）",
+      "actual": "n=16",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C21",
+      "name": "测评提交计分",
+      "steps": "start→16×answer(4 分)→submit",
+      "expected": "code=0 且 type_code=active",
+      "actual": "type=active",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C22",
+      "name": "报告 13 区块与会员裁剪",
+      "steps": "GET /history/report/{uid}",
+      "expected": "免费用户会员区块无 content",
+      "actual": "member_blocks=4, gated=True",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C23",
+      "name": "创建订单",
+      "steps": "POST /billing/orders（contract_confirm=true）",
+      "expected": "code=0 且 order_no 生成",
+      "actual": "order_no=JB20261014063834BD7B21",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C24",
+      "name": "支付回调验签+重复幂等",
+      "steps": "mock-pay 两次同 transaction_id",
+      "expected": "两次均成功且不重复发放",
+      "actual": "first=0, repeat=0",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C25",
+      "name": "会员权益生效",
+      "steps": "GET /billing/subscription",
+      "expected": "member_status=member",
+      "actual": "status=member",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C26",
+      "name": "会员问答链路（门控语义见 pytest mock 套件）",
+      "steps": "会员身份重新问答",
+      "expected": "completed 且分节非空（真实模式）；block 注入裁剪由 pytest 覆盖",
+      "actual": "completed=True, sections=['safety', 'child']",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C27",
+      "name": "历史混合列表",
+      "steps": "GET /history?page=1",
+      "expected": "code=0 且列表非空（问答+报告）",
+      "actual": "items=3",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C28",
+      "name": "权利请求受理",
+      "steps": "POST /rights/requests export",
+      "expected": "code=0 且 RT 编号+SLA",
+      "actual": "no=RT20261014063856010928",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C29",
+      "name": "反馈提交（送检闭环）",
+      "steps": "POST /feedback 正常内容",
+      "expected": "code=0 且送检通过 audit_result=pass/passed",
+      "actual": "audit=passed",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "C30",
+      "name": "举报提交（涉未成年加急）",
+      "steps": "POST /reports harmful_to_minor",
+      "expected": "code=0 且返回 RP 编号+SLA",
+      "actual": "no=RP20261014063856C646FE",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A01",
+      "name": "后台 MFA 登录",
+      "steps": "admin/Admin@123456 → 演示码 123456",
+      "expected": "code=0 且 role=super_admin",
+      "actual": "role=super_admin",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A02",
+      "name": "知识库列表",
+      "steps": "GET /admin/kb/entries",
+      "expected": "code=0 且条目≥28",
+      "actual": "total=54",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A03",
+      "name": "知识库新建条目",
+      "steps": "POST /admin/kb/entries",
+      "expected": "code=0 且生成 kb_id",
+      "actual": "kb_id=KB3A0E646B343A",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A04",
+      "name": "知识库送审+审核通过（二次确认）",
+      "steps": "submit → review pass+confirm",
+      "expected": "两步 code=0 且条目 published",
+      "actual": "submit=True, review=0",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A05",
+      "name": "词库规则测试器",
+      "steps": "POST /admin/lexicon/test（http 200）",
+      "expected": "code=0 且 hit=true 且命中模式",
+      "actual": "hit=True, body={\"code\":0,\"message\":\"ok\",\"data\":{\"hit\":true,\"matched_terms\":[],\"matched_patterns\":[\"medicine_dosage_pattern:(布洛芬|对乙酰氨基酚|",
+      "status": "PASS",
+      "evidence": "{\"code\":0,\"message\":\"ok\",\"data\":{\"hit\":true,\"matched_terms\":[],\"matched_patterns\":[\"medicine_dosage_pattern:(布洛芬|对乙酰氨基酚|阿莫西林|头孢|退烧药|抗生素)[^。]{0,10}(剂量|"
+    },
+    {
+      "no": "A06",
+      "name": "Agent 调用日志（脱敏）",
+      "steps": "GET /admin/agent-logs",
+      "expected": "code=0 且日志≥1（含 E2E 问答）",
+      "actual": "logs=20",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A07",
+      "name": "反馈列表",
+      "steps": "GET /admin/feedback",
+      "expected": "code=0",
+      "actual": "code=0",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A08",
+      "name": "举报列表（涉未成年加急）",
+      "steps": "GET /admin/reports",
+      "expected": "code=0",
+      "actual": "code=0",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A09",
+      "name": "高风险事件列表",
+      "steps": "GET /admin/risk-events",
+      "expected": "code=0 且存在待复核事件",
+      "actual": "n=20",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A10",
+      "name": "风险事件复核（误报）",
+      "steps": "POST review conclusion=misreport",
+      "expected": "code=0 且 disposal_result=misreport",
+      "actual": "code=0",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A11",
+      "name": "复核结论出具后可上报",
+      "steps": "POST report-authority",
+      "expected": "code=0（结论前置灰解除）",
+      "actual": "code=0",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A12",
+      "name": "权利请求列表",
+      "steps": "GET /admin/rights",
+      "expected": "code=0 且含 E2E 请求",
+      "actual": "code=0",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A13",
+      "name": "系统开关列表（仅超管）",
+      "steps": "GET /admin/configs",
+      "expected": "code=0 且含 5 个入口开关",
+      "actual": "n=6",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A14",
+      "name": "审计日志",
+      "steps": "GET /admin/audit-logs",
+      "expected": "code=0 且含本轮操作记录",
+      "actual": "code=0",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A15",
+      "name": "客服角色登录对照",
+      "steps": "support/Admin@123456 → MFA",
+      "expected": "code=0 且 role=support",
+      "actual": "role=support",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A16",
+      "name": "风险阈值配置读取",
+      "steps": "GET /admin/lexicon/config",
+      "expected": "code=0 且含 two_level_threshold",
+      "actual": "code=0",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "A17",
+      "name": "词库配置留痕与一键回滚",
+      "steps": "PUT 阈值→查历史→写回基线→回滚前版→回滚基线版",
+      "expected": "历史留痕(active+changed_by) 且回滚后阈值依次还原 v1/v0",
+      "actual": "trail=True, rb_v25=True, rb_v26=True",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "E01",
+      "name": "未携带令牌访问受保护端点",
+      "steps": "GET /profiles/children（无 Authorization）",
+      "expected": "401/1101",
+      "actual": "http=401, code=1101",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "E02",
+      "name": "伪造令牌",
+      "steps": "伪造 Bearer token",
+      "expected": "401/1101",
+      "actual": "code=1101",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "E03",
+      "name": "客服越权写开关",
+      "steps": "support PUT /admin/configs/*",
+      "expected": "403/1103",
+      "actual": "http=403",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "E04",
+      "name": "专家跨域越权",
+      "steps": "expert_child 编辑宠物条目",
+      "expected": "403/1603",
+      "actual": "http=403, code=1603",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "E05",
+      "name": "缺二次确认凭证",
+      "steps": "operator 下架未带 confirm_token",
+      "expected": "403/1602 且无副作用",
+      "actual": "http=403, code=1602",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "E06",
+      "name": "免费额度用尽拒绝",
+      "steps": "新用户循环创建+消费流至额度耗尽",
+      "expected": "第 5 次创建返回 429/1202 且无模型调用",
+      "actual": "got_1202=True, round0=done,round1=done,round2=done,round3=done,round4=1202",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "E07",
+      "name": "非法参数体",
+      "steps": "POST 建档 body 类型错误",
+      "expected": "422/1001",
+      "actual": "http=422, code=1001",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "E08",
+      "name": "不存在档案（防枚举）",
+      "steps": "PUT 随机 uid",
+      "expected": "404/1002 与他人档案响应一致",
+      "actual": "code=1002",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "E09",
+      "name": "紧急下线开关生效",
+      "steps": "超管关闭宠物入口→C 端建会话→恢复",
+      "expected": "关闭后 1406/503，恢复后正常",
+      "actual": "switch_off=True, code=1406",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "E10",
+      "name": "举报非法分类",
+      "steps": "category=not_a_category",
+      "expected": "1001/422 拒绝",
+      "actual": "code=1001",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "E11",
+      "name": "申诉次数上限",
+      "steps": "同会话第 3 次申诉",
+      "expected": "1001 拒绝（上限 2 次）",
+      "actual": "code=1001",
+      "status": "PASS",
+      "evidence": ""
+    },
+    {
+      "no": "E12",
+      "name": "不存在会话防枚举",
+      "steps": "GET 随机会话",
+      "expected": "404/1002/1102 拒绝",
+      "actual": "code=1002",
+      "status": "PASS",
+      "evidence": ""
+    }
+  ]
+}

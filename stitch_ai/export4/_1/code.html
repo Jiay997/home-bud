@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>家伴 - 首次启动与免责声明</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "warn": "#7A5600",
+            "on-secondary-fixed-variant": "#384a47",
+            "ink-3": "#5F6F6C",
+            "outline-variant": "#bec9c5",
+            "on-surface-variant": "#3e4946",
+            "surface-tint": "#086a5f",
+            "danger": "#A8231B",
+            "accent-soft": "#E1EFEC",
+            "on-accent": "#FFFFFF",
+            "surface-bright": "#f7faf8",
+            "on-background": "#181c1b",
+            "secondary-fixed": "#d3e7e2",
+            "on-tertiary-fixed": "#390c00",
+            "tertiary-fixed": "#ffdbd0",
+            "surface": "#FFFFFF",
+            "surface-container-highest": "#e0e3e1",
+            "warn-soft": "#F6EDD8",
+            "accent-press": "#074E46",
+            "surface-2": "#E9EFED",
+            "secondary-container": "#d3e7e2",
+            "on-error-container": "#93000a",
+            "line": "#D5DEDB",
+            "background": "#f7faf8",
+            "on-secondary": "#ffffff",
+            "bg": "#F2F5F4",
+            "primary": "#005148",
+            "surface-container-low": "#f1f4f2",
+            "inverse-primary": "#85d5c7",
+            "tertiary": "#723622",
+            "on-primary": "#ffffff",
+            "on-primary-fixed-variant": "#005048",
+            "tertiary-container": "#8f4d37",
+            "on-surface": "#181c1b",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#b7cbc7",
+            "on-secondary-fixed": "#0d1f1c",
+            "on-tertiary-container": "#ffcfc0",
+            "accent": "#0A6B60",
+            "surface-container": "#ebefec",
+            "secondary": "#50625f",
+            "accent-line": "#8FBFB7",
+            "inverse-on-surface": "#eef1ef",
+            "ink-1": "#0F1E1C",
+            "line-strong": "#B4C3BF",
+            "on-error": "#ffffff",
+            "danger-soft": "#F7E4E2",
+            "tertiary-fixed-dim": "#ffb59d",
+            "outline": "#6f7976",
+            "ink-2": "#455754",
+            "error-container": "#ffdad6",
+            "surface-container-high": "#e6e9e7",
+            "surface-dim": "#d7dbd9",
+            "surface-variant": "#e0e3e1",
+            "inverse-surface": "#2d3130",
+            "on-secondary-container": "#566865",
+            "on-primary-container": "#98e8da",
+            "primary-fixed-dim": "#85d5c7",
+            "on-tertiary-fixed-variant": "#713621",
+            "error": "#ba1a1a",
+            "primary-fixed": "#a1f1e3",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed": "#00201c",
+            "primary-container": "#0a6b60"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-md": "16px",
+            "gutter": "16px",
+            "space-xxl": "48px",
+            "margin": "16px",
+            "space-xl": "32px",
+            "space-lg": "24px",
+            "space-sm": "8px",
+            "space-xs": "6px"
+          },
+          "fontFamily": {
+            "title": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "caption": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "body": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "numeric": [
+              "\"ui-monospace, SF Mono, Consolas, monospace\""
+            ],
+            "sub": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "display": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ]
+          },
+          "fontSize": {
+            "title": [
+              "19px",
+              {
+                "lineHeight": "1.3",
+                "fontWeight": "600"
+              }
+            ],
+            "caption": [
+              "12px",
+              {
+                "lineHeight": "1.5",
+                "fontWeight": "400"
+              }
+            ],
+            "body": [
+              "16px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "numeric": [
+              "16px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "sub": [
+              "14px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "display": [
+              "23px",
+              {
+                "lineHeight": "1.3",
+                "fontWeight": "600"
+              }
+            ]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    /* Custom scrollbar matching instrumentation aesthetic */
+    .scale-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .scale-scroll::-webkit-scrollbar-track {
+      background: #F2F5F4;
+    }
+    .scale-scroll::-webkit-scrollbar-thumb {
+      background: #B4C3BF;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#1e2322] flex items-center justify-center min-h-screen p-0 sm:p-4 select-none font-body">
+<!-- Mini Program Frame Container (375x812 iPhone / WeChat mini-program canvas) -->
+<div class="relative w-full max-w-[375px] h-[812px] bg-bg overflow-hidden flex flex-col justify-between shadow-2xl border border-line-strong">
+<!-- Calibrated Ruler Top Markings (Measurement Scale Philosophy) -->
+<div class="absolute top-0 left-0 right-0 h-1 bg-surface-2 flex justify-between px-2 items-end opacity-70 z-20 pointer-events-none">
+<div class="w-[1px] h-1 bg-line-strong"></div>
+<div class="w-[1px] h-0.5 bg-line"></div>
+<div class="w-[1px] h-0.5 bg-line"></div>
+<div class="w-[1px] h-0.5 bg-line"></div>
+<div class="w-[1px] h-1 bg-line-strong"></div>
+<div class="w-[1px] h-0.5 bg-line"></div>
+<div class="w-[1px] h-0.5 bg-line"></div>
+<div class="w-[1px] h-0.5 bg-line"></div>
+<div class="w-[1px] h-1 bg-line-strong"></div>
+</div>
+<!-- 1. Top Status Bar -->
+<div class="w-full pt-3 px-6 pb-1 flex justify-between items-center text-ink-1 z-30 select-none">
+<span class="font-numeric text-[14px] font-semibold tracking-tight text-ink-1">9:41</span>
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-[15px] text-ink-2" data-icon="signal_cellular_alt">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[15px] text-ink-2" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-[18px] text-ink-2" data-icon="battery_full">battery_full</span>
+</div>
+</div>
+<!-- WeChat Mini-Program Header Anchor Bar (JSON Component Compliant) -->
+<div class="flex justify-between items-center w-full px-4 h-11 bg-surface border-b border-line">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="shield">shield</span>
+<span class="font-title text-[15px] text-primary tracking-tight">微信小程序</span>
+</div>
+<!-- WeChat Capsule Simulation -->
+<div class="flex items-center border border-line bg-surface-bright rounded-full px-2.5 py-0.5 space-x-2">
+<span class="material-symbols-outlined text-[14px] text-ink-2" data-icon="more_horiz">more_horiz</span>
+<div class="w-[1px] h-3 bg-line"></div>
+<span class="material-symbols-outlined text-[13px] text-ink-2" data-icon="radio_button_checked">radio_button_checked</span>
+</div>
+</div>
+<!-- Main Modal Canvas Area -->
+<main class="flex-1 flex flex-col px-4 pt-3 pb-2 overflow-hidden justify-between">
+<!-- 2. Brand Identity Header Area -->
+<div class="text-center pt-1 pb-2">
+<div class="inline-flex items-center justify-center px-2 py-0.5 bg-accent-soft border border-accent-line rounded mb-1.5">
+<span class="font-numeric text-[10px] text-accent font-medium tracking-wider">SEC-SYS // V2.4</span>
+</div>
+<h1 class="font-display text-display text-ink-1 font-bold tracking-tight">家伴</h1>
+<p class="font-caption text-caption text-ink-3 mt-0.5">家庭养育多智能体助手</p>
+</div>
+<!-- 3. Core Measurement Card: "免责与使用说明" -->
+<div class="bg-surface border border-line rounded-xl p-4 flex flex-col flex-1 max-h-[510px] shadow-sm">
+<!-- Header of Card with scale calibration tick -->
+<div class="flex items-center justify-between pb-2.5 border-b border-line">
+<div class="flex items-center space-x-2">
+<div class="w-1.5 h-3.5 bg-accent"></div>
+<h2 class="font-title text-title text-ink-1">免责与使用说明</h2>
+</div>
+<span class="font-numeric text-[11px] text-ink-3 uppercase tracking-wider">MANDATORY · 必须知悉</span>
+</div>
+<!-- Calibrated Protocol Range Scale Tag -->
+<div class="my-2.5 py-1 px-2.5 bg-surface-2 border border-line flex items-center justify-between rounded">
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-[15px] text-accent" data-icon="verified_user">verified_user</span>
+<span class="font-caption text-caption text-ink-2">服务定位标尺</span>
+</div>
+<span class="font-caption text-[11px] text-ink-1 font-medium">非医疗 · 科普决策参考</span>
+</div>
+<!-- Scrollable Legal Terms Box (Instrumentation Frame) -->
+<div class="scale-scroll flex-1 overflow-y-auto border border-line bg-surface-container-low p-3 rounded mb-3 text-justify text-ink-2 space-y-2.5">
+<div class="p-2 bg-accent-soft border border-accent-line rounded">
+<p class="font-sub text-[13px] text-accent-press font-semibold leading-relaxed">
+              本产品为养育科普参考工具，不替代医生、心理咨询师、教师、执业兽医。紧急情况请立即联系线下专业机构。
+            </p>
+</div>
+<p class="font-caption text-caption text-ink-2 leading-relaxed">
+            1. <strong class="text-ink-1">服务性质界定：</strong>“家伴”依托专业多模型多智能体架构提供育儿、儿童行为观察及家庭协作建议。所有分析结论、测评量表分值与应对方案仅供监护人参考，严禁作为临床诊断或处方依据。
+          </p>
+<p class="font-caption text-caption text-ink-2 leading-relaxed">
+            2. <strong class="text-ink-1">紧急危机警示：</strong>若儿童出现高热惊厥、呼吸困难、急性外伤、持续自伤情绪或意识障碍等危急情况，系统不具备急救指引效力，请立即拨打120或前往实体三甲医院急诊就医。
+          </p>
+<p class="font-caption text-caption text-ink-2 leading-relaxed">
+            3. <strong class="text-ink-1">未成年人隐私专章：</strong>我们执行《儿童个人信息网络保护规定》，采集的成长记录均进行端到端加密与敏感信息隔离存储，监护人享有完全的撤回授权与数据清除权利。
+          </p>
+</div>
+<!-- Agreement Document Links -->
+<div class="pt-1 pb-3 border-t border-line">
+<p class="font-caption text-caption text-ink-3 mb-1.5">请仔细通读以下法规协议条款：</p>
+<div class="flex flex-wrap gap-y-1 gap-x-1.5 text-accent font-sub text-[12px]">
+<a class="underline hover:text-accent-press transition-colors" href="javascript:void(0)">《用户协议》</a>
+<span class="text-line-strong">|</span>
+<a class="underline hover:text-accent-press transition-colors" href="javascript:void(0)">《隐私政策》</a>
+<span class="text-line-strong">|</span>
+<a class="underline hover:text-accent-press transition-colors" href="javascript:void(0)">《免责声明》</a>
+<span class="text-line-strong">|</span>
+<a class="underline hover:text-accent-press transition-colors" href="javascript:void(0)">《儿童个人信息处理规则》（易懂版）</a>
+</div>
+</div>
+<!-- Interactive Confirmation Checkbox Area -->
+<div class="pt-2 border-t border-line flex flex-col space-y-3">
+<label class="flex items-start space-x-2.5 cursor-pointer group" for="agreeCheckbox">
+<input class="mt-0.5 w-4 h-4 rounded border-line-strong text-accent focus:ring-0 focus:ring-offset-0 transition cursor-pointer" id="agreeCheckbox" onchange="toggleSubmitButton(this.checked)" type="checkbox"/>
+<span class="font-sub text-[13px] text-ink-1 font-medium leading-tight group-hover:text-primary transition-colors">
+              我已阅读并同意上述全部协议
+            </span>
+</label>
+<!-- Primary Confirmation Action Button -->
+<div class="w-full">
+<button class="w-full h-[44px] rounded-lg bg-surface-container-highest text-ink-3 font-title text-[15px] font-semibold flex items-center justify-center transition-all duration-200 cursor-not-allowed select-none" disabled="" id="submitBtn" onclick="handleEnterApp()">
+<span>进入</span>
+</button>
+<p class="font-caption text-[11px] text-ink-3 text-center mt-1.5" id="btnHelperText">
+              未勾选：置灰，不可点击
+            </p>
+</div>
+</div>
+</div>
+<!-- 4. Footer Compliance Audit Stamp (Monospace Structured Spec) -->
+<footer class="py-2 text-center border-t border-line mt-1">
+<p class="font-numeric text-[10px] text-ink-3 tracking-tight">
+          同意记录：类型 / 版本 / 时间 / 设备
+        </p>
+<p class="font-numeric text-[9px] text-outline-variant mt-0.5 tracking-wider">
+          AUTH-HASH: 8F2A-MINIPROGRAM-WECHAT-CN
+        </p>
+</footer>
+</main>
+<!-- Visual Anchor Scale Bottom Bar Indicator -->
+<div class="w-full h-1 bg-surface border-t border-line flex justify-between px-4">
+<div class="w-2 h-[1px] bg-line-strong"></div>
+<div class="w-8 h-[1px] bg-accent"></div>
+<div class="w-2 h-[1px] bg-line-strong"></div>
+</div>
+</div>
+<!-- Micro-interaction script for strict compliance gatekeeping -->
+<script>
+    function toggleSubmitButton(isChecked) {
+      const btn = document.getElementById('submitBtn');
+      const helper = document.getElementById('btnHelperText');
+      
+      if (isChecked) {
+        btn.disabled = false;
+        btn.className = "w-full h-[44px] rounded-lg bg-accent text-on-accent hover:bg-accent-press active:scale-[0.98] font-title text-[15px] font-semibold flex items-center justify-center transition-all duration-200 cursor-pointer shadow-sm";
+        helper.textContent = "已就绪：点击进入系统";
+        helper.className = "font-caption text-[11px] text-accent text-center mt-1.5 font-medium";
+      } else {
+        btn.disabled = true;
+        btn.className = "w-full h-[44px] rounded-lg bg-surface-container-highest text-ink-3 font-title text-[15px] font-semibold flex items-center justify-center transition-all duration-200 cursor-not-allowed select-none";
+        helper.textContent = "未勾选：置灰，不可点击";
+        helper.className = "font-caption text-[11px] text-ink-3 text-center mt-1.5";
+      }
+    }
+
+    function handleEnterApp() {
+      const checkbox = document.getElementById('agreeCheckbox');
+      if (checkbox.checked) {
+        // Record compliant consent payload representation
+        const consentData = {
+          type: "EXPLICIT_CONSENT",
+          version: "V2.4",
+          time: new Date().toISOString(),
+          device: "WECHAT_MINIPROGRAM_375x812"
+        };
+        const btn = document.getElementById('submitBtn');
+        btn.innerHTML = `<span class="material-symbols-outlined text-[18px] mr-1" data-icon="check_circle">check_circle</span>已确认合规`;
+        btn.classList.add("bg-primary");
+      }
+    }
+  </script>
+</body></html>

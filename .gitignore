@@ -1,0 +1,64 @@
+# ===== 小光景（HomeBud）项目忽略规则 =====
+
+# 环境变量（含密钥，勿提交）
+.env
+.env.*
+!.env.example
+
+# 依赖与虚拟环境
+node_modules/
+.venv/
+venv/
+
+# Python 缓存
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# 前端构建产物
+dist/
+build/
+
+# 运行数据与日志
+backend/data/
+*.log
+_pytest_run.txt
+
+# 备份快照与压缩包（二进制归档不进源码仓库）
+_backup_before_reorg_*.zip
+*.zip
+
+# 数据库转储（含用户表 / 儿童档案 / 密码哈希，公开仓库严禁提交）
+backups/
+*.dump
+*.sql.gz
+
+# 工具产物（非权威副本）
+.trae/
+.workbuddy/
+.run/
+
+# UI 审计临时产物（截图/脚本/localStorage 注入种子，含临时令牌，勿提交）
+.audit/
+
+# 过程性走查截图（前几轮中间产物，约 52MB / 316 张；权威证据见 wechat-miniapp/screenshots/）
+wechat-miniapp/walkthrough/
+
+# 答辩材料与历史测试截图（体积大，不宜随源码仓库分发）
+docs/答辩/
+docs/screenshots/
+
+# 内部过程文档（自评 / 进度 / 测试证据 / 审查清单，不进公开仓库）
+项目进度评估报告_*.md
+项目核心功能清单与完成度评估_*.md
+PROJECT_PROGRESS.md
+PROJECT_PROGRESS.html
+_review.png
+docs/测试报告_*.md
+docs/性能压测报告_*.md
+docs/性能基线_*.md
+docs/RESTful审查_*.md
+docs/微信小程序接入判定与准备清单_*.md
+docs/测试截图/

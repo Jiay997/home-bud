@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>测评报告</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=-apple-system,+BlinkMacSystemFont,+PingFang+SC,+system-ui,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "warn": "#7A5600",
+            "on-secondary-fixed-variant": "#384a47",
+            "ink-3": "#5F6F6C",
+            "outline-variant": "#bec9c5",
+            "on-surface-variant": "#3e4946",
+            "surface-tint": "#086a5f",
+            "danger": "#A8231B",
+            "accent-soft": "#E1EFEC",
+            "on-accent": "#FFFFFF",
+            "surface-bright": "#f7faf8",
+            "on-background": "#181c1b",
+            "secondary-fixed": "#d3e7e2",
+            "on-tertiary-fixed": "#390c00",
+            "tertiary-fixed": "#ffdbd0",
+            "surface": "#FFFFFF",
+            "surface-container-highest": "#e0e3e1",
+            "warn-soft": "#F6EDD8",
+            "accent-press": "#074E46",
+            "surface-2": "#E9EFED",
+            "secondary-container": "#d3e7e2",
+            "on-error-container": "#93000a",
+            "line": "#D5DEDB",
+            "background": "#f7faf8",
+            "on-secondary": "#ffffff",
+            "bg": "#F2F5F4",
+            "primary": "#005148",
+            "surface-container-low": "#f1f4f2",
+            "inverse-primary": "#85d5c7",
+            "tertiary": "#723622",
+            "on-primary": "#ffffff",
+            "on-primary-fixed-variant": "#005048",
+            "tertiary-container": "#8f4d37",
+            "on-surface": "#181c1b",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#b7cbc7",
+            "on-secondary-fixed": "#0d1f1c",
+            "on-tertiary-container": "#ffcfc0",
+            "accent": "#0A6B60",
+            "surface-container": "#ebefec",
+            "secondary": "#50625f",
+            "accent-line": "#8FBFB7",
+            "inverse-on-surface": "#eef1ef",
+            "ink-1": "#0F1E1C",
+            "line-strong": "#B4C3BF",
+            "on-error": "#ffffff",
+            "danger-soft": "#F7E4E2",
+            "tertiary-fixed-dim": "#ffb59d",
+            "outline": "#6f7976",
+            "ink-2": "#455754",
+            "error-container": "#ffdad6",
+            "surface-container-high": "#e6e9e7",
+            "surface-dim": "#d7dbd9",
+            "surface-variant": "#e0e3e1",
+            "inverse-surface": "#2d3130",
+            "on-secondary-container": "#566865",
+            "on-primary-container": "#98e8da",
+            "primary-fixed-dim": "#85d5c7",
+            "on-tertiary-fixed-variant": "#713621",
+            "error": "#ba1a1a",
+            "primary-fixed": "#a1f1e3",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed": "#00201c",
+            "primary-container": "#0a6b60"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-md": "16px",
+            "gutter": "16px",
+            "space-xxl": "48px",
+            "margin": "16px",
+            "space-xl": "32px",
+            "space-lg": "24px",
+            "space-sm": "8px",
+            "space-xs": "6px"
+          },
+          "fontFamily": {
+            "title": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"],
+            "caption": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"],
+            "body": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"],
+            "numeric": ["ui-monospace, SF Mono, Consolas, monospace"],
+            "sub": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"],
+            "display": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"]
+          },
+          "fontSize": {
+            "title": ["19px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "caption": ["12px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "body": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "numeric": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "sub": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "display": ["23px", { "lineHeight": "1.3", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      background-color: #F2F5F4;
+      -webkit-font-smoothing: antialiased;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-bg text-on-surface min-h-screen flex justify-center selection:bg-accent-soft selection:text-primary">
+<!-- Mini Program Container 375x812 Target Frame -->
+<div class="w-full max-w-[375px] min-h-[812px] bg-bg flex flex-col relative overflow-x-hidden pb-12">
+<!-- TopAppBar (From Shared Component Anchor, Back Context suppresses BottomNavBar) -->
+<header class="sticky top-0 z-40 bg-surface flex justify-between items-center w-full px-4 h-12 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+<button aria-label="返回" class="w-8 h-8 flex items-center justify-center text-primary active:scale-95 transition-all duration-200" type="button">
+<span class="material-symbols-outlined text-[24px]">chevron_left</span>
+</button>
+<h1 class="font-title text-title text-primary tracking-tight font-bold">测评报告</h1>
+<!-- WeChat Mini Program Pill simulation (more_horiz from JSON anchor) -->
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-full border border-line">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">more_horiz</span>
+<span class="w-[1px] h-3 bg-line"></span>
+<span class="w-2.5 h-2.5 rounded-full border border-on-surface-variant/60 block"></span>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="px-4 pt-3 flex flex-col gap-3">
+<!-- Metadata Line -->
+<section class="flex flex-col sm:flex-row justify-between items-start sm:items-center px-1 text-ink-3 font-caption text-caption gap-0.5">
+<div class="flex items-center gap-1.5 font-medium text-ink-2">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+<span>被测孩子：<strong class="text-ink-1 font-semibold">宝宝 A</strong> · 2 岁 3 月</span>
+</div>
+<div class="text-ink-3">
+          生成时间：2026-09-18 12:40
+        </div>
+</section>
+<!-- 气质类型核心卡片 -->
+<section class="bg-surface rounded-xl p-5 border border-line flex flex-col items-center text-center relative overflow-hidden">
+<!-- Calibrated Accent Line Header Top Notch -->
+<div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent via-accent-line to-accent"></div>
+<!-- Botanical Fine-Line Vector Icon -->
+<div class="w-14 h-14 rounded-full bg-accent-soft border border-accent-line flex items-center justify-center mb-2.5 text-accent">
+<svg fill="none" height="30" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="30">
+<path d="M12 22C12 22 12 14 6 9C3 6.5 3 3 3 3C3 3 6.5 3 9 6C14 12 22 12 22 12"></path>
+<path d="M12 22V14"></path>
+<path d="M9 12C9 12 11 8 16 6"></path>
+</svg>
+</div>
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-2 text-ink-2 font-caption text-caption mb-1">
+<span class="material-symbols-outlined text-[13px] text-accent">tune</span>
+<span>气质倾向刻度判定</span>
+</div>
+<!-- 大标题：“慢热型”（23px 墨青粗体） -->
+<h2 class="font-display text-display text-primary tracking-tight font-bold my-1">
+          慢热型
+        </h2>
+<!-- 细分子说明与边界声明 -->
+<p class="font-caption text-caption text-ink-3 mt-1 max-w-[280px] leading-relaxed">
+          观察敏锐 · 预热充分 · 节奏沉着
+        </p>
+<div class="mt-3.5 pt-3 border-t border-line w-full">
+<p class="text-ink-3 font-caption text-caption bg-surface-container-low py-1.5 px-3 rounded-lg inline-block border border-line/60">
+            四象仅作趣味包装，不作理论映射宣称
+          </p>
+</div>
+</section>
+<!-- 四个维度分档刻度带卡片（GraduatedBand 签名组件） -->
+<section class="bg-surface rounded-xl p-4 sm:p-5 border border-line flex flex-col gap-4">
+<div class="flex items-center justify-between pb-1 border-b border-line">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-accent text-[20px]">straighten</span>
+<h3 class="font-title text-body font-semibold text-ink-1">四维分档刻度带</h3>
+</div>
+<span class="font-caption text-caption text-ink-3">GraduatedBand</span>
+</div>
+<!-- 说明标注 -->
+<div class="flex items-start gap-1.5 text-ink-3 font-caption text-caption bg-surface-container-low p-2 rounded-lg border border-line">
+<span class="material-symbols-outlined text-[15px] text-accent mt-0.5 shrink-0">info</span>
+<span>只分档，不渲染精确分数，避免绝对化</span>
+</div>
+<!-- 刻度带列表 -->
+<div class="flex flex-col gap-4 mt-1">
+<!-- 维度 1: 活动水平 (低 - 中 - [偏高]) -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center text-ink-1 font-sub text-sub font-medium">
+<span>活动水平</span>
+<span class="text-accent font-semibold text-caption bg-accent-soft px-2 py-0.5 rounded-full border border-accent-line">偏高倾向</span>
+</div>
+<!-- Calibrated Scale Track -->
+<div class="grid grid-cols-3 gap-1.5 h-7 relative items-center">
+<!-- Tier 1: 低 -->
+<div class="h-5 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-ink-3 font-caption text-caption relative">
+<span>低</span>
+</div>
+<!-- Tier 2: 中 -->
+<div class="h-5 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-ink-3 font-caption text-caption relative">
+<span>中</span>
+</div>
+<!-- Tier 3: 偏高 (Active) -->
+<div class="h-7 rounded-lg bg-accent text-on-accent flex items-center justify-center font-sub text-caption font-semibold shadow-sm border border-accent-press relative">
+<span class="material-symbols-outlined text-[14px] mr-0.5" style="font-variation-settings: 'FILL' 1;">check</span>
+<span>偏高</span>
+</div>
+</div>
+</div>
+<!-- 维度 2: 趋近-退缩 ([偏低] - 中 - 高) -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center text-ink-1 font-sub text-sub font-medium">
+<span>趋近 - 退缩</span>
+<span class="text-accent font-semibold text-caption bg-accent-soft px-2 py-0.5 rounded-full border border-accent-line">偏低倾向（易退缩）</span>
+</div>
+<!-- Calibrated Scale Track -->
+<div class="grid grid-cols-3 gap-1.5 h-7 relative items-center">
+<!-- Tier 1: 偏低 (Active) -->
+<div class="h-7 rounded-lg bg-accent text-on-accent flex items-center justify-center font-sub text-caption font-semibold shadow-sm border border-accent-press relative">
+<span class="material-symbols-outlined text-[14px] mr-0.5" style="font-variation-settings: 'FILL' 1;">check</span>
+<span>偏低</span>
+</div>
+<!-- Tier 2: 中 -->
+<div class="h-5 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-ink-3 font-caption text-caption relative">
+<span>中</span>
+</div>
+<!-- Tier 3: 高 -->
+<div class="h-5 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-ink-3 font-caption text-caption relative">
+<span>高</span>
+</div>
+</div>
+</div>
+<!-- 维度 3: 适应性 (低 - 中 - [偏高]) -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center text-ink-1 font-sub text-sub font-medium">
+<span>适应性</span>
+<span class="text-accent font-semibold text-caption bg-accent-soft px-2 py-0.5 rounded-full border border-accent-line">偏高倾向</span>
+</div>
+<!-- Calibrated Scale Track -->
+<div class="grid grid-cols-3 gap-1.5 h-7 relative items-center">
+<!-- Tier 1: 低 -->
+<div class="h-5 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-ink-3 font-caption text-caption relative">
+<span>低</span>
+</div>
+<!-- Tier 2: 中 -->
+<div class="h-5 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-ink-3 font-caption text-caption relative">
+<span>中</span>
+</div>
+<!-- Tier 3: 偏高 (Active) -->
+<div class="h-7 rounded-lg bg-accent text-on-accent flex items-center justify-center font-sub text-caption font-semibold shadow-sm border border-accent-press relative">
+<span class="material-symbols-outlined text-[14px] mr-0.5" style="font-variation-settings: 'FILL' 1;">check</span>
+<span>偏高</span>
+</div>
+</div>
+</div>
+<!-- 维度 4: 情绪强度 ([偏低] - 中 - 高) -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center text-ink-1 font-sub text-sub font-medium">
+<span>情绪强度</span>
+<span class="text-accent font-semibold text-caption bg-accent-soft px-2 py-0.5 rounded-full border border-accent-line">偏低倾向（温和沉着）</span>
+</div>
+<!-- Calibrated Scale Track -->
+<div class="grid grid-cols-3 gap-1.5 h-7 relative items-center">
+<!-- Tier 1: 偏低 (Active) -->
+<div class="h-7 rounded-lg bg-accent text-on-accent flex items-center justify-center font-sub text-caption font-semibold shadow-sm border border-accent-press relative">
+<span class="material-symbols-outlined text-[14px] mr-0.5" style="font-variation-settings: 'FILL' 1;">check</span>
+<span>偏低</span>
+</div>
+<!-- Tier 2: 中 -->
+<div class="h-5 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-ink-3 font-caption text-caption relative">
+<span>中</span>
+</div>
+<!-- Tier 3: 高 -->
+<div class="h-5 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-ink-3 font-caption text-caption relative">
+<span>高</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 解读卡片（分节 Bento Grid 结构） -->
+<section class="bg-surface rounded-xl p-4 sm:p-5 border border-line flex flex-col gap-3.5">
+<div class="flex items-center gap-1.5 pb-2 border-b border-line">
+<span class="material-symbols-outlined text-primary text-[20px]">psychology_alt</span>
+<h3 class="font-title text-body font-semibold text-ink-1">多维解读与养育支持</h3>
+</div>
+<!-- 节 1：类型解读 -->
+<div class="bg-surface-container-low rounded-lg p-3.5 border border-line">
+<div class="flex items-center gap-1.5 mb-1.5 text-primary font-sub text-sub font-semibold">
+<span class="w-1.5 h-3.5 rounded-sm bg-primary"></span>
+<h4>类型解读</h4>
+</div>
+<p class="text-ink-2 font-body text-sub leading-relaxed pl-3">
+            面对新环境需要更长时间预热，被催促推入时更容易退缩。其观察期是收集安全感的重要历程。
+          </p>
+</div>
+<!-- 节 2：适配养育方式 -->
+<div class="bg-accent-soft/60 rounded-lg p-3.5 border border-accent-line">
+<div class="flex items-center gap-1.5 mb-1.5 text-accent font-sub text-sub font-semibold">
+<span class="w-1.5 h-3.5 rounded-sm bg-accent"></span>
+<h4>适配养育方式</h4>
+</div>
+<p class="text-ink-2 font-body text-sub leading-relaxed pl-3">
+            提前预告行程，留出过渡时间。进入陌生聚会前，允许其站在家长身旁静态旁观 10-15 分钟。
+          </p>
+</div>
+<!-- 节 3：沟通技巧 -->
+<div class="bg-surface-container-low rounded-lg p-3.5 border border-line">
+<div class="flex items-center gap-1.5 mb-1.5 text-secondary font-sub text-sub font-semibold">
+<span class="w-1.5 h-3.5 rounded-sm bg-secondary"></span>
+<h4>沟通技巧</h4>
+</div>
+<p class="text-ink-2 font-body text-sub leading-relaxed pl-3">
+            先描述他的感受，再给两个选择。例如：“这里人很多你有点不习惯对吗？我们先在这里看，还是拿玩具去旁边？”
+          </p>
+</div>
+</section>
+<!-- 条件触发波动提示条（陈黄底色 #F6EDD8） -->
+<section class="bg-warn-soft border border-[#E7DAC0] rounded-xl p-3 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-warn text-[20px] mt-0.5 shrink-0">history_toggle_off</span>
+<div class="flex flex-col">
+<span class="text-warn font-sub text-sub font-semibold">波动提示</span>
+<p class="text-warn font-caption text-caption leading-relaxed mt-0.5">
+            仅反映近期行为倾向，单次结果不代表长期特质。环境转变或情绪波动均可能带来阶段性差异。
+          </p>
+</div>
+</section>
+<!-- 底部非宿命判定卡片 -->
+<section class="bg-surface-2 rounded-xl p-4 border border-line flex flex-col gap-1.5 text-ink-2">
+<div class="flex items-center gap-1.5 text-ink-1 font-sub text-sub font-semibold">
+<span class="material-symbols-outlined text-accent text-[18px]">verified_user</span>
+<span>气质不是宿命判定</span>
+</div>
+<p class="font-caption text-caption text-ink-3 leading-relaxed">
+          孩子性格会随成长变化，本报告不作为任何诊断、评价或长期定论。仅供养育参考，不替代专业人士。
+        </p>
+</section>
+<!-- 操作区 -->
+<section class="flex flex-col gap-2.5 pt-2">
+<!-- 主按钮：44px 高，Teal 主色，8px 圆角 -->
+<button class="w-full h-11 bg-accent hover:bg-accent-press active:scale-[0.98] transition-all duration-200 text-on-accent font-title text-body font-semibold rounded-xl flex items-center justify-center gap-2 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px]">download</span>
+<span>保存长图</span>
+</button>
+<!-- 次级文字按钮群 -->
+<div class="flex items-center justify-around py-1 px-4 text-ink-2 font-sub text-sub">
+<button class="hover:text-primary active:scale-95 transition-all duration-150 py-1.5 px-3 flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[17px] text-ink-3">share</span>
+<span>分享</span>
+</button>
+<span class="w-[1px] h-3.5 bg-line"></span>
+<button class="hover:text-primary active:scale-95 transition-all duration-150 py-1.5 px-3 flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[17px] text-ink-3">rate_review</span>
+<span>反馈</span>
+</button>
+<span class="w-[1px] h-3.5 bg-line"></span>
+<button class="hover:text-danger active:scale-95 transition-all duration-150 py-1.5 px-3 flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[17px] text-ink-3">flag</span>
+<span>举报</span>
+</button>
+</div>
+</section>
+<!-- 底部免责声明 -->
+<footer class="text-center py-2 text-ink-3 font-caption text-caption">
+<p>AI 生成内容，仅供参考，不替代医生诊断</p>
+</footer>
+</main>
+</div>
+</body></html>

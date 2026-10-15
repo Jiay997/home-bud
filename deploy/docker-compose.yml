@@ -1,0 +1,195 @@
+# =============================================================================
+# 小光景 Docker Compose 编排文件
+#
+# 拓扑：
+#   frontend(nginx:80) ──/api/ 反代──> backend(uvicorn:8000) ──> postgres(pgvector:pg16)
+#                                                     ├──────> redis:7-alpine
+#                                                     └──────> milvus-standalone(3.0.2)
+#                                                                 ├─ etcd(v3.5.25)
+#                                                                 └─ minio
+#（Milvus 三件套为检索主通道独立向量库，spec milvus-vector-store：
+#  集合 jiaban_kb_entries、2048 维 HNSW COSINE、Strong 一致性；
+#  Milvus 不可用时后端自动回退 hashing 降级链，行为一致）
+#
+# 使用方式（在本目录 deploy/ 下执行）：
+#   cp .env.example .env && docker compose up -d
+#
+# 注意：
+#   - 构建上下文 context 指向仓库根目录（..），Dockerfile 路径为 deploy/xxx
+#   - milvus-standalone 宿主端口 19531:19530（避让本机已占用 19530 的其他
+#     Milvus 实例；compose 内部服务间仍走 milvus:19530）
+#   - redis 为可选缓存后端：backend 的 REDIS_URL 默认已指向 redis 服务，
+#     redis 停掉时 get_cache() 工厂自动回退进程内缓存，不会 500
+# =============================================================================
+
+services:
+  # ---------- PostgreSQL 16（内置 pgvector 向量扩展） ----------
+  postgres:
+    # pgvector/pgvector:pg16 = 官方 postgres:16 + 预装 vector 扩展（无需手动编译）
+    image: pgvector/pgvector:pg16
+    container_name: jiaban-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?请在 .env 中设置 DB_PASSWORD}
+      POSTGRES_DB: jiaban
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_EXPOSE_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d jiaban"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ---------- Redis 7（可选缓存：限流/额度/开关热读等键位） ----------
+  redis:
+    image: redis:7-alpine
+    container_name: jiaban-redis
+    restart: unless-stopped
+    # appendonly 开启 AOF 持久化：计数类键（额度/限流）重启不丢失
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # ---------- Milvus 三件套（独立向量库：etcd 元数据 + minio 对象存储 + standalone） ----------
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.25
+    container_name: jiaban-etcd
+    restart: unless-stopped
+    environment:
+      ETCD_AUTO_COMPACTION_MODE: revision
+      ETCD_AUTO_COMPACTION_RETENTION: "1000"
+      ETCD_QUOTA_BACKEND_BYTES: "4294967296"
+      ETCD_SNAPSHOT_COUNT: "50000"
+    volumes:
+      - etcddata:/etcd
+    command: etcd -advertise-client-urls=http://etcd:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 10s
+
+  minio:
+    image: minio/minio:RELEASE.2024-12-18T13-15-44Z
+    container_name: jiaban-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    volumes:
+      - miniodata:/minio_data
+    command: minio server /minio_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 10s
+
+  milvus-standalone:
+    image: milvusdb/milvus:v3.0.2
+    container_name: jiaban-milvus
+    restart: unless-stopped
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+      COMMON_STORAGETYPE: remote
+    volumes:
+      - milvusdata:/var/lib/milvus
+    ports:
+      # 宿主 19531 避让（本机 19530 已被其他项目 Milvus 占用）；compose 内部走 milvus:19530
+      - "19531:19530"
+      - "9091:9091"
+    depends_on:
+      etcd:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 60s
+
+  # ---------- FastAPI 后端 ----------
+  backend:
+    build:
+      context: ..
+      dockerfile: deploy/backend.Dockerfile
+    image: jiaban-backend
+    container_name: jiaban-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # 容器内数据库地址指向 postgres 服务；凭据取自 .env 的 DB_PASSWORD
+      DATABASE_URL: postgresql+psycopg2://postgres:${DB_PASSWORD}@postgres:5432/jiaban
+      # 容器内 Redis 地址指向 redis 服务（.env 中 REDIS_URL 留空也会被此处覆盖注入；
+      # redis 不可达时后端 get_cache() 自动回退进程内缓存，不会 500）
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      # 容器内 Milvus 地址指向 milvus-standalone 服务（.env 中 MILVUS_URI 留空
+      # 会被此处覆盖注入；Milvus 不可达时检索自动回退 hashing 降级链，不会 500）
+      MILVUS_URI: ${MILVUS_URI:-http://milvus:19530}
+      UVICORN_WORKERS: ${UVICORN_WORKERS:-2}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      milvus-standalone:
+        condition: service_healthy
+    volumes:
+      # 档案媒体（头像/相册）本地磁盘持久化：容器重建/更新不丢文件
+      - uploaddata:/app/data/uploads
+    expose:
+      - "8000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/v1/health', timeout=4).status == 200 else 1)",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  # ---------- nginx 前端 + 反向代理 ----------
+  frontend:
+    build:
+      context: ..
+      dockerfile: deploy/frontend.dockerfile
+    image: jiaban-frontend
+    container_name: jiaban-frontend
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-80}:80"
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  pgdata:
+  # Redis AOF 持久化数据卷（额度/限流计数重启不丢失）
+  redisdata:
+  # Milvus 三件套数据卷（向量集合持久化）
+  etcddata:
+  miniodata:
+  milvusdata:
+  # 档案媒体数据卷（头像/相册文件持久化）
+  uploaddata:

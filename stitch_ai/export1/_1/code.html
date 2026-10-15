@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>家伴后台管理系统 - 知识库管理</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=-apple-system,+BlinkMacSystemFont,+PingFang+SC,+system-ui,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-container": "#ffcfc0",
+            "surface-container-highest": "#e0e3e1",
+            "on-primary": "#ffffff",
+            "inverse-primary": "#85d5c7",
+            "primary-container": "#0a6b60",
+            "on-secondary-container": "#566865",
+            "accent-line": "#8FBFB7",
+            "on-tertiary-fixed": "#390c00",
+            "surface-bright": "#f7faf8",
+            "on-primary-container": "#98e8da",
+            "error-container": "#ffdad6",
+            "secondary": "#50625f",
+            "accent-soft": "#E1EFEC",
+            "ink-2": "#455754",
+            "ink-3": "#5F6F6C",
+            "on-surface-variant": "#3e4946",
+            "ink-1": "#0F1E1C",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed-dim": "#ffb59d",
+            "warn": "#7A5600",
+            "on-primary-fixed-variant": "#005048",
+            "primary-fixed-dim": "#85d5c7",
+            "outline-variant": "#bec9c5",
+            "accent": "#0A6B60",
+            "warn-soft": "#F6EDD8",
+            "secondary-fixed-dim": "#b7cbc7",
+            "error": "#ba1a1a",
+            "primary-fixed": "#a1f1e3",
+            "outline": "#6f7976",
+            "surface": "#FFFFFF",
+            "on-secondary-fixed-variant": "#384a47",
+            "on-primary-fixed": "#00201c",
+            "inverse-on-surface": "#eef1ef",
+            "secondary-fixed": "#d3e7e2",
+            "surface-2": "#E9EFED",
+            "surface-container": "#ebefec",
+            "surface-variant": "#e0e3e1",
+            "background": "#f7faf8",
+            "inverse-surface": "#2d3130",
+            "on-tertiary-fixed-variant": "#713621",
+            "on-accent": "#FFFFFF",
+            "bg": "#F2F5F4",
+            "on-background": "#181c1b",
+            "secondary-container": "#d3e7e2",
+            "surface-container-low": "#f1f4f2",
+            "on-secondary-fixed": "#0d1f1c",
+            "danger": "#A8231B",
+            "on-error-container": "#93000a",
+            "tertiary": "#723622",
+            "surface-dim": "#d7dbd9",
+            "accent-press": "#074E46",
+            "primary": "#005148",
+            "surface-tint": "#086a5f",
+            "surface-container-high": "#e6e9e7",
+            "line": "#D5DEDB",
+            "on-surface": "#181c1b",
+            "danger-soft": "#F7E4E2",
+            "tertiary-fixed": "#ffdbd0",
+            "tertiary-container": "#8f4d37",
+            "line-strong": "#B4C3BF",
+            "on-secondary": "#ffffff",
+            "on-error": "#ffffff",
+            "on-tertiary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin": "16px",
+            "space-sm": "8px",
+            "space-xxl": "48px",
+            "space-xl": "32px",
+            "gutter": "16px",
+            "space-md": "16px",
+            "space-lg": "24px",
+            "space-xs": "6px"
+          },
+          "fontFamily": {
+            "display": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"],
+            "title": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"],
+            "numeric": ["ui-monospace, SF Mono, Consolas, monospace"],
+            "sub": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"],
+            "body": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"],
+            "caption": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"]
+          },
+          "fontSize": {
+            "display": ["23px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "title": ["19px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "numeric": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "sub": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "body": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "caption": ["12px", { "lineHeight": "1.5", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-bg text-ink-1 min-h-screen antialiased selection:bg-accent-soft selection:text-accent font-body text-body">
+<!-- ==================== 左侧固定侧边栏 (SideNavBar: 240px) ==================== -->
+<aside class="w-60 h-screen fixed left-0 top-0 flex flex-col justify-between py-space-lg px-space-md border-r border-line dark:border-outline-variant bg-surface dark:bg-surface-container z-30 select-none">
+<div class="flex flex-col gap-space-md">
+<!-- 品牌标识与平台定位 -->
+<div class="px-space-xs pb-space-xs border-b border-line">
+<div class="font-title text-title font-semibold text-ink-1 dark:text-on-surface tracking-tight flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-lg bg-accent flex items-center justify-center text-on-accent text-caption font-bold">家</span>
+<span>家伴管理中心</span>
+</div>
+<div class="font-caption text-caption text-ink-3 mt-1 tracking-wide">临床级智能监控平台</div>
+</div>
+<!-- 快捷创建CTA -->
+<button class="w-full h-11 bg-accent hover:bg-accent-press text-on-accent rounded-lg flex items-center justify-center gap-space-xs font-sub text-sub font-medium transition-colors duration-150 active:scale-[0.99]">
+<span class="material-symbols-outlined text-sub" data-icon="add">add</span>
+<span>新建知识文档</span>
+</button>
+<!-- 导航主列表 -->
+<nav class="flex flex-col gap-1 mt-1">
+<!-- 1. 知识库管理 (高亮激活态) -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg bg-accent-soft dark:bg-primary-container text-accent dark:text-on-primary-container font-medium cursor-pointer transition-colors duration-150" href="javascript:void(0)">
+<span class="material-symbols-outlined text-sub" data-icon="auto_stories" data-weight="fill" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+<span class="font-sub text-sub">知识库管理</span>
+</a>
+<!-- 2. 词库维护 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 dark:text-on-surface-variant font-normal hover:bg-surface-2 hover:text-ink-1 cursor-pointer transition-colors duration-150" href="javascript:void(0)">
+<span class="material-symbols-outlined text-sub" data-icon="spellcheck">spellcheck</span>
+<span class="font-sub text-sub">词库维护</span>
+</a>
+<!-- 3. Agent调用日志 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 dark:text-on-surface-variant font-normal hover:bg-surface-2 hover:text-ink-1 cursor-pointer transition-colors duration-150" href="javascript:void(0)">
+<span class="material-symbols-outlined text-sub" data-icon="terminal">terminal</span>
+<span class="font-sub text-sub">Agent调用日志</span>
+</a>
+<!-- 4. 反馈与举报 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 dark:text-on-surface-variant font-normal hover:bg-surface-2 hover:text-ink-1 cursor-pointer transition-colors duration-150" href="javascript:void(0)">
+<span class="material-symbols-outlined text-sub" data-icon="flag">flag</span>
+<span class="font-sub text-sub">反馈与举报</span>
+</a>
+<!-- 5. 高风险事件 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 dark:text-on-surface-variant font-normal hover:bg-surface-2 hover:text-ink-1 cursor-pointer transition-colors duration-150" href="javascript:void(0)">
+<span class="material-symbols-outlined text-sub text-warn" data-icon="warning">warning</span>
+<span class="font-sub text-sub">高风险事件</span>
+</a>
+<!-- 6. 权利请求 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 dark:text-on-surface-variant font-normal hover:bg-surface-2 hover:text-ink-1 cursor-pointer transition-colors duration-150" href="javascript:void(0)">
+<span class="material-symbols-outlined text-sub" data-icon="shield_person">shield_person</span>
+<span class="font-sub text-sub">权利请求</span>
+</a>
+<!-- 7. 系统开关与配置 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 dark:text-on-surface-variant font-normal hover:bg-surface-2 hover:text-ink-1 cursor-pointer transition-colors duration-150" href="javascript:void(0)">
+<span class="material-symbols-outlined text-sub" data-icon="tune">tune</span>
+<span class="font-sub text-sub">系统开关与配置</span>
+</a>
+</nav>
+</div>
+<!-- 侧边栏底部审计与监控 -->
+<div class="pt-space-md border-t border-line flex flex-col gap-1">
+<a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-ink-3 hover:text-ink-1 hover:bg-surface-2 transition-colors duration-150" href="javascript:void(0)">
+<span class="material-symbols-outlined text-sub" data-icon="history">history</span>
+<span class="font-sub text-sub">审计记录</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-xs rounded-lg text-ink-3 hover:text-ink-1 hover:bg-surface-2 transition-colors duration-150" href="javascript:void(0)">
+<span class="material-symbols-outlined text-sub" data-icon="monitoring">monitoring</span>
+<span class="font-sub text-sub">系统监控</span>
+</a>
+<div class="px-space-md pt-space-xs text-caption font-caption text-ink-3 text-[11px] font-numeric">
+        版本：v2.4.12-临床标定
+      </div>
+</div>
+</aside>
+<!-- ==================== 顶部导航栏 (TopNavBar: fixed top-0, left-60, h-16) ==================== -->
+<header class="fixed top-0 right-0 left-60 h-16 px-space-lg flex justify-between items-center bg-surface dark:bg-surface-container border-b border-line dark:border-outline-variant z-20">
+<div class="flex items-center gap-space-md">
+<div class="font-title text-title font-semibold text-ink-1 tracking-tight flex items-center gap-space-xs">
+<span>家伴</span>
+<span class="text-line-strong font-normal">/</span>
+<span class="text-ink-2 font-sub text-sub">后台管理系统</span>
+</div>
+<div class="h-4 w-[1px] bg-line"></div>
+<span class="px-2 py-0.5 rounded bg-accent-soft text-accent text-caption font-medium border border-accent-line">
+        临床级严密质检中
+      </span>
+</div>
+<!-- 右侧账号与辅助操作 -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs text-ink-3">
+<button class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-2 hover:text-ink-1 transition-colors" title="通知提醒">
+<span class="material-symbols-outlined text-title" data-icon="notifications">notifications</span>
+</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-2 hover:text-ink-1 transition-colors" title="操作指引">
+<span class="material-symbols-outlined text-title" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+<div class="h-5 w-[1px] bg-line"></div>
+<!-- 用户信息群组 -->
+<div class="flex items-center gap-space-xs font-sub text-sub">
+<span class="font-numeric font-medium text-ink-1">admin@jiaban</span>
+<span class="text-ink-3">·</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-2 text-ink-2 text-caption">内容运营</span>
+<span class="text-ink-3">·</span>
+<button class="text-danger hover:text-error hover:underline cursor-pointer font-medium text-sub">
+          [退出]
+        </button>
+</div>
+</div>
+</header>
+<!-- ==================== 内容主体区 (距顶64px，左偏移240px，最大宽度1200px居中) ==================== -->
+<main class="ml-60 pt-16 min-h-screen bg-bg">
+<div class="max-w-[1200px] mx-auto px-space-lg py-space-lg flex flex-col gap-space-md">
+<!-- 1. 页面头部卡片 (分类选项卡与主操作) -->
+<section class="bg-surface rounded-xl border border-line p-space-md flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<!-- 分类刻度指示带与选项卡 -->
+<div class="flex items-center gap-space-sm flex-wrap">
+<div class="flex items-center gap-1.5 font-sub text-sub font-medium text-ink-1 mr-space-xs">
+<span class="material-symbols-outlined text-accent" data-icon="collections_bookmark">collections_bookmark</span>
+<span>知识库：</span>
+</div>
+<div class="inline-flex p-1 bg-surface-2 rounded-lg border border-line gap-1">
+<button class="px-3 py-1.5 rounded-lg bg-surface text-accent font-medium text-sub shadow-sm flex items-center gap-1.5 border border-accent-line">
+<span>育儿</span>
+<span class="font-numeric text-caption px-1.5 py-0.2 rounded-full bg-accent-soft text-accent font-semibold">128</span>
+</button>
+<button class="px-3 py-1.5 rounded-lg text-ink-2 hover:text-ink-1 hover:bg-surface text-sub transition-colors flex items-center gap-1.5">
+<span>宠物</span>
+<span class="font-numeric text-caption px-1.5 py-0.2 rounded-full bg-surface text-ink-3">76</span>
+</button>
+<button class="px-3 py-1.5 rounded-lg text-ink-2 hover:text-ink-1 hover:bg-surface text-sub transition-colors flex items-center gap-1.5">
+<span>题库</span>
+<span class="font-numeric text-caption px-1.5 py-0.2 rounded-full bg-surface text-ink-3">18</span>
+</button>
+</div>
+<div class="hidden xl:flex items-center gap-2 ml-space-sm text-caption text-ink-3 border-l border-line pl-space-md">
+<span>当前分类置信度校准：</span>
+<div class="w-24 h-2 bg-surface-2 rounded-full overflow-hidden flex">
+<div class="w-3/4 bg-accent h-full"></div>
+<div class="w-1/4 bg-accent-line h-full"></div>
+</div>
+<span class="font-numeric text-accent font-medium">99.4%</span>
+</div>
+</div>
+<!-- 右侧主操作按钮 -->
+<div>
+<button class="h-11 px-space-lg bg-accent hover:bg-accent-press text-on-accent rounded-lg flex items-center justify-center gap-space-xs font-sub text-sub font-medium transition-colors duration-150 active:scale-[0.99] whitespace-nowrap">
+<span class="material-symbols-outlined text-title" data-icon="add">add</span>
+<span>+ 新建条目</span>
+</button>
+</div>
+</section>
+<!-- 2. 筛选过滤栏 -->
+<section class="bg-surface rounded-xl border border-line p-space-md">
+<form class="grid grid-cols-1 md:grid-cols-12 gap-space-md items-end" onsubmit="event.preventDefault();">
+<!-- 状态下拉框 -->
+<div class="md:col-span-3 flex flex-col gap-1.5">
+<label class="font-caption text-caption text-ink-2 font-medium flex items-center justify-between">
+<span>审核状态</span>
+<span class="text-ink-3 font-normal">全量对齐</span>
+</label>
+<div class="relative">
+<select class="w-full h-11 pl-3 pr-8 bg-surface rounded-lg border border-line text-sub font-sub text-ink-1 focus:border-accent focus:ring-1 focus:ring-accent appearance-none cursor-pointer">
+<option value="all">全部 ▾</option>
+<option value="published">已上架</option>
+<option value="pending">待审核</option>
+<option value="rejected">已驳回</option>
+<option value="offline">已下架</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-3 text-ink-3 pointer-events-none text-sub" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- 领域下拉框 -->
+<div class="md:col-span-3 flex flex-col gap-1.5">
+<label class="font-caption text-caption text-ink-2 font-medium flex items-center justify-between">
+<span>专业领域</span>
+<span class="text-ink-3 font-normal">临床/行为</span>
+</label>
+<div class="relative">
+<select class="w-full h-11 pl-3 pr-8 bg-surface rounded-lg border border-line text-sub font-sub text-ink-1 focus:border-accent focus:ring-1 focus:ring-accent appearance-none cursor-pointer">
+<option value="all">全部 ▾</option>
+<option value="sleep">发育与睡眠</option>
+<option value="nutrition">临床营养与辅食</option>
+<option value="behavior">动物行为与应激</option>
+<option value="early_child">早期认知敏感期</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-3 text-ink-3 pointer-events-none text-sub" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- 关键词搜索框 -->
+<div class="md:col-span-4 flex flex-col gap-1.5">
+<label class="font-caption text-caption text-ink-2 font-medium">关键词检索</label>
+<div class="relative">
+<input class="w-full h-11 pl-9 pr-3 bg-surface rounded-lg border border-line text-sub font-sub text-ink-1 placeholder:text-ink-3 focus:border-accent focus:ring-1 focus:ring-accent" placeholder="请输入标题或正文关键词" type="text"/>
+<span class="material-symbols-outlined absolute left-2.5 top-3 text-ink-3 text-sub" data-icon="search">search</span>
+</div>
+</div>
+<!-- 搜索按钮 -->
+<div class="md:col-span-2 flex items-center gap-2">
+<button class="w-full h-11 bg-accent hover:bg-accent-press text-on-accent rounded-lg flex items-center justify-center gap-1.5 font-sub text-sub font-medium transition-colors" type="submit">
+<span class="material-symbols-outlined text-sub" data-icon="search">search</span>
+<span>搜索</span>
+</button>
+<button class="h-11 px-3 bg-surface-2 hover:bg-line text-ink-2 rounded-lg font-sub text-sub font-medium transition-colors" title="重置筛选" type="button">
+              重置
+            </button>
+</div>
+</form>
+</section>
+<!-- 3. 密集型数据表格卡片 (纯白底，发丝边框 #D5DEDB，圆角12px) -->
+<section class="bg-surface rounded-xl border border-line overflow-hidden flex flex-col">
+<!-- 表格工具栏/刻度准则提示 -->
+<div class="px-space-md py-space-sm bg-surface-bright border-b border-line flex items-center justify-between text-caption text-ink-3">
+<div class="flex items-center gap-space-sm">
+<span class="flex items-center gap-1 font-medium text-ink-1">
+<span class="w-2 h-2 rounded-full bg-accent"></span>
+              条目基线：临床三审三校制
+            </span>
+<span class="hidden sm:inline">|</span>
+<span class="hidden sm:inline">最新数据标定时间：今天 14:28:10</span>
+</div>
+<div class="flex items-center gap-space-xs font-numeric">
+<span>显示 1-5 / 222 条</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<!-- 表头：固定列宽，文字墨色 #0F1E1C -->
+<thead>
+<tr class="bg-surface-2 border-b border-line text-ink-1 font-sub text-sub font-medium">
+<th class="w-12 py-3 px-space-md text-center">
+<input class="rounded border-line text-accent focus:ring-accent h-4 w-4" type="checkbox"/>
+</th>
+<th class="w-24 py-3 px-space-md font-numeric">ID</th>
+<th class="py-3 px-space-md">标题</th>
+<th class="w-32 py-3 px-space-md">状态</th>
+<th class="w-20 py-3 px-space-md font-numeric text-center">版本</th>
+<th class="w-28 py-3 px-space-md">审核人</th>
+<th class="w-36 py-3 px-space-md text-right pr-space-lg">操作</th>
+</tr>
+</thead>
+<!-- 数据行密集排布 -->
+<tbody class="divide-y divide-line text-sub font-sub">
+<!-- 行1：KB-001 | 幼儿睡眠引导 | [已上架] | v3 | 专家A | 操作：[编辑] [下架] -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3 px-space-md text-center">
+<input class="rounded border-line text-accent focus:ring-accent h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-space-md font-numeric font-medium text-ink-1">KB-001</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-medium text-ink-1">幼儿睡眠引导</span>
+<span class="text-caption text-ink-3 px-1.5 py-0.2 rounded bg-surface-2">发育睡眠</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-caption font-medium bg-accent-soft text-accent border border-accent-line">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                    已上架
+                  </span>
+</td>
+<td class="py-3 px-space-md font-numeric text-center text-ink-2 font-medium">v3</td>
+<td class="py-3 px-space-md text-ink-1">专家A</td>
+<td class="py-3 px-space-md text-right pr-space-lg space-x-2 whitespace-nowrap">
+<button class="text-accent hover:text-accent-press hover:underline font-medium">编辑</button>
+<span class="text-line">|</span>
+<button class="text-danger hover:text-error hover:underline font-medium">下架</button>
+</td>
+</tr>
+<!-- 行2：KB-014 | 辅食添加顺序 | [待审核] | v1 | — | 操作：[审核] [编辑] -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3 px-space-md text-center">
+<input class="rounded border-line text-accent focus:ring-accent h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-space-md font-numeric font-medium text-ink-1">KB-014</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-medium text-ink-1">辅食添加顺序</span>
+<span class="text-caption text-ink-3 px-1.5 py-0.2 rounded bg-surface-2">临床营养</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-caption font-medium bg-warn-soft text-warn border border-line-strong">
+<span class="w-1.5 h-1.5 rounded-full bg-warn"></span>
+                    待审核
+                  </span>
+</td>
+<td class="py-3 px-space-md font-numeric text-center text-ink-2 font-medium">v1</td>
+<td class="py-3 px-space-md text-ink-3">—</td>
+<td class="py-3 px-space-md text-right pr-space-lg space-x-2 whitespace-nowrap">
+<button class="text-accent hover:text-accent-press font-semibold underline">审核</button>
+<span class="text-line">|</span>
+<button class="text-ink-2 hover:text-ink-1 hover:underline">编辑</button>
+</td>
+</tr>
+<!-- 行3：KB-032 | 猫应激识别 | [已上架] | v2 | 专家B | 操作：[编辑] [下架] -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3 px-space-md text-center">
+<input class="rounded border-line text-accent focus:ring-accent h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-space-md font-numeric font-medium text-ink-1">KB-032</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-medium text-ink-1">猫应激识别</span>
+<span class="text-caption text-ink-3 px-1.5 py-0.2 rounded bg-surface-2">动物行为</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-caption font-medium bg-accent-soft text-accent border border-accent-line">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                    已上架
+                  </span>
+</td>
+<td class="py-3 px-space-md font-numeric text-center text-ink-2 font-medium">v2</td>
+<td class="py-3 px-space-md text-ink-1">专家B</td>
+<td class="py-3 px-space-md text-right pr-space-lg space-x-2 whitespace-nowrap">
+<button class="text-accent hover:text-accent-press hover:underline font-medium">编辑</button>
+<span class="text-line">|</span>
+<button class="text-danger hover:text-error hover:underline font-medium">下架</button>
+</td>
+</tr>
+<!-- 行4：KB-045 | 幼儿敏感期 | [已驳回] | v2 | 专家A | 操作：[查看] [重提] -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3 px-space-md text-center">
+<input class="rounded border-line text-accent focus:ring-accent h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-space-md font-numeric font-medium text-ink-1">KB-045</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-medium text-ink-1">幼儿敏感期</span>
+<span class="text-caption text-danger px-1.5 py-0.2 rounded bg-danger-soft">循证缺失</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-caption font-medium bg-danger-soft text-danger border border-line-strong">
+<span class="w-1.5 h-1.5 rounded-full bg-danger"></span>
+                    已驳回
+                  </span>
+</td>
+<td class="py-3 px-space-md font-numeric text-center text-ink-2 font-medium">v2</td>
+<td class="py-3 px-space-md text-ink-1">专家A</td>
+<td class="py-3 px-space-md text-right pr-space-lg space-x-2 whitespace-nowrap">
+<button class="text-ink-2 hover:text-ink-1 hover:underline">查看</button>
+<span class="text-line">|</span>
+<button class="text-accent hover:text-accent-press font-semibold underline">重提</button>
+</td>
+</tr>
+<!-- 行5：KB-051 | 狗狗护食纠正 | [已下架] | v4 | 专家B | 操作：[回滚] [编辑] (整行轻微置灰) -->
+<tr class="bg-surface-container-low/60 text-ink-3 hover:bg-surface-container-low transition-colors opacity-80">
+<td class="py-3 px-space-md text-center">
+<input class="rounded border-line text-accent focus:ring-accent h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-space-md font-numeric font-medium text-ink-3">KB-051</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-medium text-ink-2 line-through decoration-line-strong">狗狗护食纠正</span>
+<span class="text-caption text-ink-3 px-1.5 py-0.2 rounded bg-surface-2">训导规范</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-caption font-medium bg-surface-2 text-ink-2 border border-line">
+<span class="w-1.5 h-1.5 rounded-full bg-ink-3"></span>
+                    已下架
+                  </span>
+</td>
+<td class="py-3 px-space-md font-numeric text-center text-ink-3 font-medium">v4</td>
+<td class="py-3 px-space-md text-ink-3">专家B</td>
+<td class="py-3 px-space-md text-right pr-space-lg space-x-2 whitespace-nowrap">
+<button class="text-accent hover:text-accent-press hover:underline font-medium">回滚</button>
+<span class="text-line">|</span>
+<button class="text-ink-2 hover:text-ink-1 hover:underline">编辑</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- 4. 底部批量操作栏与合规注脚与分页器 -->
+<div class="p-space-md bg-surface border-t border-line flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<!-- 批量操作组合 -->
+<div class="flex items-center gap-space-sm flex-wrap">
+<label class="inline-flex items-center gap-2 cursor-pointer font-sub text-sub text-ink-2 hover:text-ink-1 pr-2">
+<input class="rounded border-line text-accent focus:ring-accent h-4 w-4" type="checkbox"/>
+<span>全选</span>
+</label>
+<button class="h-9 px-3 bg-surface border border-line hover:border-accent hover:text-accent text-ink-2 rounded-lg font-sub text-sub font-medium transition-colors">
+              批量上架
+            </button>
+<button class="h-9 px-3 bg-surface border border-line hover:border-danger hover:text-danger text-ink-2 rounded-lg font-sub text-sub font-medium transition-colors">
+              批量下架
+            </button>
+<button class="h-9 px-3 bg-surface border border-line hover:bg-surface-2 text-ink-2 rounded-lg font-sub text-sub font-medium transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-sub" data-icon="download">download</span>
+<span>导出 CSV</span>
+</button>
+</div>
+<!-- 分页器组件 -->
+<div class="flex items-center gap-space-md font-sub text-sub justify-between lg:justify-end">
+<span class="text-ink-2 font-numeric">
+              第 <strong class="font-semibold text-ink-1">1</strong> / 12 页 · 共 <strong class="font-semibold text-ink-1">222</strong> 条
+            </span>
+<div class="flex items-center gap-1.5">
+<button class="h-9 px-3 rounded-lg border border-line text-ink-3 bg-surface cursor-not-allowed text-sub" disabled="">
+                上一页
+              </button>
+<button class="h-9 w-9 rounded-lg border border-accent bg-accent-soft text-accent font-semibold font-numeric flex items-center justify-center">
+                1
+              </button>
+<button class="h-9 w-9 rounded-lg border border-line bg-surface text-ink-2 hover:bg-surface-2 font-numeric flex items-center justify-center">
+                2
+              </button>
+<button class="h-9 w-9 rounded-lg border border-line bg-surface text-ink-2 hover:bg-surface-2 font-numeric flex items-center justify-center">
+                3
+              </button>
+<button class="h-9 px-3 rounded-lg border border-line text-ink-1 bg-surface hover:bg-surface-2 text-sub font-medium transition-colors">
+                下一页
+              </button>
+</div>
+</div>
+</div>
+</section>
+<!-- 业务规则安全注脚 (采用设计规范所规定的软底提示区 #E1EFEC) -->
+<footer class="bg-accent-soft/70 border border-accent-line/60 rounded-xl px-space-md py-3 flex items-start gap-space-xs text-caption font-caption text-ink-3">
+<span class="material-symbols-outlined text-accent text-sub mt-0.5" data-icon="verified_user">verified_user</span>
+<div class="leading-relaxed">
+<strong class="text-ink-1 font-medium">临床合规与风控基线：</strong>
+          上线前 100% 双专家审核；上线后每月自动化抽检 30 条，高危类目（用药、惊厥、急性腹泻、烈性攻击）100% 专家组复核 · 合格线 ≥98%，若低于阈值将强制暂停该知识卡片输出并触发回滚报警。
+        </div>
+</footer>
+</div>
+</main>
+</body></html>

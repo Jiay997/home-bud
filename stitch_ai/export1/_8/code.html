@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>账号与安全</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=-apple-system,+BlinkMacSystemFont,+PingFang+SC,+system-ui,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-high": "#e6e9e7",
+            "background": "#f7faf8",
+            "on-secondary-fixed-variant": "#384a47",
+            "ink-2": "#455754",
+            "tertiary": "#723622",
+            "bg": "#F2F5F4",
+            "on-surface": "#181c1b",
+            "warn": "#7A5600",
+            "error": "#ba1a1a",
+            "line": "#D5DEDB",
+            "ink-1": "#0F1E1C",
+            "accent": "#0A6B60",
+            "on-primary-fixed-variant": "#005048",
+            "surface-dim": "#d7dbd9",
+            "on-accent": "#FFFFFF",
+            "line-strong": "#B4C3BF",
+            "surface-variant": "#e0e3e1",
+            "on-tertiary": "#ffffff",
+            "surface-2": "#E9EFED",
+            "surface": "#FFFFFF",
+            "accent-line": "#8FBFB7",
+            "tertiary-fixed-dim": "#ffb59d",
+            "on-primary": "#ffffff",
+            "danger-soft": "#F7E4E2",
+            "on-secondary": "#ffffff",
+            "tertiary-container": "#8f4d37",
+            "inverse-primary": "#85d5c7",
+            "on-tertiary-fixed-variant": "#713621",
+            "outline": "#6f7976",
+            "on-secondary-container": "#566865",
+            "on-tertiary-container": "#ffcfc0",
+            "tertiary-fixed": "#ffdbd0",
+            "ink-3": "#5F6F6C",
+            "surface-container-low": "#f1f4f2",
+            "on-surface-variant": "#3e4946",
+            "surface-container-highest": "#e0e3e1",
+            "primary-fixed-dim": "#85d5c7",
+            "inverse-surface": "#2d3130",
+            "error-container": "#ffdad6",
+            "accent-press": "#074E46",
+            "danger": "#A8231B",
+            "on-error-container": "#93000a",
+            "surface-container": "#ebefec",
+            "secondary-fixed-dim": "#b7cbc7",
+            "primary-fixed": "#a1f1e3",
+            "secondary-container": "#d3e7e2",
+            "inverse-on-surface": "#eef1ef",
+            "on-primary-fixed": "#00201c",
+            "secondary-fixed": "#d3e7e2",
+            "warn-soft": "#F6EDD8",
+            "secondary": "#50625f",
+            "on-error": "#ffffff",
+            "surface-tint": "#086a5f",
+            "accent-soft": "#E1EFEC",
+            "on-secondary-fixed": "#0d1f1c",
+            "surface-container-lowest": "#ffffff",
+            "on-background": "#181c1b",
+            "on-primary-container": "#98e8da",
+            "primary": "#005148",
+            "surface-bright": "#f7faf8",
+            "on-tertiary-fixed": "#390c00",
+            "outline-variant": "#bec9c5",
+            "primary-container": "#0a6b60"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "6px",
+            "margin": "16px",
+            "space-xl": "32px",
+            "gutter": "16px",
+            "space-sm": "8px",
+            "space-md": "16px",
+            "space-xxl": "48px",
+            "space-lg": "24px"
+          },
+          "fontFamily": {
+            "title": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "sub": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "caption": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "body": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "display": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "numeric": ["\"ui-monospace, SF Mono, Consolas, monospace\""]
+          },
+          "fontSize": {
+            "title": ["19px", {"lineHeight": "1.3", "fontWeight": "600"}],
+            "sub": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}],
+            "caption": ["12px", {"lineHeight": "1.5", "fontWeight": "400"}],
+            "body": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+            "display": ["23px", {"lineHeight": "1.3", "fontWeight": "600"}],
+            "numeric": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 20px;
+      line-height: 1;
+      display: inline-block;
+    }
+    /* 精密量具标尺纹理 */
+    .ruler-ticks {
+      background-image: repeating-linear-gradient(
+        to right,
+        #B4C3BF 0,
+        #B4C3BF 1px,
+        transparent 1px,
+        transparent 8px
+      );
+    }
+    .ruler-ticks-sm {
+      background-image: repeating-linear-gradient(
+        to right,
+        #D5DEDB 0,
+        #D5DEDB 1px,
+        transparent 1px,
+        transparent 4px
+      );
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-bg text-on-surface antialiased min-h-screen flex justify-center selection:bg-accent-soft selection:text-primary">
+<!-- 小程序画布容器 (375px 基准) -->
+<div class="w-full max-w-[375px] min-h-[812px] bg-bg flex flex-col relative pb-10 shadow-lg">
+<!-- 顶部状态栏与安全区 -->
+<header class="sticky top-0 z-40 bg-surface/95 backdrop-blur-md">
+<!-- 微信状态栏模拟 -->
+<div class="h-6 w-full flex items-center justify-between px-4 pt-1 text-ink-3">
+<span class="font-numeric text-caption font-medium tracking-tight">09:41</span>
+<div class="flex items-center gap-1">
+<span class="w-2.5 h-2 bg-ink-2 rounded-[1px] inline-block"></span>
+<span class="w-2.5 h-2 bg-ink-2 rounded-[1px] inline-block"></span>
+<span class="w-3.5 h-2 border border-ink-2 p-[1px] rounded-[1px] inline-block">
+<span class="w-full h-full bg-ink-2 block"></span>
+</span>
+</div>
+</div>
+<!-- 微信小程序顶栏与胶囊控件 -->
+<div class="h-12 w-full px-3 flex items-center justify-between">
+<!-- 返回操作 -->
+<button aria-label="返回" class="w-8 h-8 flex items-center justify-center rounded-lg active:scale-95 transition-transform text-ink-1">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<!-- 页面主标题 -->
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-3.5 bg-accent rounded-sm inline-block"></span>
+<h1 class="font-title text-title text-ink-1 tracking-tight">账号与安全</h1>
+<span class="font-caption text-caption text-ink-3 bg-surface-2 px-1.5 py-0.5 rounded border border-line">安全层级·甲</span>
+</div>
+<!-- 微信官方经典胶囊外壳 -->
+<div class="w-[87px] h-8 bg-surface-container-low border border-line rounded-full flex items-center justify-around px-1.5 shadow-sm">
+<span class="material-symbols-outlined text-ink-2 text-[18px]" data-icon="more_horiz">more_horiz</span>
+<div class="w-[1px] h-4 bg-line-strong"></div>
+<span class="material-symbols-outlined text-ink-2 text-[16px]" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</div>
+</div>
+<!-- 刻度基准横线 -->
+<div class="h-[2px] w-full ruler-ticks opacity-75"></div>
+</header>
+<!-- 主体内容卡片区域 -->
+<main class="flex-1 px-3.5 pt-3 pb-8 space-y-3.5">
+<!-- 标尺校验概览微栏 -->
+<section class="bg-surface border border-line rounded-xl p-3 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-accent-soft flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="shield">shield</span>
+</div>
+<div>
+<div class="font-title text-[13px] text-ink-1">量具级安全风控状态</div>
+<div class="font-caption text-caption text-ink-3">基准校验点：2024-03-29 08:30</div>
+</div>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-soft border border-accent-line text-primary font-caption text-caption font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
+            刻度合规
+          </span>
+</div>
+</section>
+<!-- 1. 【登录方式】 -->
+<section class="bg-surface rounded-xl border border-line overflow-hidden">
+<!-- 分组标题与刻度装饰 -->
+<div class="px-4 py-2.5 bg-surface-container-low border-b border-line flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="font-numeric text-caption text-accent font-semibold">[01]</span>
+<span class="font-title text-sub font-semibold text-ink-1">登录方式</span>
+</div>
+<span class="font-caption text-caption text-ink-3">主身份锚点</span>
+</div>
+<div class="p-4">
+<div class="flex items-center justify-between py-1">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-accent">
+<span class="material-symbols-outlined" data-icon="mark_chat_read">mark_chat_read</span>
+</div>
+<div>
+<div class="font-title text-sub text-ink-1 font-medium">微信登录（openid 绑定）</div>
+<div class="font-caption text-caption text-ink-3">当前会话身份唯一数字标识已校准</div>
+</div>
+</div>
+<div class="flex items-center gap-1 text-accent font-caption text-caption font-medium bg-accent-soft px-2.5 py-1 rounded-md border border-accent-line/60">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+<span>已绑定</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. 【系统权限管理】 -->
+<section class="bg-surface rounded-xl border border-line overflow-hidden">
+<div class="px-4 py-2.5 bg-surface-container-low border-b border-line flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="font-numeric text-caption text-accent font-semibold">[02]</span>
+<span class="font-title text-sub font-semibold text-ink-1">系统权限管理</span>
+</div>
+<span class="font-caption text-caption text-ink-3">动态授权调校</span>
+</div>
+<div class="p-4 space-y-3">
+<!-- 权限子项 1：麦克风 -->
+<div class="flex items-center justify-between py-1.5 border-b border-line/60 pb-3">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-ink-2">
+<span class="material-symbols-outlined" data-icon="mic">mic</span>
+</div>
+<div>
+<div class="font-title text-sub text-ink-1">麦克风权限</div>
+<div class="font-caption text-caption text-warn font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-warn"></span>
+                  未授权
+                </div>
+</div>
+</div>
+<button class="px-3 h-8 rounded-lg bg-surface border border-line-strong text-ink-1 font-caption text-caption hover:bg-surface-2 active:scale-95 transition-all">
+              去设置
+            </button>
+</div>
+<!-- 权限子项 2：相册 / 摄像头 -->
+<div class="flex items-center justify-between py-1.5">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-accent">
+<span class="material-symbols-outlined" data-icon="photo_camera">photo_camera</span>
+</div>
+<div>
+<div class="font-title text-sub text-ink-1">相册 / 摄像头权限</div>
+<div class="font-caption text-caption text-primary font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                  已授权
+                </div>
+</div>
+</div>
+<button class="px-3 h-8 rounded-lg bg-surface border border-line text-ink-3 font-caption text-caption hover:bg-surface-2 active:scale-95 transition-all">
+              去设置
+            </button>
+</div>
+<!-- 辅助提示栏（刻度卡尺样式） -->
+<div class="bg-surface-container-low rounded-lg p-2.5 border border-line flex items-start gap-2">
+<span class="material-symbols-outlined text-ink-3 text-[16px] mt-0.5" data-icon="tune">tune</span>
+<p class="font-caption text-caption text-ink-2 leading-relaxed">
+              权限用于语音录入与图片反馈，可随时按需开关。
+            </p>
+</div>
+</div>
+</section>
+<!-- 3. 【撤回同意（分项独立控制）】 -->
+<section class="bg-surface rounded-xl border border-line overflow-hidden">
+<div class="px-4 py-2.5 bg-surface-container-low border-b border-line flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="font-numeric text-caption text-accent font-semibold">[03]</span>
+<span class="font-title text-sub font-semibold text-ink-1">撤回同意（分项独立控制）</span>
+</div>
+<span class="font-caption text-caption text-ink-3">法定知情权</span>
+</div>
+<div class="p-4 space-y-3.5">
+<!-- 分项 1：基础同意 -->
+<div class="flex items-center justify-between border-b border-line/60 pb-3">
+<div>
+<div class="font-title text-sub text-ink-1">基础同意（协议与免责）</div>
+<div class="font-caption text-caption text-ink-3">包含平台通用用户守则及技术服务免责协议</div>
+</div>
+<button class="px-3.5 h-8 rounded-lg bg-surface border border-line-strong text-ink-1 font-caption text-caption hover:border-accent hover:text-accent active:scale-95 transition-all">
+              撤回
+            </button>
+</div>
+<!-- 分项 2：儿童信息单独同意 -->
+<div class="flex items-center justify-between">
+<div>
+<div class="font-title text-sub text-ink-1 flex items-center gap-1">
+                儿童信息单独同意
+                <span class="px-1.5 py-0.2 bg-warn-soft text-warn font-caption text-[11px] rounded border border-warn/30">特殊保护</span>
+</div>
+<div class="font-caption text-caption text-ink-3">涉及监护人专属授权及儿童生理刻度数据</div>
+</div>
+<button class="px-3.5 h-8 rounded-lg bg-surface border border-line-strong text-ink-1 font-caption text-caption hover:border-accent hover:text-accent active:scale-95 transition-all">
+              撤回
+            </button>
+</div>
+<!-- 详细后果告知（量具安全标定块） -->
+<div class="bg-accent-soft/70 border border-accent-line rounded-lg p-3 space-y-1.5">
+<div class="flex items-center gap-1.5 text-primary font-caption text-caption font-semibold">
+<span class="material-symbols-outlined text-[16px]" data-icon="policy">policy</span>
+<span>详细后果告知：</span>
+</div>
+<ul class="font-caption text-caption text-ink-2 space-y-1 pl-1 list-disc list-inside">
+<li>撤回后停止处理对应信息；</li>
+<li>儿童信息撤回后：档案停用、不再写入新数据；</li>
+<li>已生成历史脱敏保留为「宝宝 A」。</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- 4. 【高危操作：账号注销】 -->
+<section class="bg-surface rounded-xl border border-danger/30 overflow-hidden">
+<div class="px-4 py-2.5 bg-danger-soft/60 border-b border-danger/20 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-danger font-title text-sub font-semibold">
+<span class="material-symbols-outlined text-[18px]" data-icon="warning">warning</span>
+<span>高危操作：账号注销</span>
+</div>
+<span class="font-caption text-caption text-danger">不可逆处置</span>
+</div>
+<div class="p-4 space-y-3">
+<div class="font-caption text-caption text-ink-2 leading-relaxed bg-surface-2 p-2.5 rounded-lg border border-line">
+            注销后数据彻底删除、不可恢复；交易与订单记录依法定留存。
+          </div>
+<!-- 危险红色描边按钮 -->
+<button class="w-full h-11 rounded-lg bg-surface border border-danger text-danger font-title text-sub font-medium flex items-center justify-center gap-1.5 hover:bg-danger-soft active:scale-[0.99] transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete_forever">delete_forever</span>
+<span>注销账号（需二次校验确认）</span>
+</button>
+</div>
+</section>
+<!-- 精密量具底纹标尺 -->
+<div class="pt-2 pb-1 flex flex-col items-center">
+<div class="w-48 h-2 ruler-ticks-sm"></div>
+<div class="font-numeric text-[10px] text-ink-3 tracking-widest mt-1">CALIBRATION SYSTEM SCALE 1.0</div>
+</div>
+</main>
+<!-- 底部常驻合规说明 -->
+<footer class="mt-auto px-4 py-3 text-center border-t border-line/60 bg-surface/80 backdrop-blur-sm">
+<div class="flex items-center justify-center gap-1 text-ink-3 font-caption text-caption">
+<span class="material-symbols-outlined text-[14px]" data-icon="info">info</span>
+<span>AI 生成内容，仅供参考，不替代医生诊断</span>
+</div>
+</footer>
+</div>
+</body></html>

@@ -1,0 +1,22 @@
+pediatric LLM
+topic:parenting
+topic:baby
+infant care AI
+parenting knowledge base RAG
+parenting agent
+儿科 大模型
+育儿 助手 开源
+母婴 大模型
+儿童 健康 问答
+未成年人 内容安全
+敏感词 过滤
+self-harm detection LLM
+llama guard safety
+WHO child growth standards
+儿童 生长发育 标准
+pediatric QA dataset
+育儿 知识库
+baby AI assistant
+婴幼儿 记录
+postpartum depression detection
+NeMo Guardrails

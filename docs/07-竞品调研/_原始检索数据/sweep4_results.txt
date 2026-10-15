@@ -1,0 +1,27 @@
+﻿SEARCH PASS 4
+=== Q: growthstandards | total=2 ===
+ki-tools/growthstandards | stars=14 | pushed=2025-07-21T23:50:53Z | lic=NOASSERTION | lang=R | R package for anthropometric growth standard calculations
+jdtatz/anthro-growthstandards | stars=0 | pushed=2026-09-03T21:52:17Z | lic=NONE | lang=Python | Anthropomorphic Growth-Standards
+=== Q: babybuddy-mcp user:babybuddy | total=1 ===
+babybuddy/babybuddy-mcp | stars=2 | pushed=2026-09-21T23:58:01Z | lic=BSD-2-Clause | lang=Python | 
+=== Q: 育儿 智能体 | total=6 ===
+SquirtleHankes/super-daddy | stars=8 | pushed=2026-03-16T03:48:23Z | lic=NONE | lang=Python | 🍼 超级奶爸 AI 育儿智能体 —— 邪修养娃！0-6岁一站式科学育儿 AI Skill，基于 WHO/AAP 权威指南。12大功能模块：喂养计划📋 生长曲线📈 宝宝主页🌐 育儿资讯📰 疫苗管理💉 健康自查🏥 早教游戏🎮 睡眠优化😴 哭声安抚😢 采购清单🛒 开支管理💰 发育里程碑🧒
+ness-zhang1097538770/zhiya-baby-assistant | stars=1 | pushed=2026-10-07T12:24:41Z | lic=MIT | lang=Python | 知芽（Kids Mind）· 0-3 岁育儿多智能体：育儿问答 + 成长档案 + 提醒 + 数字绘本
+jiangyanan-my/feed_kid | stars=0 | pushed=2026-03-31T03:08:42Z | lic=NONE | lang=Python | 育儿智能体
+ljj0607/baby-agent | stars=0 | pushed=2026-06-29T02:53:59Z | lic=NONE | lang= | 育儿智能体
+ness-zhang1097538770/kids-mind | stars=0 | pushed=2026-10-08T03:03:22Z | lic=MIT | lang=Python | 知芽（Kids Mind）：0-3岁新手父母的育儿多智能体助手（育儿问答+成长档案+提醒+数字绘本）
+zchys/xiaohongshu-copywriter-agent | stars=0 | pushed=2026-06-27T17:07:28Z | lic=NONE | lang=TypeScript | 基于 RAG + Prompt Engineering 的小红书文案智能体，支持冷知识科普和育儿科普双赛道
+=== Q: temperament questionnaire | total=2 ===
+erdemiraysu/Childrens-Behavior-Questionnaire | stars=0 | pushed=2024-05-14T14:23:10Z | lic=NONE | lang= | Explore differences between CWS and CWNS using a highly differentiated assessment of temperament in early to middle childhood. 
+gblongiu/affinitree-app | stars=0 | pushed=2025-12-02T21:28:46Z | lic=NONE | lang=Python | Affinitree App is an interactive web tool that visualizes Temperament and Character Inventory (TCI) questionnaire results, scores responses, and renders simple charts so users can explore personality 
+=== Q: 气质 测评 | total=2 ===
+1wanganshi/dsh-internet-positioning | stars=0 | pushed=2026-09-23T04:24:45Z | lic=MIT | lang=JavaScript | 互联网定位：DSH 侧边栏插件。上传一张照片，AI 从五官、气质、大众印象三层拆解，给出可执行的内容定位建议。另含性格特质测评与形象改造方案。
+changgemag/fsti-test | stars=0 | pushed=2026-04-15T16:07:29Z | lic=MIT | lang=JavaScript | 一个面向 FPS 玩家的娱乐向性格测试网页。 FSTI 通过 15 道题、3 个维度和 27 种结果类型，尝试用更有网感、更贴近玩家社区表达的方式，去刻画不同 FPS 玩家在对局中的打法倾向、团队气质和个人风格。它不是严肃的人格测评，也不追求心理学意义上的准确性，而是一个更适合分享、传播和截图互动的轻量测试页。 这个项目使用原生 HTML、CSS 和 JavaScript 构建，不依赖前端框架，结
+--- RAW README EXISTENCE TESTS ---
+nutriverse/growthstandards :: NOT FOUND
+nutriverse/zscorer :: OK master len=24773
+nutriverse/gigs :: NOT FOUND
+WorldHealthOrganization/anthro :: OK master len=5130
+hsongra11/mychild-app :: OK main len=17095
+twastvedt/Baby-Skill-Tree :: OK main len=88
+DONE4

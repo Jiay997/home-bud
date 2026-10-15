@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>订单与支付</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=-apple-system,+BlinkMacSystemFont,+PingFang+SC,+system-ui,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-high": "#e6e9e7",
+            "background": "#f7faf8",
+            "on-secondary-fixed-variant": "#384a47",
+            "ink-2": "#455754",
+            "tertiary": "#723622",
+            "bg": "#F2F5F4",
+            "on-surface": "#181c1b",
+            "warn": "#7A5600",
+            "error": "#ba1a1a",
+            "line": "#D5DEDB",
+            "ink-1": "#0F1E1C",
+            "accent": "#0A6B60",
+            "on-primary-fixed-variant": "#005048",
+            "surface-dim": "#d7dbd9",
+            "on-accent": "#FFFFFF",
+            "line-strong": "#B4C3BF",
+            "surface-variant": "#e0e3e1",
+            "on-tertiary": "#ffffff",
+            "surface-2": "#E9EFED",
+            "surface": "#FFFFFF",
+            "accent-line": "#8FBFB7",
+            "tertiary-fixed-dim": "#ffb59d",
+            "on-primary": "#ffffff",
+            "danger-soft": "#F7E4E2",
+            "on-secondary": "#ffffff",
+            "tertiary-container": "#8f4d37",
+            "inverse-primary": "#85d5c7",
+            "on-tertiary-fixed-variant": "#713621",
+            "outline": "#6f7976",
+            "on-secondary-container": "#566865",
+            "on-tertiary-container": "#ffcfc0",
+            "tertiary-fixed": "#ffdbd0",
+            "ink-3": "#5F6F6C",
+            "surface-container-low": "#f1f4f2",
+            "on-surface-variant": "#3e4946",
+            "surface-container-highest": "#e0e3e1",
+            "primary-fixed-dim": "#85d5c7",
+            "inverse-surface": "#2d3130",
+            "error-container": "#ffdad6",
+            "accent-press": "#074E46",
+            "danger": "#A8231B",
+            "on-error-container": "#93000a",
+            "surface-container": "#ebefec",
+            "secondary-fixed-dim": "#b7cbc7",
+            "primary-fixed": "#a1f1e3",
+            "secondary-container": "#d3e7e2",
+            "inverse-on-surface": "#eef1ef",
+            "on-primary-fixed": "#00201c",
+            "secondary-fixed": "#d3e7e2",
+            "warn-soft": "#F6EDD8",
+            "secondary": "#50625f",
+            "on-error": "#ffffff",
+            "surface-tint": "#086a5f",
+            "accent-soft": "#E1EFEC",
+            "on-secondary-fixed": "#0d1f1c",
+            "surface-container-lowest": "#ffffff",
+            "on-background": "#181c1b",
+            "on-primary-container": "#98e8da",
+            "primary": "#005148",
+            "surface-bright": "#f7faf8",
+            "on-tertiary-fixed": "#390c00",
+            "outline-variant": "#bec9c5",
+            "primary-container": "#0a6b60"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "6px",
+            "margin": "16px",
+            "space-xl": "32px",
+            "gutter": "16px",
+            "space-sm": "8px",
+            "space-md": "16px",
+            "space-xxl": "48px",
+            "space-lg": "24px"
+          },
+          "fontFamily": {
+            "title": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "sub": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "caption": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "body": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "display": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "numeric": ["\"ui-monospace, SF Mono, Consolas, monospace\""]
+          },
+          "fontSize": {
+            "title": ["19px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "sub": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "caption": ["12px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "body": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "display": ["23px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "numeric": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* 精密量具标尺纹理背景 */
+    .ruler-ticks {
+      background-image: repeating-linear-gradient(
+        to right,
+        #B4C3BF 0,
+        #B4C3BF 1px,
+        transparent 1px,
+        transparent 8px
+      );
+      height: 6px;
+    }
+    .ruler-ticks-major {
+      background-image: repeating-linear-gradient(
+        to right,
+        #0A6B60 0,
+        #0A6B60 1.5px,
+        transparent 1.5px,
+        transparent 24px
+      );
+      height: 10px;
+    }
+  </style>
+</head>
+<body class="bg-bg text-on-surface antialiased flex justify-center selection:bg-accent-soft selection:text-primary">
+<!-- 小程序 375x812 画布容器 -->
+<div class="w-[375px] min-h-[812px] bg-bg relative flex flex-col pb-12 shadow-2xl overflow-x-hidden border-x border-line">
+<!-- 顶部状态栏与微信小程序顶栏 (符合 Shared Components JSON 风格与规范) -->
+<header class="sticky top-0 z-40 bg-surface border-b border-line">
+<!-- 微信胶囊占位与信号指示区域 -->
+<div class="h-6 w-full flex items-center justify-between px-4 pt-1">
+<span class="font-numeric text-caption text-ink-3">09:41</span>
+<div class="flex items-center gap-1 text-ink-3">
+<span class="material-symbols-outlined text-caption" data-icon="signal_cellular_alt">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-caption" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-caption" data-icon="battery_full">battery_full</span>
+</div>
+</div>
+<!-- 微信小程序顶栏结构 (Shared Component TopAppBar 规格) -->
+<div class="flex justify-between items-center w-full px-3 h-11">
+<!-- 左侧返回 -->
+<button aria-label="返回" class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-surface-variant transition-all active:scale-95 text-primary" type="button">
+<span class="material-symbols-outlined text-title" data-icon="chevron_left">chevron_left</span>
+</button>
+<!-- 居中标题 -->
+<h1 class="font-title text-title text-primary tracking-tight font-semibold">订单与支付</h1>
+<!-- 右侧微信小程序专属胶囊按钮拟态 -->
+<div class="flex items-center h-8 px-2.5 py-1 bg-surface-container-low border border-line rounded-full gap-2 text-ink-1">
+<button aria-label="更多小程序功能" class="flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-body" data-icon="more_horiz">more_horiz</span>
+</button>
+<div class="w-[1px] h-3.5 bg-line"></div>
+<button aria-label="关闭小程序" class="flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-sub" data-icon="radio_button_checked">radio_button_checked</span>
+</button>
+</div>
+</div>
+<!-- 精密量具顶端基准刻度条 -->
+<div class="w-full flex flex-col bg-surface border-t border-line-strong/30">
+<div class="ruler-ticks w-full opacity-60"></div>
+</div>
+</header>
+<!-- 主内容区 -->
+<main class="flex-1 px-4 py-3 space-y-4">
+<!-- 状态指示刻度栏：展示当前校验流状态 -->
+<section aria-label="流程校准" class="bg-surface rounded-xl p-3 border border-line">
+<div class="flex justify-between items-center mb-1.5">
+<span class="font-caption text-caption text-ink-3">刻度校验位：阶段流程</span>
+<span class="font-numeric text-caption text-accent font-medium">节点标定 · 03/03</span>
+</div>
+<!-- 刻度分段尺 -->
+<div class="relative w-full h-2 bg-surface-container rounded-sm overflow-hidden flex">
+<div class="w-1/3 h-full bg-accent border-r border-surface"></div>
+<div class="w-1/3 h-full bg-accent border-r border-surface"></div>
+<div class="w-1/3 h-full bg-accent-line"></div>
+</div>
+<div class="flex justify-between text-caption font-caption text-ink-3 mt-1.5">
+<span class="text-accent font-medium">① 订单确认</span>
+<span class="text-accent font-medium">② 支付校验</span>
+<span class="text-accent font-medium">③ 结果回执</span>
+</div>
+</section>
+<!-- 模块一【订单确认卡】 -->
+<section aria-labelledby="order-confirm-title" class="bg-surface rounded-xl p-4 border border-line relative">
+<!-- 刻度角标装饰 -->
+<div class="flex items-center justify-between border-b border-line pb-2 mb-3">
+<div class="flex items-center gap-1.5">
+<span class="w-1 h-3.5 bg-accent rounded-sm inline-block"></span>
+<h2 class="font-title text-title text-ink-1" id="order-confirm-title">订单确认</h2>
+</div>
+<span class="font-caption text-caption text-ink-3 bg-surface-container px-2 py-0.5 rounded border border-line">标尺编号：ORD-3921</span>
+</div>
+<!-- 信息清单列表 -->
+<div class="space-y-2.5">
+<div class="flex items-center justify-between text-sub font-sub">
+<span class="text-ink-2">购买商品</span>
+<span class="text-ink-1 font-medium">会员月卡 · 30天</span>
+</div>
+<!-- 精密测量标尺细线 -->
+<div class="w-full ruler-ticks opacity-40"></div>
+<div class="flex items-baseline justify-between">
+<span class="font-sub text-sub text-ink-2">支付金额</span>
+<div class="flex items-baseline text-accent">
+<span class="font-title text-title mr-0.5 font-bold">¥</span>
+<span class="font-numeric text-display font-semibold tracking-tight">19.9</span>
+<span class="font-sub text-sub ml-1 text-ink-2">元</span>
+</div>
+</div>
+<!-- 刻度分割线 -->
+<div class="w-full ruler-ticks opacity-40"></div>
+<div class="flex items-center justify-between text-sub font-sub">
+<span class="text-ink-2">服务有效期</span>
+<span class="text-ink-1">支付成功起 30 天内有效</span>
+</div>
+</div>
+<!-- 协议链接与退款条款说明 -->
+<div class="mt-4 p-2.5 bg-surface-container-low rounded-lg border border-line text-caption font-caption">
+<div class="flex items-start gap-1.5">
+<span class="material-symbols-outlined text-caption text-accent mt-0.5" data-icon="verified_user">verified_user</span>
+<div class="text-ink-2 leading-relaxed">
+              阅读并同意
+              <a class="text-accent underline font-medium hover:text-accent-press transition-colors" href="#">《退款政策》</a>
+              — 虚拟数字化内容一经解锁不支持退款
+            </div>
+</div>
+</div>
+<!-- 支付主操作按钮 -->
+<div class="mt-4 space-y-2">
+<button class="w-full h-11 bg-accent text-on-accent font-title text-sub rounded-lg flex items-center justify-center shadow-sm active:bg-accent-press transition-all" type="button">
+<span>立即支付 ¥19.9 元</span>
+</button>
+<div class="flex items-center justify-center gap-1 text-caption font-caption text-ink-3">
+<span class="material-symbols-outlined text-caption text-accent" data-icon="check_circle">check_circle</span>
+<span>下单前已二次校验服务端商品价格</span>
+</div>
+</div>
+</section>
+<!-- 模块二【支付处理中与异常补偿卡（展示异步补偿防重复机制）】 -->
+<section aria-labelledby="payment-pending-title" class="bg-surface rounded-xl p-4 border border-line-strong relative">
+<!-- 顶部刻度指示 -->
+<div class="flex items-center justify-between border-b border-line pb-2 mb-3">
+<div class="flex items-center gap-1.5">
+<span class="w-1 h-3.5 bg-warn rounded-sm inline-block"></span>
+<h2 class="font-title text-title text-ink-1" id="payment-pending-title">支付确认中</h2>
+</div>
+<span class="font-caption text-caption text-warn bg-warn-soft px-2 py-0.5 rounded border border-warn/20">校验补偿通道开启</span>
+</div>
+<!-- 旋转微动画状态行 -->
+<div class="flex items-center gap-2.5 p-3 bg-accent-soft/60 rounded-lg border border-accent-line/40">
+<div class="relative flex items-center justify-center w-5 h-5">
+<span class="material-symbols-outlined text-accent animate-spin text-body" data-icon="progress_activity">progress_activity</span>
+</div>
+<div class="flex-1">
+<div class="font-sub text-sub font-semibold text-accent">支付中… 请勿重复点击</div>
+<div class="font-numeric text-caption text-ink-3">防重放令牌：VAL-TOKEN-849204</div>
+</div>
+</div>
+<!-- 精密刻度校准分流条 -->
+<div class="my-3 px-1">
+<div class="flex justify-between text-caption font-numeric text-ink-3 mb-1">
+<span>客户端轮询</span>
+<span>服务端对账补偿</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden flex">
+<div class="bg-accent h-full w-2/3 animate-pulse"></div>
+<div class="bg-accent-line h-full w-1/3"></div>
+</div>
+</div>
+<!-- 说明行 -->
+<div class="p-2.5 bg-surface-container-low rounded-lg border border-line text-caption font-caption text-ink-2 leading-relaxed">
+<p class="font-medium text-ink-1 mb-0.5">支付确认中：已扣款但未收到回调</p>
+<p>期间可关闭页面，稍后自动生效。系统通过防重防漏补偿机制，持续核对微信支付凭据，保障权益不丢失。</p>
+</div>
+<!-- 辅助按钮组 -->
+<div class="mt-3.5 grid grid-cols-2 gap-2.5">
+<button class="h-10 border border-line-strong bg-surface text-ink-1 font-sub text-sub rounded-lg flex items-center justify-center hover:bg-surface-container transition-colors active:scale-98" type="button">
+            我知道了
+          </button>
+<button class="h-10 border border-accent text-accent bg-accent-soft font-sub text-sub rounded-lg flex items-center justify-center hover:bg-accent-soft/80 transition-colors active:scale-98" type="button">
+            查看订单记录
+          </button>
+</div>
+</section>
+<!-- 模块三【支付成功回执示例区块】 -->
+<section aria-labelledby="success-receipt-title" class="bg-surface rounded-xl p-4 border border-line relative">
+<!-- 标题头 -->
+<div class="flex items-center justify-between border-b border-line pb-2 mb-3">
+<div class="flex items-center gap-1.5">
+<span class="w-1 h-3.5 bg-accent rounded-sm inline-block"></span>
+<h2 class="font-title text-title text-ink-1" id="success-receipt-title">支付成功回执示例</h2>
+</div>
+<span class="font-numeric text-caption text-ink-3">回执标尺：#REC-882</span>
+</div>
+<!-- 回执主体 -->
+<div class="text-center py-3 px-2 bg-surface-container-low rounded-lg border border-line">
+<!-- 绿色勾选图标 -->
+<div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-accent-soft text-accent border border-accent-line mb-2">
+<span class="material-symbols-outlined text-display" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div class="font-display text-display text-ink-1 tracking-tight">支付成功</div>
+<p class="font-numeric text-caption text-accent mt-0.5">交易参考单号：420000219482019482</p>
+<!-- 标尺双刻度划分线 -->
+<div class="my-3 ruler-ticks opacity-60"></div>
+<!-- 说明信息 -->
+<div class="text-left bg-surface p-2.5 rounded border border-line space-y-1.5 font-sub text-caption">
+<div class="flex justify-between items-center">
+<span class="text-ink-3">权益生效时间</span>
+<span class="font-numeric text-ink-1 font-medium">今日 20:17</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-ink-3">服务到期时间</span>
+<span class="font-numeric text-ink-1 font-medium">2026-05-01 20:17</span>
+</div>
+</div>
+</div>
+<!-- 动作按钮 -->
+<div class="mt-3.5">
+<button class="w-full h-11 bg-accent text-on-accent font-title text-sub rounded-lg flex items-center justify-center shadow-sm active:bg-accent-press transition-all gap-1.5" type="button">
+<span>去查看会员内容</span>
+<span class="material-symbols-outlined text-sub" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- 底部安全与合规声明 -->
+<footer class="pt-2 pb-4 text-center">
+<!-- 底部刻度基准 -->
+<div class="w-24 mx-auto ruler-ticks opacity-40 mb-2"></div>
+<p class="font-caption text-caption text-ink-3 tracking-normal">
+          AI 生成内容，仅供参考，不替代医生诊断
+        </p>
+<p class="font-numeric text-caption text-outline-variant mt-1">
+          标定版本 · 2.4.0
+        </p>
+</footer>
+</main>
+</div>
+</body></html>

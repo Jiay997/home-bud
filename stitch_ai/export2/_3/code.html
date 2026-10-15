@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>报告长图预览与保存</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=-apple-system,+BlinkMacSystemFont,+PingFang+SC,+system-ui,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-high": "#e6e9e7",
+            "background": "#f7faf8",
+            "on-secondary-fixed-variant": "#384a47",
+            "ink-2": "#455754",
+            "tertiary": "#723622",
+            "bg": "#F2F5F4",
+            "on-surface": "#181c1b",
+            "warn": "#7A5600",
+            "error": "#ba1a1a",
+            "line": "#D5DEDB",
+            "ink-1": "#0F1E1C",
+            "accent": "#0A6B60",
+            "on-primary-fixed-variant": "#005048",
+            "surface-dim": "#d7dbd9",
+            "on-accent": "#FFFFFF",
+            "line-strong": "#B4C3BF",
+            "surface-variant": "#e0e3e1",
+            "on-tertiary": "#ffffff",
+            "surface-2": "#E9EFED",
+            "surface": "#FFFFFF",
+            "accent-line": "#8FBFB7",
+            "tertiary-fixed-dim": "#ffb59d",
+            "on-primary": "#ffffff",
+            "danger-soft": "#F7E4E2",
+            "on-secondary": "#ffffff",
+            "tertiary-container": "#8f4d37",
+            "inverse-primary": "#85d5c7",
+            "on-tertiary-fixed-variant": "#713621",
+            "outline": "#6f7976",
+            "on-secondary-container": "#566865",
+            "on-tertiary-container": "#ffcfc0",
+            "tertiary-fixed": "#ffdbd0",
+            "ink-3": "#5F6F6C",
+            "surface-container-low": "#f1f4f2",
+            "on-surface-variant": "#3e4946",
+            "surface-container-highest": "#e0e3e1",
+            "primary-fixed-dim": "#85d5c7",
+            "inverse-surface": "#2d3130",
+            "error-container": "#ffdad6",
+            "accent-press": "#074E46",
+            "danger": "#A8231B",
+            "on-error-container": "#93000a",
+            "surface-container": "#ebefec",
+            "secondary-fixed-dim": "#b7cbc7",
+            "primary-fixed": "#a1f1e3",
+            "secondary-container": "#d3e7e2",
+            "inverse-on-surface": "#eef1ef",
+            "on-primary-fixed": "#00201c",
+            "secondary-fixed": "#d3e7e2",
+            "warn-soft": "#F6EDD8",
+            "secondary": "#50625f",
+            "on-error": "#ffffff",
+            "surface-tint": "#086a5f",
+            "accent-soft": "#E1EFEC",
+            "on-secondary-fixed": "#0d1f1c",
+            "surface-container-lowest": "#ffffff",
+            "on-background": "#181c1b",
+            "on-primary-container": "#98e8da",
+            "primary": "#005148",
+            "surface-bright": "#f7faf8",
+            "on-tertiary-fixed": "#390c00",
+            "outline-variant": "#bec9c5",
+            "primary-container": "#0a6b60"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "6px",
+            "margin": "16px",
+            "space-xl": "32px",
+            "gutter": "16px",
+            "space-sm": "8px",
+            "space-md": "16px",
+            "space-xxl": "48px",
+            "space-lg": "24px"
+          },
+          "fontFamily": {
+            "title": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "sub": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "caption": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "body": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "display": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "numeric": ["\"ui-monospace, SF Mono, Consolas, monospace\""]
+          },
+          "fontSize": {
+            "title": ["19px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "sub": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "caption": ["12px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "body": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "display": ["23px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "numeric": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* 精密标尺刻度背景纹理 */
+    .scale-ruler-marks {
+      background-image: repeating-linear-gradient(
+        to right,
+        #B4C3BF 0px,
+        #B4C3BF 1px,
+        transparent 1px,
+        transparent 8px
+      );
+    }
+  </style>
+</head>
+<body class="bg-[#F2F5F4] text-on-surface antialiased font-body min-h-screen flex justify-center selection:bg-accent-soft selection:text-primary">
+<!-- 375x812 移动画布视口容器 -->
+<div class="w-full max-w-[375px] min-h-[812px] bg-background flex flex-col relative shadow-xl overflow-x-hidden pb-10">
+<!-- 微信小程序标准顶部导航栏 (遵从 Shared Components JSON: TopAppBar) -->
+<header class="sticky top-0 z-50 bg-surface border-b border-line flex justify-between items-center w-full px-4 h-12 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+<!-- 微信小程序返回与标题 -->
+<div class="flex items-center space-x-2">
+<button aria-label="返回" class="text-primary p-1 rounded hover:bg-surface-variant transition-all active:scale-95 flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[22px]">chevron_left</span>
+</button>
+<span class="font-title text-title text-primary tracking-tight">报告长图</span>
+</div>
+<!-- 微信小程序经典胶囊按钮模拟 -->
+<div class="flex items-center bg-surface-2 border border-line-strong rounded-full px-2.5 py-1 space-x-2 shadow-xs">
+<button aria-label="更多操作" class="text-ink-1 hover:text-primary flex items-center" type="button">
+<span class="material-symbols-outlined text-[16px]">more_horiz</span>
+</button>
+<div class="w-[1px] h-3 bg-line"></div>
+<button aria-label="关闭小程序" class="text-ink-1 hover:text-primary flex items-center" type="button">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">trip_origin</span>
+</button>
+</div>
+</header>
+<!-- 顶部状态指示条 -->
+<div class="bg-surface-2 px-4 py-1.5 border-b border-line flex items-center justify-between">
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-[14px] text-accent">straighten</span>
+<span class="font-caption text-caption text-ink-2">精密刻度测量系统 · 生成完成</span>
+</div>
+<span class="font-caption text-caption text-ink-3">标准预览模式</span>
+</div>
+<!-- 核心滚动视窗 -->
+<main class="flex-1 px-3.5 pt-3 pb-6 flex flex-col space-y-4">
+<!-- 1. 长图预览容器卡 (模拟长比例可导出卡片) -->
+<section class="w-full bg-surface rounded-xl border border-line-strong shadow-md overflow-hidden relative transition-all">
+<!-- 导图顶部标尺装饰带 -->
+<div class="h-2 w-full bg-surface-2 scale-ruler-marks border-b border-line opacity-75"></div>
+<div class="p-4 space-y-4">
+<!-- 卡片头部与四象包装说明 -->
+<div class="border-b border-line pb-3.5">
+<div class="flex justify-between items-start">
+<div>
+<div class="inline-flex items-center px-1.5 py-0.5 rounded bg-accent-soft text-primary font-caption text-[11px] mb-1">
+<span>发育与心理测量观测档</span>
+</div>
+<h1 class="font-title text-title text-ink-1 font-semibold tracking-tight">宝宝 A · 慢热型气质报告</h1>
+</div>
+<div class="w-10 h-10 rounded-xl bg-surface-2 border border-accent-line flex flex-col items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+<span class="text-[9px] font-caption leading-none text-ink-2 mt-0.5">慢热型</span>
+</div>
+</div>
+<!-- 四象趣味包装说明 -->
+<div class="mt-2.5 p-2 bg-surface-container-low rounded-lg border border-line flex items-start space-x-2">
+<span class="material-symbols-outlined text-accent text-[18px] shrink-0 mt-0.5">explore</span>
+<div class="font-caption text-caption text-ink-2 leading-relaxed">
+<span class="font-semibold text-ink-1">四象趣味定标：</span>
+                如细水长流的稳健观察者。初遇新事物偏向静止观察、吸收环境线索，适应后展现高度专注与深厚情感黏性。
+              </div>
+</div>
+</div>
+<!-- 四维倾向刻度条预览 (精密量具刻度风格) -->
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="font-sub text-sub font-semibold text-ink-1 flex items-center gap-1">
+<span class="w-1.5 h-3 bg-accent rounded-sm inline-block"></span>
+                四维行为倾向测绘
+              </span>
+<span class="font-caption text-caption text-ink-3">基准范围 0 - 100</span>
+</div>
+<!-- 刻度项 1：活动水平 -->
+<div class="bg-surface-2 p-2.5 rounded-lg border border-line">
+<div class="flex justify-between items-center mb-1 text-ink-1">
+<span class="font-caption text-caption font-semibold">活动水平 (体能与节律动能)</span>
+<span class="font-caption text-caption text-accent font-semibold font-numeric">38 偏静</span>
+</div>
+<div class="relative w-full h-3 bg-surface rounded-full border border-line-strong overflow-hidden flex items-center px-0.5">
+<!-- 标尺分段 -->
+<div class="absolute inset-0 grid grid-cols-4 divide-x divide-line opacity-40">
+<div></div><div></div><div></div><div></div>
+</div>
+<!-- 指示条 -->
+<div class="h-2 bg-accent rounded-full transition-all" style="width: 38%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-ink-3 mt-1 font-caption">
+<span>深潜静思</span>
+<span class="text-accent font-medium">测量位 38</span>
+<span>高频探索</span>
+</div>
+</div>
+<!-- 刻度项 2：趋近-退缩 -->
+<div class="bg-surface-2 p-2.5 rounded-lg border border-line">
+<div class="flex justify-between items-center mb-1 text-ink-1">
+<span class="font-caption text-caption font-semibold">趋近-退缩 (初遇生疏刺激)</span>
+<span class="font-caption text-caption text-accent font-semibold font-numeric">74 谨慎退缩</span>
+</div>
+<div class="relative w-full h-3 bg-surface rounded-full border border-line-strong overflow-hidden flex items-center px-0.5">
+<div class="absolute inset-0 grid grid-cols-4 divide-x divide-line opacity-40">
+<div></div><div></div><div></div><div></div>
+</div>
+<div class="h-2 bg-accent rounded-full transition-all" style="width: 74%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-ink-3 mt-1 font-caption">
+<span>主动迎合</span>
+<span class="text-accent font-medium">测量位 74</span>
+<span>蓄力观察</span>
+</div>
+</div>
+<!-- 刻度项 3：适应性 -->
+<div class="bg-surface-2 p-2.5 rounded-lg border border-line">
+<div class="flex justify-between items-center mb-1 text-ink-1">
+<span class="font-caption text-caption font-semibold">适应性 (环境变迁融入周期)</span>
+<span class="font-caption text-caption text-accent font-semibold font-numeric">45 渐进适应</span>
+</div>
+<div class="relative w-full h-3 bg-surface rounded-full border border-line-strong overflow-hidden flex items-center px-0.5">
+<div class="absolute inset-0 grid grid-cols-4 divide-x divide-line opacity-40">
+<div></div><div></div><div></div><div></div>
+</div>
+<div class="h-2 bg-accent rounded-full transition-all" style="width: 45%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-ink-3 mt-1 font-caption">
+<span>缓步推进</span>
+<span class="text-accent font-medium">测量位 45</span>
+<span>迅速融入</span>
+</div>
+</div>
+<!-- 刻度项 4：情绪强度 -->
+<div class="bg-surface-2 p-2.5 rounded-lg border border-line">
+<div class="flex justify-between items-center mb-1 text-ink-1">
+<span class="font-caption text-caption font-semibold">情绪强度 (反应外显幅度)</span>
+<span class="font-caption text-caption text-accent font-semibold font-numeric">32 温和内敛</span>
+</div>
+<div class="relative w-full h-3 bg-surface rounded-full border border-line-strong overflow-hidden flex items-center px-0.5">
+<div class="absolute inset-0 grid grid-cols-4 divide-x divide-line opacity-40">
+<div></div><div></div><div></div><div></div>
+</div>
+<div class="h-2 bg-accent rounded-full transition-all" style="width: 32%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-ink-3 mt-1 font-caption">
+<span>微澜平稳</span>
+<span class="text-accent font-medium">测量位 32</span>
+<span>剧烈充沛</span>
+</div>
+</div>
+</div>
+<!-- 核心洞察摘要卡片 -->
+<div class="border border-line rounded-lg p-3 space-y-2.5 bg-surface">
+<div class="flex items-center space-x-1.5 border-b border-line pb-1.5">
+<span class="material-symbols-outlined text-[16px] text-accent">fact_check</span>
+<span class="font-sub text-sub font-semibold text-ink-1">核心养育洞察提炼</span>
+</div>
+<div class="space-y-2 text-ink-2 font-caption text-caption">
+<div>
+<span class="font-semibold text-ink-1">【类型解读】</span>
+                知觉敏锐而防御机制成熟，面对陌生的空间与伙伴时需要5-15分钟心理安全建构期。
+              </div>
+<div>
+<span class="font-semibold text-ink-1">【适配养育方式】</span>
+                “阶梯式介入”。不强推社交，提前告知活动流程，充当坚强后盾而非推手。
+              </div>
+<div>
+<span class="font-semibold text-ink-1">【沟通技巧要点】</span>
+                避免“别害羞”等评价性词汇；代以“妈妈知道你在先看一看，随时可以告诉我”。
+              </div>
+</div>
+</div>
+<!-- 波动提示与声明 -->
+<div class="bg-warn-soft p-2.5 rounded-lg border border-[#e8d8b2] text-warn space-y-1">
+<div class="flex items-center space-x-1">
+<span class="material-symbols-outlined text-[15px]">info</span>
+<span class="font-caption text-caption font-semibold">波动提示与成长律动</span>
+</div>
+<p class="font-caption text-caption leading-relaxed text-ink-2">
+<strong class="text-warn">“气质不是宿命判定，而是天生风格的初始度量。”</strong> 随着环境支持、语言发展与大脑额叶成熟，孩子的行为策略将产生弹性拓展与自我调节。
+            </p>
+</div>
+<!-- 规范要求：第1处固定免责区 (面积占比保障 ≥15%) -->
+<div class="bg-surface-container-high border-2 border-line-strong p-3.5 rounded-lg space-y-1.5">
+<div class="flex items-center justify-between border-b border-line pb-1">
+<div class="flex items-center space-x-1 text-danger">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">gavel</span>
+<span class="font-caption text-caption font-semibold">法定医学与评估免责说明（一）</span>
+</div>
+<span class="font-caption text-[11px] text-ink-3">标准规约</span>
+</div>
+<p class="font-caption text-[11px] text-ink-2 leading-relaxed">
+              本报告依据家长主观问卷观测记录进行算法分析。测量结果反映特定观察周期内的行为倾向，<strong>严禁作为儿科临床诊断、神经发育障碍、孤独症谱系或心理病理学判定的依据</strong>。若儿童伴随严重的社会退缩或言语停滞，请务必前往三甲医院发育行为儿科或心理科就诊咨询。
+            </p>
+</div>
+<!-- 规范要求：第2处固定免责区与防伪短链二维码、AI生成标识、协议版本号 -->
+<div class="bg-surface-container-high border-2 border-line-strong p-3.5 rounded-lg space-y-2.5">
+<div class="flex items-center justify-between border-b border-line pb-1">
+<div class="flex items-center space-x-1 text-danger">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-caption text-caption font-semibold">法定版权与技术免责说明（二）</span>
+</div>
+<span class="font-caption text-[11px] text-ink-3">规约条目 2.4</span>
+</div>
+<p class="font-caption text-[11px] text-ink-2 leading-relaxed">
+              报告中所含图表与文字生成均经过双向脱敏处理，受《个人信息保护法》与儿童隐私指引严格约束。评测结果不可用于民事鉴定、入园入学能力筛选及一切商业征信评估。
+            </p>
+<!-- 底部二维码、AI 标识与版本号元数据栏 -->
+<div class="pt-2 border-t border-line flex items-center justify-between">
+<div class="space-y-1">
+<div class="inline-flex items-center space-x-1 px-1.5 py-0.5 bg-surface rounded border border-line text-[10px] text-ink-2">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+<span>AI 生成内容模型算法标识</span>
+</div>
+<div class="font-caption text-[10px] text-ink-3">
+                  防伪溯源码：QS-2025-88914-TK
+                </div>
+<div class="font-caption text-[10px] text-ink-3">
+                  用户协议服务版本：<span class="font-semibold text-ink-1">V1.5</span>
+</div>
+</div>
+<!-- 防伪短链二维码模拟 (几何图案构建) -->
+<div class="flex flex-col items-center">
+<div class="w-13 h-13 p-1 bg-surface border border-line-strong rounded flex flex-col items-center justify-center shadow-xs">
+<div class="grid grid-cols-4 gap-0.5 w-10 h-10 p-0.5 bg-surface-2 border border-line">
+<div class="bg-ink-1 rounded-[1px]"></div>
+<div class="bg-ink-1 rounded-[1px]"></div>
+<div class="bg-surface"></div>
+<div class="bg-ink-1 rounded-[1px]"></div>
+<div class="bg-ink-1 rounded-[1px]"></div>
+<div class="bg-surface"></div>
+<div class="bg-ink-1 rounded-[1px]"></div>
+<div class="bg-surface"></div>
+<div class="bg-surface"></div>
+<div class="bg-ink-1 rounded-[1px]"></div>
+<div class="bg-surface"></div>
+<div class="bg-ink-1 rounded-[1px]"></div>
+<div class="bg-ink-1 rounded-[1px]"></div>
+<div class="bg-surface"></div>
+<div class="bg-ink-1 rounded-[1px]"></div>
+<div class="bg-ink-1 rounded-[1px]"></div>
+</div>
+</div>
+<span class="font-caption text-[9px] text-ink-3 mt-0.5 scale-90">扫码验真</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 导图底部标尺收尾 -->
+<div class="h-2 w-full bg-surface-2 scale-ruler-marks border-t border-line opacity-75"></div>
+</section>
+<!-- 2. 隐私提示与头像控制卡 -->
+<section class="bg-surface rounded-xl border border-line p-3.5 space-y-3 shadow-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-1.5 text-ink-1">
+<span class="material-symbols-outlined text-[18px] text-accent">security</span>
+<span class="font-sub text-sub font-semibold">隐私安全提示</span>
+<button class="text-accent font-caption text-caption hover:underline ml-1" type="button">
+              [了解]
+            </button>
+</div>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded bg-accent-soft text-accent font-caption text-[11px]">
+            安全保护生效中
+          </span>
+</div>
+<p class="font-caption text-caption text-ink-2 leading-relaxed bg-surface-2 p-2.5 rounded-lg border border-line">
+          请勿在分享中暴露孩子的可识别信息（正脸照、姓名、园所、门牌等）。本卡片已自动抹除真实名字与定位。
+        </p>
+<!-- 控制行：头像选择与打码开关 -->
+<div class="pt-1 flex items-center justify-between gap-2">
+<!-- 头像选择 -->
+<div class="flex-1 bg-surface-container-low border border-line rounded-lg px-2.5 py-1.5 flex items-center justify-between cursor-pointer hover:border-line-strong transition-all">
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-[16px] text-ink-2">face</span>
+<span class="font-caption text-caption text-ink-1">头像展示：默认插画头像</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-ink-3">arrow_drop_down</span>
+</div>
+<!-- 打码保护开关 (开启状态) -->
+<div class="flex items-center space-x-2 pl-1 shrink-0">
+<span class="font-caption text-caption text-ink-1 font-medium">打码保护</span>
+<button aria-checked="true" class="w-11 h-6 bg-accent rounded-full p-0.5 flex items-center justify-end shadow-inner cursor-pointer transition-colors duration-200" role="switch" type="button">
+<div class="w-5 h-5 bg-white rounded-full shadow-md flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px] text-accent font-bold">check</span>
+</div>
+</button>
+</div>
+</div>
+</section>
+<!-- 3. 底部主操作按钮组 -->
+<section class="space-y-2.5 pt-1">
+<!-- 全宽主按钮“保存到相册” (墨青色高亮，44px高，8px圆角) -->
+<button class="w-full h-[44px] bg-accent hover:bg-accent-press active:scale-[0.98] text-on-accent font-sub text-sub font-semibold rounded-xl flex items-center justify-center space-x-2 shadow-sm transition-all duration-200" type="button">
+<span class="material-symbols-outlined text-[20px]">download</span>
+<span>保存到相册</span>
+</button>
+<!-- 双次按钮“分享给好友”和“复制链接” -->
+<div class="grid grid-cols-2 gap-2.5">
+<button class="h-[44px] bg-surface hover:bg-surface-2 active:scale-[0.98] border border-line-strong text-ink-1 font-sub text-sub font-medium rounded-xl flex items-center justify-center space-x-1.5 shadow-xs transition-all duration-200" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">send</span>
+<span>分享给好友</span>
+</button>
+<button class="h-[44px] bg-surface hover:bg-surface-2 active:scale-[0.98] border border-line-strong text-ink-1 font-sub text-sub font-medium rounded-xl flex items-center justify-center space-x-1.5 shadow-xs transition-all duration-200" type="button">
+<span class="material-symbols-outlined text-[18px] text-ink-2">link</span>
+<span>复制链接</span>
+</button>
+</div>
+</section>
+<!-- 底部常驻合规说明 -->
+<footer class="pt-3 pb-2 text-center">
+<div class="inline-flex items-center justify-center space-x-1 text-ink-3 font-caption text-caption">
+<span class="material-symbols-outlined text-[14px]">smart_toy</span>
+<span>AI 生成内容，仅供参考，不替代医生诊断</span>
+</div>
+<p class="font-caption text-[10px] text-outline mt-0.5">测量基准符合中国学前儿童气质发展常模参照</p>
+</footer>
+</main>
+</div>
+</body></html>

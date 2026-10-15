@@ -1,0 +1,886 @@
+{
+  "startedAt": "2026-10-14T12:01:47.142Z",
+  "env": {
+    "systemInfo": {
+      "model": "iPhone 5",
+      "platform": "devtools",
+      "SDKVersion": "3.17.3",
+      "screenWidth": 320,
+      "screenHeight": 568,
+      "pixelRatio": 2,
+      "statusBarHeight": 20,
+      "safeAreaBottom": 568,
+      "windowWidth": 320,
+      "windowHeight": 568,
+      "brand": "devtools",
+      "system": "iOS 10.0.1"
+    }
+  },
+  "suites": {
+    "probe": {
+      "cases": [
+        {
+          "id": "sysinfo",
+          "name": "模拟器系统信息",
+          "status": "PASS",
+          "suite": "probe",
+          "note": "iPhone 5 320x568 dpr=2 lib=3.17.3",
+          "data": {
+            "model": "iPhone 5",
+            "platform": "devtools",
+            "SDKVersion": "3.17.3",
+            "screenWidth": 320,
+            "screenHeight": 568,
+            "pixelRatio": 2,
+            "statusBarHeight": 20,
+            "safeAreaBottom": 568,
+            "windowWidth": 320,
+            "windowHeight": 568,
+            "brand": "devtools",
+            "system": "iOS 10.0.1"
+          },
+          "ms": 34
+        },
+        {
+          "id": "home-snapshot",
+          "name": "首页数据层快照",
+          "status": "PASS",
+          "suite": "probe",
+          "note": "route=pages/index/index dataKeys=43",
+          "data": {
+            "route": "pages/index/index",
+            "dataKeys": 43
+          },
+          "ms": 10703
+        }
+      ]
+    },
+    "pages": {
+      "cases": [
+        {
+          "id": "p01-home",
+          "name": "首页",
+          "status": "FAIL",
+          "suite": "pages",
+          "error": "route mismatch: pages/profile-detail/index",
+          "note": "route=pages/profile-detail/index",
+          "ms": 10164
+        },
+        {
+          "id": "p02-qa-child",
+          "name": "问答（孩子）",
+          "status": "PASS",
+          "suite": "pages",
+          "note": "route=pages/qa/index keys=46",
+          "data": {
+            "route": "pages/qa/index",
+            "dataKeys": 46,
+            "shot": "screenshots/pages/p02-qa-child.png",
+            "log": {
+              "stack": [
+                "pages/qa/index"
+              ],
+              "nested": 0
+            }
+          },
+          "ms": 10091
+        },
+        {
+          "id": "p03-qa-pet",
+          "name": "问答（宠物）",
+          "status": "PASS",
+          "suite": "pages",
+          "note": "route=pages/qa/index keys=46",
+          "data": {
+            "route": "pages/qa/index",
+            "dataKeys": 46,
+            "shot": "screenshots/pages/p03-qa-pet.png",
+            "log": {
+              "stack": [
+                "pages/qa/index"
+              ],
+              "nested": 0
+            }
+          },
+          "ms": 10030
+        },
+        {
+          "id": "p04-qa-family",
+          "name": "问答（家庭综合）",
+          "status": "PASS",
+          "suite": "pages",
+          "note": "route=pages/qa/index keys=47",
+          "data": {
+            "route": "pages/qa/index",
+            "dataKeys": 47,
+            "shot": "screenshots/pages/p04-qa-family.png",
+            "log": {
+              "stack": [
+                "pages/qa/index"
+              ],
+              "nested": 0
+            }
+          },
+          "ms": 11603
+        },
+        {
+          "id": "p05-records",
+          "name": "记录",
+          "status": "PASS",
+          "suite": "pages",
+          "note": "route=pages/records/index keys=27",
+          "data": {
+            "route": "pages/records/index",
+            "dataKeys": 27,
+            "shot": "screenshots/pages/p05-records.png",
+            "log": {
+              "stack": [
+                "pages/records/index"
+              ],
+              "nested": 2
+            }
+          },
+          "ms": 10423
+        },
+        {
+          "id": "p06-profiles",
+          "name": "家庭档案列表",
+          "status": "PASS",
+          "suite": "pages",
+          "note": "route=pages/profiles/index keys=44",
+          "data": {
+            "route": "pages/profiles/index",
+            "dataKeys": 44,
+            "shot": "screenshots/pages/p06-profiles.png",
+            "log": {
+              "stack": [
+                "pages/profiles/index"
+              ],
+              "nested": 1
+            }
+          },
+          "ms": 10316
+        },
+        {
+          "id": "p06b-uid-discovery",
+          "name": "档案 uid 发现（详情/相册入参）",
+          "status": "PASS",
+          "suite": "pages",
+          "note": "发现 uid 1 个",
+          "data": {
+            "uids": [
+              "369fead4-8fd3-4bc4-9b62-bbd5b9dbe385"
+            ]
+          },
+          "ms": 8587
+        },
+        {
+          "id": "p07-me",
+          "name": "我的",
+          "status": "PASS",
+          "suite": "pages",
+          "note": "route=pages/me/index keys=23",
+          "data": {
+            "route": "pages/me/index",
+            "dataKeys": 23,
+            "shot": "screenshots/pages/p07-me.png",
+            "log": {
+              "stack": [
+                "pages/me/index"
+              ],
+              "nested": 0
+            }
+          },
+          "ms": 10110
+        },
+        {
+          "id": "p08-member",
+          "name": "会员",
+          "status": "PASS",
+          "suite": "pages",
+          "note": "route=pages/member/index keys=52",
+          "data": {
+            "route": "pages/member/index",
+            "dataKeys": 52,
+            "shot": "screenshots/pages/p08-member.png",
+            "log": {
+              "stack": [
+                "pages/member/index"
+              ],
+              "nested": 2
+            }
+          },
+          "ms": 10186
+        },
+        {
+          "id": "p09-assessment-intro",
+          "name": "测评引导",
+          "status": "PASS",
+          "suite": "pages",
+          "note": "route=pages/assessment-intro/index keys=14",
+          "data": {
+            "route": "pages/assessment-intro/index",
+            "dataKeys": 14,
+            "shot": "screenshots/pages/p09-assessment-intro.png",
+            "log": {
+              "stack": [
+                "pages/assessment-intro/index"
+              ],
+              "nested": 0
+            }
+          },
+          "ms": 15868
+        },
+        {
+          "id": "p10-assessment",
+          "name": "测评作答",
+          "status": "PASS",
+          "suite": "pages",
+          "note": "route=pages/assessment/index keys=39",
+          "data": {
+            "route": "pages/assessment/index",
+            "dataKeys": 39,
+            "shot": "screenshots/pages/p10-assessment.png",
+            "log": {
+              "stack": [
+                "pages/assessment/index"
+              ],
+              "nested": 1
+            }
+          },
+          "ms": 10103
+        },
+        {
+          "id": "p11-report-history",
+          "name": "报告（历史）",
+          "status": "PASS",
+          "suite": "pages",
+          "note": "route=pages/report/index keys=25",
+          "data": {
+            "route": "pages/report/index",
+            "dataKeys": 25,
+            "shot": "screenshots/pages/p11-report-history.png",
+            "log": {
+              "stack": [
+                "pages/report/index"
+              ],
+              "nested": 0
+            }
+          },
+          "ms": 10144
+        },
+        {
+          "id": "p12-profile-detail-child",
+          "name": "档案详情（孩子）",
+          "status": "PASS",
+          "suite": "pages",
+          "note": "route=pages/profile-detail/index",
+          "data": {
+            "route": "pages/profile-detail/index",
+            "shot": "screenshots/pages/p12-profile-detail-child.png"
+          },
+          "ms": 10168
+        },
+        {
+          "id": "p13-profile-album-child",
+          "name": "成长相册（孩子）",
+          "status": "PASS",
+          "suite": "pages",
+          "note": "route=pages/profile-album/index",
+          "data": {
+            "route": "pages/profile-album/index",
+            "shot": "screenshots/pages/p13-profile-album-child.png"
+          },
+          "ms": 19583
+        }
+      ]
+    },
+    "states": {
+      "cases": [
+        {
+          "id": "offline-inject",
+          "name": "注入离线故障（mock wx.request）",
+          "status": "PASS",
+          "suite": "states",
+          "note": "mock wx.request -> request:fail",
+          "ms": 24
+        },
+        {
+          "id": "s01-home-offline",
+          "name": "首页断网错误态",
+          "status": "FAIL",
+          "suite": "states",
+          "note": "新增文案=11 分支翻转=0",
+          "error": "与正常态相比未观察到错误分支或新增文案",
+          "data": {
+            "route": "pages/index/index",
+            "shot": "screenshots/states/s01-home-offline.png",
+            "added": [
+              "237,0,1",
+              "237,1,0",
+              "e2_df",
+              "e3_d4",
+              "237,2,1",
+              "{}",
+              "e0_4a",
+              "237,1,1",
+              "{\"linkCopy\":\"调试连接\",\"dialogTitle\":\"调试连接\",\"inputPlaceholder\":\"http://192.168.x.x:8",
+              "调试连接",
+              "e1_a3"
+            ],
+            "addedErr": [],
+            "flipped": [],
+            "bools": {
+              "b": false,
+              "d": true,
+              "j": false,
+              "Z": false
+            },
+            "strings": [
+              "237,0,1",
+              "237,1,0",
+              "e2_df",
+              "e3_d4",
+              "237,2,1",
+              "{}",
+              "e0_4a",
+              "237,1,1",
+              "{\"linkCopy\":\"调试连接\",\"dialogTitle\":\"调试连接\",\"inputPlaceholder\":\"http://192.168.x.x:8",
+              "调试连接",
+              "e1_a3"
+            ]
+          },
+          "ms": 10513
+        },
+        {
+          "id": "s02-records-offline",
+          "name": "记录页断网错误态",
+          "status": "PASS",
+          "suite": "states",
+          "note": "新增文案=10（错误类:连接失败，请检查网络后重试。） 分支翻转=0",
+          "data": {
+            "route": "pages/records/index",
+            "shot": "screenshots/states/s02-records-offline.png",
+            "added": [
+              "242,0,0",
+              "{\"a\":\"全部\",\"b\":\"all\",\"c\":1,\"d\":true,\"e\":\"e0_all\"}",
+              "e5_ed",
+              "242,1,0",
+              "连接失败，请检查网络后重试。",
+              "242,2,0",
+              "242,3,0",
+              "{}",
+              "242,1,1",
+              "e5_ec"
+            ],
+            "addedErr": [
+              "连接失败，请检查网络后重试。"
+            ],
+            "flipped": [],
+            "bools": {
+              "c": false,
+              "h": true,
+              "k": true
+            },
+            "strings": [
+              "242,0,0",
+              "{\"a\":\"全部\",\"b\":\"all\",\"c\":1,\"d\":true,\"e\":\"e0_all\"}",
+              "e5_ed",
+              "242,1,0",
+              "连接失败，请检查网络后重试。",
+              "242,2,0",
+              "242,3,0",
+              "{}",
+              "242,1,1",
+              "e5_ec"
+            ]
+          },
+          "ms": 10371
+        },
+        {
+          "id": "s03-me-offline",
+          "name": "我的页断网错误态",
+          "status": "FAIL",
+          "suite": "states",
+          "note": "新增文案=11 分支翻转=0",
+          "error": "与正常态相比未观察到错误分支或新增文案",
+          "data": {
+            "route": "pages/me/index",
+            "shot": "screenshots/states/s03-me-offline.png",
+            "added": [
+              "250,0,1",
+              "250,1,0",
+              "e1_60",
+              "e2_79",
+              "250,2,1",
+              "e3_bb",
+              "e4_5b",
+              "250,3,1",
+              "{}",
+              "e0_77",
+              "250,1,1"
+            ],
+            "addedErr": [],
+            "flipped": [],
+            "bools": {
+              "b": false,
+              "d": true,
+              "ah": false,
+              "ak": false
+            },
+            "strings": [
+              "250,0,1",
+              "250,1,0",
+              "e1_60",
+              "e2_79",
+              "250,2,1",
+              "e3_bb",
+              "e4_5b",
+              "250,3,1",
+              "{}",
+              "e0_77",
+              "250,1,1"
+            ]
+          },
+          "ms": 10267
+        },
+        {
+          "id": "s04-qa-offline",
+          "name": "问答页断网降级",
+          "status": "FAIL",
+          "suite": "states",
+          "note": "新增文案=22 分支翻转=0",
+          "error": "与正常态相比未观察到错误分支或新增文案",
+          "data": {
+            "route": "pages/qa/index",
+            "shot": "screenshots/states/s04-qa-offline.png",
+            "added": [
+              "256,0,0",
+              "未绑定档案",
+              "e0_7c",
+              "未选择档案：将按通用 1-3 岁回答",
+              "e1_9c",
+              "256,1,0",
+              "e2_ab",
+              "描述宝宝的具体情况，越具体越好",
+              "e3_64",
+              "e4_be",
+              "e5_89",
+              "e6_65",
+              "256,2,0",
+              "e7_88",
+              "256,3,0",
+              "e8_76",
+              "e9_38",
+              "256,4,0",
+              "e10_88",
+              "e11_ab",
+              "256,5,0",
+              "{}"
+            ],
+            "addedErr": [],
+            "flipped": [],
+            "bools": {
+              "b": true,
+              "c": true,
+              "l": false,
+              "q": true,
+              "x": false,
+              "C": true
+            },
+            "strings": [
+              "256,0,0",
+              "未绑定档案",
+              "e0_7c",
+              "未选择档案：将按通用 1-3 岁回答",
+              "e1_9c",
+              "256,1,0",
+              "e2_ab",
+              "描述宝宝的具体情况，越具体越好",
+              "e3_64",
+              "e4_be",
+              "e5_89",
+              "e6_65",
+              "256,2,0",
+              "e7_88",
+              "256,3,0",
+              "e8_76",
+              "e9_38",
+              "256,4,0",
+              "e10_88",
+              "e11_ab",
+              "256,5,0",
+              "{}"
+            ]
+          },
+          "ms": 10378
+        },
+        {
+          "id": "offline-restore",
+          "name": "还原网络并验证恢复",
+          "status": "PASS",
+          "suite": "states",
+          "note": "还原后首屏回到就绪态（无错误分支/错误文案）",
+          "data": {
+            "route": "pages/index/index",
+            "shot": "screenshots/states/s05-home-recovered.png",
+            "strings": [
+              "265,0,1",
+              "265,1,0",
+              "e6_df",
+              "e7_d4",
+              "265,3,1",
+              "{}",
+              "今日可用",
+              "剩余 3 / 4 次",
+              "25%",
+              "额度用尽后可次日再来，或开通会员不受额度限制",
+              "e0_1a",
+              "了解孩子近期的行为倾向",
+              "阶段测评",
+              "3 分钟 · 16 题 · 4 个维度",
+              "查看报告",
+              "e1_5c",
+              "{\"a\":\"glyph-child\",\"b\":\"icon-info\",\"c\":\"0-6 岁宝宝养育\",\"d\":\"喂养 / 睡眠 / 敏感期 / 行为引导\",\"e",
+              "会员月卡 19.9 元/月",
+              "深度方案 · 月度计划 · 专属档案",
+              "了解会员",
+              "e5_28",
+              "观察帮助理解，不给家庭贴标签。",
+              "265,1,1",
+              "265,2,1"
+            ],
+            "bools": {
+              "b": false,
+              "d": false,
+              "j": false,
+              "Z": true,
+              "A": false,
+              "E": true,
+              "H": true
+            }
+          },
+          "ms": 11277
+        }
+      ]
+    },
+    "flows": {
+      "cases": [
+        {
+          "id": "f00-map-probe",
+          "name": "交互映射体检（磁盘 render key 解析）",
+          "status": "PASS",
+          "suite": "flows",
+          "note": "全部 handler 已解析",
+          "data": {
+            "qa_input_snippets": [
+              "draft.value = $event.detail.value",
+              "draft.value="
+            ],
+            "qa_send": [
+              "y",
+              "D"
+            ],
+            "qa_regen": [
+              "T"
+            ],
+            "assess_choose": [
+              "f"
+            ],
+            "assess_next": [
+              "I"
+            ],
+            "assess_start": [
+              "y"
+            ],
+            "records_preset": [
+              "e"
+            ],
+            "profiles_add_child": [
+              "D",
+              "E"
+            ],
+            "profiles_tab_child": "k",
+            "me_sheets": [
+              "D",
+              "L",
+              "af"
+            ],
+            "member_orders": [
+              "S"
+            ],
+            "report_save": [
+              "U"
+            ],
+            "detail_birth": [
+              "H"
+            ],
+            "album_add": [
+              "h",
+              "p"
+            ],
+            "qa_input_key": "A"
+          },
+          "ms": 34
+        },
+        {
+          "id": "f00b-nav-probe",
+          "name": "导航探针：首页 reLaunch 落点与页面栈",
+          "status": "PASS",
+          "suite": "flows",
+          "note": "首页→首页 [\"pages/index/index\",\"pages/index/index\",\"pages/index/index\"] | 详情→首页 [\"pages/index/index\",\"pages/index/index\",\"pages/index/index\"] | 自跳 [\"pages/index/index\",\"pages/index/index\",\"pages/index/index\"]",
+          "data": {
+            "a": {
+              "from": "/pages/profiles/index",
+              "before": "pages/profiles/index",
+              "marks": [
+                "pages/index/index",
+                "pages/index/index",
+                "pages/index/index"
+              ]
+            },
+            "b": {
+              "from": "/pages/profile-detail/index?kind=child&uid=x",
+              "before": "pages/profile-detail/index",
+              "marks": [
+                "pages/index/index",
+                "pages/index/index",
+                "pages/index/index"
+              ]
+            },
+            "c": {
+              "from": "/pages/index/index",
+              "before": "pages/index/index",
+              "marks": [
+                "pages/index/index",
+                "pages/index/index",
+                "pages/index/index"
+              ]
+            }
+          },
+          "ms": 60548
+        },
+        {
+          "id": "f01-records-filters",
+          "name": "记录页筛选 chips 切换与列表联动",
+          "status": "FAIL",
+          "suite": "flows",
+          "note": "触发=5/5 各档列表条目数=[5,5,5,5,5]",
+          "error": "切换筛选后条目数无变化",
+          "data": {
+            "shots": [
+              "screenshots/flows/f01-records-filter-0.png",
+              "screenshots/flows/f01-records-filter-1.png",
+              "screenshots/flows/f01-records-filter-2.png",
+              "screenshots/flows/f01-records-filter-3.png",
+              "screenshots/flows/f01-records-filter-4.png"
+            ],
+            "counts": [
+              5,
+              5,
+              5,
+              5,
+              5
+            ],
+            "results": [
+              "OK .b[0].e=e0_all n=8",
+              "OK .b[1].e=e1_child n=8",
+              "OK .b[2].e=e2_pet n=8",
+              "OK .b[3].e=e3_qa n=8",
+              "OK .b[4].e=e4_report n=8"
+            ]
+          },
+          "ms": 62186
+        },
+        {
+          "id": "f02-home-policy-dialog",
+          "name": "首页《服务协议》弹窗",
+          "status": "FAIL",
+          "suite": "flows",
+          "note": "NO_HIT:o → 可见弹层 0 个",
+          "error": "弹窗未出现或事件流未触发",
+          "data": {
+            "visible": [],
+            "shot": "screenshots/flows/f02-home-policy-dialog.png",
+            "invoke": "NO_HIT:o"
+          },
+          "ms": 11482
+        },
+        {
+          "id": "f03-qa-send-stream",
+          "name": "问答发送（真实流式生成）",
+          "status": "PASS",
+          "suite": "flows",
+          "note": "输入=true 发送=true 会话条目数=3s:2 15s:2 45s:2",
+          "data": {
+            "shots": [
+              "screenshots/flows/f03-qa-3s.png",
+              "screenshots/flows/f03-qa-15s.png",
+              "screenshots/flows/f03-qa-45s.png"
+            ],
+            "marks": [
+              {
+                "label": "3s",
+                "biggest": 2,
+                "arrays": {
+                  ".uS": 0,
+                  ".s": 2
+                }
+              },
+              {
+                "label": "15s",
+                "biggest": 2,
+                "arrays": {
+                  ".uS": 0,
+                  ".s": 2
+                }
+              },
+              {
+                "label": "45s",
+                "biggest": 2,
+                "arrays": {
+                  ".uS": 0,
+                  ".s": 2
+                }
+              }
+            ]
+          },
+          "ms": 60876
+        },
+        {
+          "id": "f04-assessment-full",
+          "name": "测评 16 题作答至报告",
+          "status": "PASS",
+          "suite": "flows",
+          "note": "开始=true | 作答轮次成功=16/16 | 落点=pages/assessment-intro/index>pages/report/index",
+          "data": {
+            "shots": [
+              "screenshots/flows/f04-assessment-intro.png",
+              "screenshots/flows/f04-assessment-q1.png",
+              "screenshots/flows/f04-assessment-q3.png",
+              "screenshots/flows/f04-assessment-submitted.png"
+            ],
+            "route": "pages/assessment-intro/index>pages/report/index",
+            "okCount": 16,
+            "startInvoke": "OK .y=e0_d3 n=1"
+          },
+          "ms": 50431
+        },
+        {
+          "id": "f05-report-save-longimage",
+          "name": "报告页保存长图",
+          "status": "PASS",
+          "suite": "flows",
+          "note": "触发=true 可见弹层=0",
+          "data": {
+            "shots": [
+              "screenshots/flows/f05-report-before-save.png",
+              "screenshots/flows/f05-report-save-pending.png",
+              "screenshots/flows/f05-report-save-result.png"
+            ],
+            "visible": [],
+            "invoke": "OK .U=e4_f7 n=1"
+          },
+          "ms": 12845
+        },
+        {
+          "id": "f06-profiles-tabs-add",
+          "name": "档案列表 tab 切换与新增弹层",
+          "status": "FAIL",
+          "suite": "flows",
+          "note": "tab:OK .k=e0_24 n=2 | 新增宠物:false | 新增孩子:true 可见弹层=0",
+          "error": "新增档案表单弹层未出现",
+          "data": {
+            "shots": [
+              "screenshots/flows/f06-profiles-tab-child.png",
+              "screenshots/flows/f06-profiles-add-pet-sheet.png",
+              "screenshots/flows/f06-profiles-add-child-sheet.png"
+            ],
+            "notes": [
+              "tab:OK .k=e0_24 n=2",
+              "新增宠物:false",
+              "新增孩子:true"
+            ]
+          },
+          "ms": 36381
+        },
+        {
+          "id": "f07-profile-detail-actions",
+          "name": "档案详情页交互（脱敏切换/编辑/设为当前）",
+          "status": "FAIL",
+          "suite": "flows",
+          "note": "toggleBirth:OK vis=0 | openEdit:OK vis=0 | setCurrent:FAIL vis=0",
+          "error": "仅 2/3 个详情页事件流触发成功",
+          "data": {
+            "shots": [
+              "screenshots/flows/f07-detail-birth-revealed.png",
+              "screenshots/flows/f07-detail-edit-sheet.png",
+              "screenshots/flows/f07-detail-set-current.png"
+            ],
+            "uid": "369fead4-8fd3-4bc4-9b62-bbd5b9dbe385",
+            "okCount": 2
+          },
+          "ms": 36130
+        },
+        {
+          "id": "f08-album-add-photos",
+          "name": "成长相册：新增照片弹层",
+          "status": "FAIL",
+          "suite": "flows",
+          "note": "触发=false 可见弹层=0（相册选择器由 wx.chooseMedia 提供，模拟器下由系统弹层接管）",
+          "error": "addPhotos 事件流未触发",
+          "data": {
+            "shots": [
+              "screenshots/flows/f08-album-empty.png",
+              "screenshots/flows/f08-album-add-photos.png"
+            ],
+            "visible": [],
+            "invoke": "NO_HIT:h"
+          },
+          "ms": 17124
+        },
+        {
+          "id": "f09-member-sheets",
+          "name": "会员页：权益说明/订单弹层/购买入口",
+          "status": "FAIL",
+          "suite": "flows",
+          "note": "openBenefitDoc:FAIL vis=0 | openOrders:OK vis=0 | startPurchase:OK vis=0",
+          "error": "仅 2/3 个会员页事件流触发成功",
+          "data": {
+            "shots": [
+              "screenshots/flows/f09-member-benefit-doc.png",
+              "screenshots/flows/f09-member-orders.png",
+              "screenshots/flows/f09-member-purchase.png"
+            ],
+            "okCount": 2
+          },
+          "ms": 37665
+        },
+        {
+          "id": "f10-me-sheets",
+          "name": "我的页：账户/反馈/权利中心弹层",
+          "status": "FAIL",
+          "suite": "flows",
+          "note": "account:OK vis=0 | feedback:OK vis=0 | rights:OK vis=0 最大可见弹层=0",
+          "error": "三个弹层均未出现",
+          "data": {
+            "shots": [
+              "screenshots/flows/f10-me-sheet-account.png",
+              "screenshots/flows/f10-me-sheet-feedback.png",
+              "screenshots/flows/f10-me-sheet-rights.png"
+            ],
+            "keys": [
+              "D",
+              "L",
+              "af"
+            ],
+            "visCount": 0
+          },
+          "ms": 37617
+        }
+      ]
+    }
+  },
+  "finishedAt": "2026-10-14T12:27:37.193Z",
+  "elapsedMs": 476187
+}

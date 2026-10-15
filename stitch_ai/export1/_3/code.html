@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>家伴后台管理系统 - 词库维护</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=-apple-system,+BlinkMacSystemFont,+'PingFang+SC',+system-ui,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-container": "#ffcfc0",
+            "surface-container-highest": "#e0e3e1",
+            "on-primary": "#ffffff",
+            "inverse-primary": "#85d5c7",
+            "primary-container": "#0a6b60",
+            "on-secondary-container": "#566865",
+            "accent-line": "#8FBFB7",
+            "on-tertiary-fixed": "#390c00",
+            "surface-bright": "#f7faf8",
+            "on-primary-container": "#98e8da",
+            "error-container": "#ffdad6",
+            "secondary": "#50625f",
+            "accent-soft": "#E1EFEC",
+            "ink-2": "#455754",
+            "ink-3": "#5F6F6C",
+            "on-surface-variant": "#3e4946",
+            "ink-1": "#0F1E1C",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed-dim": "#ffb59d",
+            "warn": "#7A5600",
+            "on-primary-fixed-variant": "#005048",
+            "primary-fixed-dim": "#85d5c7",
+            "outline-variant": "#bec9c5",
+            "accent": "#0A6B60",
+            "warn-soft": "#F6EDD8",
+            "secondary-fixed-dim": "#b7cbc7",
+            "error": "#ba1a1a",
+            "primary-fixed": "#a1f1e3",
+            "outline": "#6f7976",
+            "surface": "#FFFFFF",
+            "on-secondary-fixed-variant": "#384a47",
+            "on-primary-fixed": "#00201c",
+            "inverse-on-surface": "#eef1ef",
+            "secondary-fixed": "#d3e7e2",
+            "surface-2": "#E9EFED",
+            "surface-container": "#ebefec",
+            "surface-variant": "#e0e3e1",
+            "background": "#f7faf8",
+            "inverse-surface": "#2d3130",
+            "on-tertiary-fixed-variant": "#713621",
+            "on-accent": "#FFFFFF",
+            "bg": "#F2F5F4",
+            "on-background": "#181c1b",
+            "secondary-container": "#d3e7e2",
+            "surface-container-low": "#f1f4f2",
+            "on-secondary-fixed": "#0d1f1c",
+            "danger": "#A8231B",
+            "on-error-container": "#93000a",
+            "tertiary": "#723622",
+            "surface-dim": "#d7dbd9",
+            "accent-press": "#074E46",
+            "primary": "#005148",
+            "surface-tint": "#086a5f",
+            "surface-container-high": "#e6e9e7",
+            "line": "#D5DEDB",
+            "on-surface": "#181c1b",
+            "danger-soft": "#F7E4E2",
+            "tertiary-fixed": "#ffdbd0",
+            "tertiary-container": "#8f4d37",
+            "line-strong": "#B4C3BF",
+            "on-secondary": "#ffffff",
+            "on-error": "#ffffff",
+            "on-tertiary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin": "16px",
+            "space-sm": "8px",
+            "space-xxl": "48px",
+            "space-xl": "32px",
+            "gutter": "16px",
+            "space-md": "16px",
+            "space-lg": "24px",
+            "space-xs": "6px"
+          },
+          "fontFamily": {
+            "display": ["-apple-system, BlinkMacSystemFont, 'PingFang SC', system-ui, sans-serif"],
+            "title": ["-apple-system, BlinkMacSystemFont, 'PingFang SC', system-ui, sans-serif"],
+            "numeric": ["ui-monospace, SF Mono, Consolas, monospace"],
+            "sub": ["-apple-system, BlinkMacSystemFont, 'PingFang SC', system-ui, sans-serif"],
+            "body": ["-apple-system, BlinkMacSystemFont, 'PingFang SC', system-ui, sans-serif"],
+            "caption": ["-apple-system, BlinkMacSystemFont, 'PingFang SC', system-ui, sans-serif"]
+          },
+          "fontSize": {
+            "display": ["23px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "title": ["19px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "numeric": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "sub": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "body": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "caption": ["12px", { "lineHeight": "1.5", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-bg text-ink-1 min-h-screen antialiased flex selection:bg-accent-soft selection:text-accent">
+<!-- ======================== LEFT SIDE NAVIGATION (240px) ======================== -->
+<aside class="w-60 h-screen fixed left-0 top-0 flex flex-col justify-between py-space-lg px-space-md border-r border-line bg-surface z-30">
+<div class="flex flex-col gap-space-lg">
+<!-- Brand & Platform Header -->
+<div class="px-space-sm flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-accent text-surface flex items-center justify-center font-display text-display shadow-sm">
+<span class="material-symbols-outlined text-title" data-icon="shield">shield</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title text-title font-semibold text-ink-1 tracking-tight">家伴管理中心</span>
+<span class="font-caption text-caption text-ink-3">临床级智能监护平台</span>
+</div>
+</div>
+<!-- Quick Action CTA -->
+<button class="w-full flex items-center justify-center gap-space-xs py-space-sm px-space-md bg-accent text-on-accent rounded-lg font-sub text-sub font-medium hover:bg-accent-press active:scale-[0.99] transition-all duration-150">
+<span class="material-symbols-outlined text-sub" data-icon="add_circle">add_circle</span>
+<span>新建知识文档</span>
+</button>
+<!-- Primary Navigation Links (JSON Authority) -->
+<nav class="flex flex-col gap-1">
+<!-- 知识库管理 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 font-sub text-sub" href="#">
+<span class="material-symbols-outlined text-numeric" data-icon="auto_stories">auto_stories</span>
+<span>知识库管理</span>
+</a>
+<!-- 词库维护 (ACTIVE ACCORDING TO TASK) -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg bg-accent-soft text-accent font-medium transition-colors duration-150 font-sub text-sub" href="#">
+<span class="material-symbols-outlined text-numeric" data-icon="spellcheck" style="font-variation-settings: 'FILL' 1;">spellcheck</span>
+<span>词库维护</span>
+</a>
+<!-- Agent调用日志 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 font-sub text-sub" href="#">
+<span class="material-symbols-outlined text-numeric" data-icon="terminal">terminal</span>
+<span>Agent调用日志</span>
+</a>
+<!-- 反馈与举报 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 font-sub text-sub" href="#">
+<span class="material-symbols-outlined text-numeric" data-icon="flag">flag</span>
+<span>反馈与举报</span>
+</a>
+<!-- 高风险事件 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 font-sub text-sub" href="#">
+<span class="material-symbols-outlined text-numeric" data-icon="warning">warning</span>
+<span>高风险事件</span>
+</a>
+<!-- 权利请求 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 font-sub text-sub" href="#">
+<span class="material-symbols-outlined text-numeric" data-icon="shield_person">shield_person</span>
+<span>权利请求</span>
+</a>
+<!-- 系统开关与配置 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 font-sub text-sub" href="#">
+<span class="material-symbols-outlined text-numeric" data-icon="tune">tune</span>
+<span>系统开关与配置</span>
+</a>
+</nav>
+</div>
+<!-- Secondary Utilities Footer -->
+<div class="border-t border-line pt-space-md flex flex-col gap-1">
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 font-sub text-sub" href="#">
+<span class="material-symbols-outlined text-numeric" data-icon="history">history</span>
+<span>审计记录</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 font-sub text-sub" href="#">
+<span class="material-symbols-outlined text-numeric" data-icon="monitoring">monitoring</span>
+<span>系统监控</span>
+</a>
+</div>
+</aside>
+<!-- ======================== TOP NAVIGATION BAR ======================== -->
+<header class="fixed top-0 right-0 left-60 h-16 px-space-lg flex justify-between items-center bg-surface border-b border-line z-20">
+<!-- Breadcrumb & Search Left Anchor -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs text-ink-1 font-title text-title font-semibold">
+<span>家伴后台管理系统</span>
+<span class="text-line-strong font-caption">/</span>
+<span class="text-accent font-sub text-sub font-medium">词库维护</span>
+</div>
+<div class="relative ml-space-lg">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-ink-3 text-sub" data-icon="search">search</span>
+<input class="w-64 pl-9 pr-3 py-1.5 bg-surface-container-low border border-line rounded-lg font-sub text-sub text-ink-1 placeholder-ink-3 focus:outline-none focus:border-accent focus:bg-surface" placeholder="检索风控规则、特征标记..." type="text"/>
+</div>
+</div>
+<!-- Actions & User Profile Right Anchor -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs">
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-ink-2 hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150" title="通知">
+<span class="material-symbols-outlined text-numeric" data-icon="notifications">notifications</span>
+</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-ink-2 hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150" title="使用指引">
+<span class="material-symbols-outlined text-numeric" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+<div class="h-4 w-[1px] bg-line mx-space-xs"></div>
+<!-- Account / Role State -->
+<div class="flex items-center gap-space-sm font-sub text-sub">
+<div class="w-7 h-7 rounded-full bg-secondary-container text-secondary flex items-center justify-center font-numeric text-caption font-semibold">
+          官
+        </div>
+<div class="flex items-center gap-space-xs">
+<span class="text-ink-1 font-medium font-numeric text-sub">admin@jiaban</span>
+<span class="text-ink-3">·</span>
+<span class="text-ink-2 bg-surface-2 px-1.5 py-0.5 rounded text-caption font-medium">内容运营</span>
+<span class="text-ink-3">·</span>
+<button class="text-danger hover:underline font-sub text-sub font-medium ml-1">退出</button>
+</div>
+</div>
+</div>
+</header>
+<!-- ======================== MAIN CONTENT CANVAS ======================== -->
+<main class="ml-60 pt-20 pb-16 flex-1 flex flex-col items-center">
+<div class="w-[1200px] flex flex-col gap-space-md">
+<!-- 1. 页面头部卡片 (Header Card) -->
+<section class="bg-surface border border-line rounded-xl p-space-lg shadow-none flex justify-between items-center">
+<div class="flex items-center gap-space-lg">
+<div class="flex flex-col gap-1">
+<h1 class="font-title text-title font-semibold text-ink-1">词库维护（高危/敏感）</h1>
+<p class="font-caption text-caption text-ink-3">临床医学认知监护词库矩阵 · 毫秒级阻断与多模态灰区干预规则</p>
+</div>
+<div class="h-8 w-[1px] bg-line"></div>
+<!-- 词库选项卡带计数 -->
+<div class="inline-flex items-center p-1 bg-surface-2 rounded-lg border border-line">
+<button class="px-space-md py-1 bg-surface text-accent font-medium rounded-lg font-sub text-sub shadow-sm flex items-center gap-1.5">
+<span>高危</span>
+<span class="px-1.5 py-0.2 bg-danger-soft text-danger text-caption font-numeric rounded-full font-semibold">86</span>
+</button>
+<button class="px-space-md py-1 text-ink-2 font-normal hover:text-ink-1 rounded-lg font-sub text-sub flex items-center gap-1.5 transition-colors">
+<span>敏感</span>
+<span class="px-1.5 py-0.2 bg-secondary-container text-secondary text-caption font-numeric rounded-full">241</span>
+</button>
+</div>
+</div>
+<!-- 右侧操作 -->
+<div class="flex items-center gap-space-sm">
+<button class="flex items-center gap-1.5 px-space-md py-2 border border-line-strong text-ink-1 bg-surface hover:bg-surface-2 rounded-lg font-sub text-sub font-medium transition-colors">
+<span class="material-symbols-outlined text-sub" data-icon="file_upload">file_upload</span>
+<span>批量导入词库</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-md py-2 bg-accent text-on-accent hover:bg-accent-press rounded-lg font-sub text-sub font-medium transition-colors">
+<span class="material-symbols-outlined text-sub" data-icon="add">add</span>
+<span>+ 新增词条</span>
+</button>
+</div>
+</section>
+<!-- 2. 筛选过滤行 (Filter Row) -->
+<section class="bg-surface border border-line rounded-xl px-space-lg py-space-md flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<!-- 筛选：类型 -->
+<div class="flex items-center gap-2">
+<label class="font-sub text-sub text-ink-3">类型</label>
+<select class="h-9 px-space-md bg-surface border border-line rounded-lg font-sub text-sub text-ink-1 focus:outline-none focus:border-accent">
+<option>全部</option>
+<option>高危</option>
+<option>敏感</option>
+</select>
+</div>
+<!-- 筛选：策略 -->
+<div class="flex items-center gap-2">
+<label class="font-sub text-sub text-ink-3">策略</label>
+<select class="h-9 px-space-md bg-surface border border-line rounded-lg font-sub text-sub text-ink-1 focus:outline-none focus:border-accent">
+<option>全部</option>
+<option>阻断</option>
+<option>拦截+引导</option>
+<option>改写</option>
+<option>降级</option>
+</select>
+</div>
+<!-- 筛选：状态 -->
+<div class="flex items-center gap-2">
+<label class="font-sub text-sub text-ink-3">状态</label>
+<select class="h-9 px-space-md bg-surface border border-line rounded-lg font-sub text-sub text-ink-1 focus:outline-none focus:border-accent">
+<option>生效</option>
+<option>草稿</option>
+<option>已停用</option>
+</select>
+</div>
+</div>
+<!-- 关键词搜索框 -->
+<div class="relative w-72">
+<span class="material-symbols-outlined absolute left-3 top-2 text-ink-3 text-sub" data-icon="search">search</span>
+<input class="w-full h-9 pl-9 pr-3 bg-surface border border-line rounded-lg font-sub text-sub text-ink-1 placeholder-ink-3 focus:outline-none focus:border-accent" placeholder="按词条名称 / 逻辑检索..." type="text"/>
+</div>
+</section>
+<!-- 3. 密集型词库规则数据表 (Table Card) -->
+<section class="bg-surface border border-line rounded-xl overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-line font-sub text-caption font-semibold text-ink-2">
+<th class="py-3 px-space-lg">词条</th>
+<th class="py-3 px-space-md">类型</th>
+<th class="py-3 px-space-md">处理策略</th>
+<th class="py-3 px-space-md">阈值档</th>
+<th class="py-3 px-space-md">状态</th>
+<th class="py-3 px-space-md">更新人</th>
+<th class="py-3 px-space-lg text-right">操作</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line font-sub text-sub">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3.5 px-space-lg font-medium text-ink-1">
+<span class="select-all">持续高烧惊厥</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-caption font-medium bg-danger-soft text-danger border border-error-container">高危</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-medium text-danger">阻断</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-numeric text-caption font-semibold bg-surface-2 px-2 py-0.5 rounded text-ink-1">>0.8</span>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-1.5 text-accent font-medium text-caption">
+<span class="w-2 h-2 rounded-full bg-accent inline-block"></span>
+<span>生效</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-ink-2">专家A</td>
+<td class="py-3.5 px-space-lg text-right">
+<button class="text-accent hover:underline font-medium mr-3">编辑</button>
+<button class="text-danger hover:underline font-medium">停用</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3.5 px-space-lg font-medium text-ink-1">
+<span class="select-all">自伤</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-caption font-medium bg-danger-soft text-danger border border-error-container">高危</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-medium text-danger">阻断</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-numeric text-caption font-semibold bg-surface-2 px-2 py-0.5 rounded text-ink-1">>0.8</span>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-1.5 text-accent font-medium text-caption">
+<span class="w-2 h-2 rounded-full bg-accent inline-block"></span>
+<span>生效</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-ink-2">专家A</td>
+<td class="py-3.5 px-space-lg text-right">
+<button class="text-accent hover:underline font-medium mr-3">编辑</button>
+<button class="text-danger hover:underline font-medium">停用</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3.5 px-space-lg font-medium text-ink-1">
+<span class="select-all">抑郁</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-caption font-medium bg-danger-soft text-danger border border-error-container">高危</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-medium text-warn">拦截+引导</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-numeric text-caption font-semibold bg-warn-soft px-2 py-0.5 rounded text-warn">0.5-0.8</span>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-1.5 text-accent font-medium text-caption">
+<span class="w-2 h-2 rounded-full bg-accent inline-block"></span>
+<span>生效</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-ink-2">专家A</td>
+<td class="py-3.5 px-space-lg text-right">
+<button class="text-accent hover:underline font-medium mr-3">编辑</button>
+<button class="text-danger hover:underline font-medium">停用</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3.5 px-space-lg font-medium text-ink-1">
+<span class="select-all font-numeric">每日 N 次</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-caption font-medium bg-secondary-container text-secondary">敏感</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-medium text-ink-2">改写</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-numeric text-caption bg-surface-2 px-2 py-0.5 rounded text-ink-3">规则模式</span>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-1.5 text-accent font-medium text-caption">
+<span class="w-2 h-2 rounded-full bg-accent inline-block"></span>
+<span>生效</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-ink-2">运营C</td>
+<td class="py-3.5 px-space-lg text-right">
+<button class="text-accent hover:underline font-medium mr-3">编辑</button>
+<button class="text-danger hover:underline font-medium">停用</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3.5 px-space-lg font-medium text-ink-1">
+<span class="select-all">包治</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-caption font-medium bg-secondary-container text-secondary">敏感</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-medium text-ink-3">降级</span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-numeric text-caption text-ink-3">--</span>
+</td>
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-1.5 text-accent font-medium text-caption">
+<span class="w-2 h-2 rounded-full bg-accent inline-block"></span>
+<span>生效</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-ink-2">运营C</td>
+<td class="py-3.5 px-space-lg text-right">
+<button class="text-accent hover:underline font-medium mr-3">编辑</button>
+<button class="text-danger hover:underline font-medium">停用</button>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Table Summary / Footer -->
+<div class="px-space-lg py-2.5 bg-surface-container-low border-t border-line flex justify-between items-center text-caption text-ink-3">
+<span>共展现 5 条活跃风控干预定义（全量共 327 条）</span>
+<div class="flex items-center gap-space-sm font-numeric">
+<span>第 1 / 33 页</span>
+<div class="flex gap-1">
+<button class="px-2 py-0.5 bg-surface border border-line rounded text-ink-3 hover:text-ink-1 disabled:opacity-50" disabled="">上一页</button>
+<button class="px-2 py-0.5 bg-surface border border-line rounded text-ink-1 hover:border-line-strong">下一页</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. 配置面板一：两级判定配置（量具刻度与阈值分档） -->
+<section class="bg-surface border border-line rounded-xl p-space-lg flex flex-col gap-space-md">
+<div class="flex items-center justify-between border-b border-line pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-accent" data-icon="square_foot">square_foot</span>
+<h2 class="font-title text-title font-semibold text-ink-1">两级判定配置与量具刻度分档</h2>
+</div>
+<span class="text-caption font-numeric text-ink-3">判定响应时延指标: 14ms (词库命中) / 88ms (语义模型推断)</span>
+</div>
+<!-- 量具刻度带展示 (Calibrated Scale Band) -->
+<div class="bg-surface-container-low border border-line rounded-xl p-space-lg flex flex-col gap-space-md">
+<div class="flex justify-between items-center text-caption font-semibold text-ink-2">
+<span>判定刻度标尺 (Risk Confidence Axis)</span>
+<span class="font-numeric text-ink-3">0.0 ------------------------------------------------ 1.0</span>
+</div>
+<!-- The Physical Scale Track -->
+<div class="relative w-full pt-6 pb-2">
+<!-- Calibrated Visual Band -->
+<div class="h-6 w-full rounded-lg flex overflow-hidden border border-line-strong">
+<!-- Range < 0.5 -->
+<div class="w-[50%] bg-surface-2 flex items-center justify-center border-r border-line relative group">
+<span class="text-caption font-numeric text-ink-3 font-medium">安全 / 弱敏感区 (< 0.5)</span>
+</div>
+<!-- Range 0.5 - 0.8 -->
+<div class="w-[30%] bg-warn-soft flex items-center justify-center border-r border-line relative group">
+<span class="text-caption font-numeric text-warn font-medium">中度灰区 (0.5 - 0.8)</span>
+</div>
+<!-- Range > 0.8 -->
+<div class="w-[20%] bg-danger-soft flex items-center justify-center relative group">
+<span class="text-caption font-numeric text-danger font-medium">绝对高危 (> 0.8)</span>
+</div>
+</div>
+<!-- Ticks & Markers -->
+<div class="relative w-full flex justify-between text-caption font-numeric text-ink-3 mt-1.5 px-0.5">
+<span class="flex flex-col items-center">
+<span class="h-1.5 w-[1px] bg-line-strong -mt-1 mb-0.5"></span>
+                0.0
+              </span>
+<span class="flex flex-col items-center" style="margin-left: -5%;">
+<span class="h-1.5 w-[1px] bg-line-strong -mt-1 mb-0.5"></span>
+                0.5 (灰区基线)
+              </span>
+<span class="flex flex-col items-center" style="margin-right: 5%;">
+<span class="h-1.5 w-[1px] bg-line-strong -mt-1 mb-0.5"></span>
+                0.8 (阻断阈值)
+              </span>
+<span class="flex flex-col items-center">
+<span class="h-1.5 w-[1px] bg-line-strong -mt-1 mb-0.5"></span>
+                1.0
+              </span>
+</div>
+</div>
+<!-- Tier Breakdown Cards (3 Columns) -->
+<div class="grid grid-cols-3 gap-space-md mt-space-xs">
+<!-- Level 1: Hard Intercept -->
+<div class="bg-surface p-space-md border border-line rounded-lg flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 bg-danger text-on-accent text-caption font-semibold rounded">一级硬拦截</span>
+<span class="font-numeric text-caption text-ink-3">毫秒级命中</span>
+</div>
+<div class="font-sub text-sub font-semibold text-ink-1">词库 + 正则匹配</div>
+<p class="font-caption text-caption text-ink-2">
+                命中高危硬词库或固定危急正则直接执行阻断逻辑，不进入后续语义模型计算。
+              </p>
+</div>
+<!-- Level 2: Semantic Model Gray Zone -->
+<div class="bg-surface p-space-md border border-line rounded-lg flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 bg-warn text-on-accent text-caption font-semibold rounded">二级语义判定</span>
+<span class="font-numeric text-caption text-ink-3">仅灰区运算</span>
+</div>
+<div class="font-sub text-sub font-semibold text-ink-1">语义模型评分矩阵</div>
+<p class="font-caption text-caption text-ink-2">
+                评分 >0.8 强制拦截；评分在 0.5-0.8 区间内执行“拦截并注入儿科就诊指引”。
+              </p>
+</div>
+<!-- Level 3: Gray-below sampling -->
+<div class="bg-surface p-space-md border border-line rounded-lg flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 bg-secondary text-on-accent text-caption font-semibold rounded">灰区以下治理</span>
+<span class="font-numeric text-caption text-ink-3">< 0.5 放行</span>
+</div>
+<div class="font-sub text-sub font-semibold text-ink-1">放行与动态抽检</div>
+<p class="font-caption text-caption text-ink-2">
+                正常放行交互并自动打标，按 5% 概率自动纳入次日专家双盲抽检池。
+              </p>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. 配置面板二：医疗 / 兽药模式规则（模式规则引擎） -->
+<section class="bg-surface border border-line rounded-xl p-space-lg flex flex-col gap-space-md">
+<div class="flex items-center justify-between border-b border-line pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-accent" data-icon="code_blocks">code_blocks</span>
+<h2 class="font-title text-title font-semibold text-ink-1">医疗 / 兽药模式规则引擎 (RegEx Pattern Engine)</h2>
+</div>
+<span class="text-caption text-ink-3">语法环境：PCRE2 / 编译后加载于边缘拦截网关</span>
+</div>
+<div class="grid grid-cols-12 gap-space-lg">
+<!-- 正则表达式展示卡片 -->
+<div class="col-span-8 flex flex-col gap-space-sm">
+<div class="flex justify-between items-center">
+<label class="font-sub text-sub text-ink-2 font-medium">核心捕获表达式：儿童及宠物用药频率防诱导模式</label>
+<span class="font-caption text-caption text-accent font-medium">版本：v2.4.19</span>
+</div>
+<div class="bg-surface-container-low border border-line-strong rounded-lg p-space-md font-numeric text-sub text-ink-1 flex items-center justify-between select-all">
+<span class="text-primary font-semibold">药名 + (mg/kg|片|ml|每日 N 次)</span>
+<button class="text-ink-3 hover:text-accent flex items-center" title="复制表达式">
+<span class="material-symbols-outlined text-sub" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+<div class="flex gap-space-sm items-center font-caption text-caption text-ink-3">
+<span class="material-symbols-outlined text-caption text-accent" data-icon="info">info</span>
+<span>说明：限制无执业医师资质场景下生成确切服药剂量方案与用药频次推荐。</span>
+</div>
+</div>
+<!-- 操作与实时测试 -->
+<div class="col-span-4 flex flex-col justify-end gap-space-sm">
+<div class="flex gap-space-sm">
+<button class="flex-1 py-2 px-space-md border border-line-strong text-ink-1 bg-surface hover:bg-surface-2 rounded-lg font-sub text-sub font-medium transition-colors text-center">
+                编辑规则
+              </button>
+<button class="flex-1 py-2 px-space-md bg-accent-soft text-accent hover:bg-surface-2 border border-accent-line rounded-lg font-sub text-sub font-medium transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sub" data-icon="play_arrow">play_arrow</span>
+<span>规则测试</span>
+</button>
+</div>
+<div class="p-2 bg-surface-2 border border-line rounded text-caption text-ink-3 flex items-center justify-between">
+<span>输入样例命中: <span class="font-numeric text-danger font-semibold">“美林 每日 3 次”</span></span>
+<span class="text-danger font-medium">100% 触发</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. 底部留痕与生效条 (Audit & Rollback Footer Bar) -->
+<footer class="bg-surface border border-line rounded-xl p-space-lg flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<button class="flex items-center gap-1.5 px-space-md py-1.5 bg-surface border border-line text-ink-1 hover:bg-surface-2 rounded-lg font-sub text-sub font-medium transition-colors">
+<span class="material-symbols-outlined text-sub" data-icon="view_list">view_list</span>
+<span>命中日志</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-md py-1.5 bg-surface border border-line text-ink-1 hover:bg-surface-2 rounded-lg font-sub text-sub font-medium transition-colors">
+<span class="material-symbols-outlined text-sub" data-icon="manage_history">manage_history</span>
+<span>变更留痕</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-md py-1.5 bg-surface border border-error text-danger hover:bg-danger-soft rounded-lg font-sub text-sub font-medium transition-colors">
+<span class="material-symbols-outlined text-sub" data-icon="restore">restore</span>
+<span>一键回滚配置</span>
+</button>
+</div>
+<div class="flex items-center gap-space-md">
+<span class="font-numeric text-caption text-ink-3">当前节点：HA-Risk-Core-03 (上海主集群)</span>
+<button class="px-space-xl py-2 bg-accent text-on-accent rounded-lg font-sub text-sub font-semibold hover:bg-accent-press transition-colors shadow-sm">
+              发布并全量同步
+            </button>
+</div>
+</div>
+<div class="border-t border-line pt-space-xs flex items-center justify-between text-caption text-ink-3">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-caption text-warn" data-icon="warning">warning</span>
+<span>词库变更直接影响线上拦截，保存后 1 分钟内全量生效并记录版本。</span>
+</div>
+<span class="font-numeric">操作流水号: JIABAN-CR-20250518-0912</span>
+</div>
+</footer>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,82 @@
+# =====================================================================
+# 小光景 HomeBud - CI 流水线（.github/workflows/ci.yml）
+# 口径与 scripts/ci_gate.ps1 一致：后端测试(pytest) + 契约校验
+#   (contract_check) + 前端构建(npm run build)；任一环节失败即中止，
+#   GitHub Actions 以退出码 1 标红。
+# 数据库：服务容器 postgres:16 与 tests/conftest.py 无 backend/.env 时的
+#   默认连接串 postgres:postgres@localhost:5432/jiaban 对齐
+#   （pytest 使用独立测试库 jiaban_test，由 conftest.py 自行创建）。
+# =====================================================================
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    name: 后端测试 + 契约校验 + 前端构建
+    # 注：GitHub Actions 的 services 服务容器仅支持 Linux runner，
+    # 故 CI 使用 ubuntu-latest（本地 Windows 门禁仍走 scripts/ci_gate.ps1）
+    runs-on: ubuntu-latest
+
+    # PostgreSQL 16 服务容器（pytest 需要 DB 可达）
+    services:
+      postgres:
+        image: postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: jiaban
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      LLM_MOCK: "true"  # 模拟 LLM 模式：加速且结果确定
+
+    steps:
+      # ---------- 1. 检出代码 ----------
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      # ---------- 2. 安装 Python 3.12 ----------
+      - name: 安装 Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # ---------- 3. 安装后端依赖 ----------
+      - name: 安装后端依赖
+        run: pip install -r backend/requirements.txt
+
+      # ---------- 4. 后端测试（独立测试库 jiaban_test） ----------
+      - name: 后端测试（pytest）
+        working-directory: backend
+        run: python -m pytest tests -q
+
+      # ---------- 5. 契约校验（前端调用 × OpenAPI + 文档完整性门禁） ----------
+      - name: 契约校验（contract_check）
+        working-directory: backend
+        run: python scripts/contract_check.py
+
+      # ---------- 6. 安装 Node 20 ----------
+      - name: 安装 Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # ---------- 7. 安装前端依赖（按 lockfile 严格安装） ----------
+      - name: 安装前端依赖
+        working-directory: frontend
+        run: npm ci
+
+      # ---------- 8. 前端构建 ----------
+      - name: 前端构建
+        working-directory: frontend
+        run: npm run build

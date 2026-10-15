@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>记录详情</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=-apple-system,+BlinkMacSystemFont,+PingFang+SC,+system-ui,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-high": "#e6e9e7",
+            "background": "#f7faf8",
+            "on-secondary-fixed-variant": "#384a47",
+            "ink-2": "#455754",
+            "tertiary": "#723622",
+            "bg": "#F2F5F4",
+            "on-surface": "#181c1b",
+            "warn": "#7A5600",
+            "error": "#ba1a1a",
+            "line": "#D5DEDB",
+            "ink-1": "#0F1E1C",
+            "accent": "#0A6B60",
+            "on-primary-fixed-variant": "#005048",
+            "surface-dim": "#d7dbd9",
+            "on-accent": "#FFFFFF",
+            "line-strong": "#B4C3BF",
+            "surface-variant": "#e0e3e1",
+            "on-tertiary": "#ffffff",
+            "surface-2": "#E9EFED",
+            "surface": "#FFFFFF",
+            "accent-line": "#8FBFB7",
+            "tertiary-fixed-dim": "#ffb59d",
+            "on-primary": "#ffffff",
+            "danger-soft": "#F7E4E2",
+            "on-secondary": "#ffffff",
+            "tertiary-container": "#8f4d37",
+            "inverse-primary": "#85d5c7",
+            "on-tertiary-fixed-variant": "#713621",
+            "outline": "#6f7976",
+            "on-secondary-container": "#566865",
+            "on-tertiary-container": "#ffcfc0",
+            "tertiary-fixed": "#ffdbd0",
+            "ink-3": "#5F6F6C",
+            "surface-container-low": "#f1f4f2",
+            "on-surface-variant": "#3e4946",
+            "surface-container-highest": "#e0e3e1",
+            "primary-fixed-dim": "#85d5c7",
+            "inverse-surface": "#2d3130",
+            "error-container": "#ffdad6",
+            "accent-press": "#074E46",
+            "danger": "#A8231B",
+            "on-error-container": "#93000a",
+            "surface-container": "#ebefec",
+            "secondary-fixed-dim": "#b7cbc7",
+            "primary-fixed": "#a1f1e3",
+            "secondary-container": "#d3e7e2",
+            "inverse-on-surface": "#eef1ef",
+            "on-primary-fixed": "#00201c",
+            "secondary-fixed": "#d3e7e2",
+            "warn-soft": "#F6EDD8",
+            "secondary": "#50625f",
+            "on-error": "#ffffff",
+            "surface-tint": "#086a5f",
+            "accent-soft": "#E1EFEC",
+            "on-secondary-fixed": "#0d1f1c",
+            "surface-container-lowest": "#ffffff",
+            "on-background": "#181c1b",
+            "on-primary-container": "#98e8da",
+            "primary": "#005148",
+            "surface-bright": "#f7faf8",
+            "on-tertiary-fixed": "#390c00",
+            "outline-variant": "#bec9c5",
+            "primary-container": "#0a6b60"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "6px",
+            "margin": "16px",
+            "space-xl": "32px",
+            "gutter": "16px",
+            "space-sm": "8px",
+            "space-md": "16px",
+            "space-xxl": "48px",
+            "space-lg": "24px"
+          },
+          "fontFamily": {
+            "title": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "sub": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "caption": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "body": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "display": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "numeric": ["\"ui-monospace, SF Mono, Consolas, monospace\""]
+          },
+          "fontSize": {
+            "title": ["19px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "sub": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "caption": ["12px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "body": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "display": ["23px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "numeric": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* 精密标尺刻度背景纹理 */
+    .ruler-ticks {
+      background-image: repeating-linear-gradient(to right, #B4C3BF 0, #B4C3BF 1px, transparent 1px, transparent 8px);
+    }
+    .ruler-ticks-sm {
+      background-image: repeating-linear-gradient(to right, #D5DEDB 0, #D5DEDB 1px, transparent 1px, transparent 4px);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased flex justify-center items-start min-h-screen">
+<!-- 画布模拟容器 (375x812 移动端基准) -->
+<div class="w-full max-w-[375px] min-h-screen bg-bg flex flex-col relative shadow-sm overflow-x-hidden pb-[92px]">
+<!-- 微信小程序胶囊与状态栏模拟 -->
+<div class="w-full bg-surface pt-3 px-4 flex justify-between items-center text-ink-3">
+<span class="font-numeric text-caption tracking-tight">09:41</span>
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-[14px]">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[14px]">wifi</span>
+<span class="material-symbols-outlined text-[16px]">battery_full</span>
+</div>
+</div>
+<!-- 顶部导航栏 (遵从 Shared Components JSON 顶层规范) -->
+<header class="bg-surface sticky top-0 z-40 w-full flex justify-between items-center px-4 h-12 border-b border-line">
+<!-- 返回箭头与页面标题 -->
+<div class="flex items-center space-x-2">
+<button aria-label="返回上一页" class="w-8 h-8 -ml-1 flex items-center justify-center text-primary rounded-lg hover:bg-surface-variant transition-all active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[22px]">chevron_left</span>
+</button>
+<h1 class="font-title text-title text-ink-1 tracking-tight">记录详情</h1>
+</div>
+<!-- 微信小程序标准胶囊按键模拟 -->
+<div class="flex items-center bg-surface-container-low border border-line-strong rounded-full px-2.5 py-1 space-x-2">
+<button aria-label="小程序操作" class="flex items-center justify-center text-ink-2 hover:text-ink-1" type="button">
+<span class="material-symbols-outlined text-[16px]">more_horiz</span>
+</button>
+<div class="w-[1px] h-3 bg-line-strong"></div>
+<button aria-label="关闭小程序" class="flex items-center justify-center text-ink-2 hover:text-ink-1" type="button">
+<span class="material-symbols-outlined text-[14px]">radio_button_checked</span>
+</button>
+</div>
+</header>
+<!-- 主体内容滚动区域 -->
+<main class="flex-1 flex flex-col w-full px-4 pt-3 space-y-3">
+<!-- 1. 顶部元信息标尺栏 (精密量具刻度架构) -->
+<section class="bg-surface rounded-xl border border-line overflow-hidden p-3 relative">
+<!-- 顶部微型刻度尺 -->
+<div class="h-1.5 w-full ruler-ticks mb-2.5 opacity-70"></div>
+<div class="flex items-start justify-between">
+<div class="space-y-1">
+<div class="flex items-center space-x-1.5">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-lg bg-surface-2 text-primary font-caption text-caption border border-accent-line">
+                刻度编号 2026-0918-QA
+              </span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-lg bg-accent-soft text-accent font-caption text-caption font-semibold">
+                会员内容
+              </span>
+</div>
+<p class="font-caption text-caption text-ink-2 leading-relaxed pt-0.5">
+              记录类型：问答（会员内容） · 关联档案：咪咪（英短·3岁） · 时间：<span class="font-numeric text-ink-1">2026-09-18 09:12</span>
+</p>
+</div>
+<span class="material-symbols-outlined text-outline text-[20px] flex-shrink-0 ml-1">history</span>
+</div>
+<!-- 底部精密定位标尺线条 -->
+<div class="mt-2.5 pt-2 border-t border-line flex items-center justify-between font-numeric text-caption text-ink-3 text-[10px]">
+<span>基准标定点：0.00</span>
+<span class="text-accent font-semibold">校准等级：精准档案级</span>
+<span>采样率：100%</span>
+</div>
+</section>
+<!-- 2. 会员到期只读状态条 (陈黄浅色背景 warn-soft) -->
+<aside class="bg-warn-soft border border-line-strong rounded-xl p-3 flex items-start space-x-2.5">
+<span class="material-symbols-outlined text-warn text-[18px] flex-shrink-0 mt-0.5">lock</span>
+<div class="flex-1">
+<div class="flex items-center space-x-1">
+<h2 class="font-sub text-sub font-semibold text-warn">会员已到期，内容只读</h2>
+</div>
+<p class="font-caption text-caption text-warn mt-0.5 leading-relaxed">
+            到期后不再生成新内容，历史记录永久保留只读
+          </p>
+</div>
+<span class="material-symbols-outlined text-warn text-[16px] opacity-60 self-center">verified_user</span>
+</aside>
+<!-- 3. 问答核心内容卡片 -->
+<article class="bg-surface rounded-xl border border-line p-4 space-y-4 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+<!-- 问题标题区 -->
+<div class="pb-3 border-b border-line">
+<div class="flex items-center space-x-1.5 mb-1.5">
+<span class="w-1.5 h-3.5 bg-accent rounded-sm"></span>
+<span class="font-caption text-caption text-ink-3">咨询提问</span>
+</div>
+<h2 class="font-title text-title text-ink-1 font-semibold leading-snug">
+            咪咪频繁哈气，怎么安抚？
+          </h2>
+</div>
+<!-- 刻度分节 1：行为含义 -->
+<section class="space-y-1.5 bg-surface-container-low rounded-xl p-3 border border-line">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-1.5">
+<span class="inline-block w-4 h-4 rounded-full bg-accent text-on-accent text-center font-numeric text-[11px] leading-4">1</span>
+<h3 class="font-sub text-sub font-semibold text-ink-1">【行为含义】</h3>
+</div>
+<!-- 量具指标轻量刻度条 -->
+<div class="flex items-center space-x-1">
+<span class="font-caption text-[11px] text-ink-3">应激度</span>
+<div class="w-12 h-1.5 bg-line rounded-full overflow-hidden flex">
+<div class="w-8 h-full bg-accent"></div>
+</div>
+</div>
+</div>
+<p class="font-sub text-sub text-ink-2 leading-relaxed pl-5">
+            哈气多表示紧张或防卫警告，需结合当时情境判断（个体存在差异）。
+          </p>
+</section>
+<!-- 刻度分节 2：建议应对 -->
+<section class="space-y-1.5 bg-surface-container-low rounded-xl p-3 border border-line">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-1.5">
+<span class="inline-block w-4 h-4 rounded-full bg-accent text-on-accent text-center font-numeric text-[11px] leading-4">2</span>
+<h3 class="font-sub text-sub font-semibold text-ink-1">【建议应对】</h3>
+</div>
+<span class="font-caption text-[11px] text-accent font-medium px-1.5 py-0.5 rounded bg-accent-soft">缓和介入</span>
+</div>
+<p class="font-sub text-sub text-ink-2 leading-relaxed pl-5">
+            停止强行抱猫，留出高处躲避退路，用零食建立正向联结后再接近。
+          </p>
+</section>
+<!-- 刻度分节 3：何时需就医 -->
+<section class="space-y-1.5 bg-danger-soft rounded-xl p-3 border border-line">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-1.5">
+<span class="inline-block w-4 h-4 rounded-full bg-danger text-on-error text-center font-numeric text-[11px] leading-4">3</span>
+<h3 class="font-sub text-sub font-semibold text-danger">【何时需就医】</h3>
+</div>
+<span class="inline-flex items-center text-danger font-caption text-[11px]">
+<span class="material-symbols-outlined text-[13px] mr-0.5">medical_services</span>
+              医疗警戒
+            </span>
+</div>
+<p class="font-sub text-sub text-danger leading-relaxed pl-5 font-normal">
+            伴随呕吐、拒食或呼吸急促时尽快联系线下执业兽医。
+          </p>
+</section>
+<!-- 4. 追溯提示条（知识库更新/回滚提示） -->
+<div class="bg-warn-soft border border-line-strong rounded-xl p-3 flex items-start space-x-2">
+<span class="material-symbols-outlined text-warn text-[18px] flex-shrink-0 mt-0.5">update</span>
+<div class="flex-1">
+<div class="flex items-center space-x-1.5">
+<span class="font-caption text-caption font-semibold text-warn">内容已更新</span>
+<button class="font-caption text-caption text-primary underline underline-offset-2 font-medium" type="button">
+                [查看说明]
+              </button>
+</div>
+<p class="font-caption text-caption text-warn mt-0.5 leading-relaxed">
+              该回答依据的知识库条目已回滚；历史内容不追溯重写，仅作状态标记。
+            </p>
+</div>
+</div>
+<!-- 5. 卡片底部常驻免责声明与 AI 生成内容标识 -->
+<div class="pt-2 border-t border-line flex flex-col space-y-1">
+<div class="flex items-center justify-between font-caption text-caption text-ink-3">
+<span class="flex items-center">
+<span class="material-symbols-outlined text-[14px] text-accent mr-1">smart_toy</span>
+              本建议由智能算法模型结合养宠规范辅助生成
+            </span>
+<span class="font-numeric text-[11px]">模型版本：4.2-标定</span>
+</div>
+<p class="font-caption text-[11px] text-ink-3 leading-tight opacity-80">
+            免责声明：分析结论仅供日常护理参考，不可替代专业动物诊疗机构之临床诊断与治疗方案。
+          </p>
+</div>
+</article>
+<!-- 刻度校准脚标区 -->
+<div class="py-2 flex items-center justify-center space-x-2 text-ink-3 font-caption text-[11px]">
+<div class="w-6 h-[1px] bg-line-strong"></div>
+<span>已进入存档保护模式 · 无法修改条目</span>
+<div class="w-6 h-[1px] bg-line-strong"></div>
+</div>
+</main>
+<!-- 6. 底部固定操作栏 -->
+<footer class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[375px] z-50 bg-surface border-t border-line px-4 py-2.5 flex items-center justify-between shadow-[0_-2px_6px_rgba(0,0,0,0.02)]">
+<!-- 左侧次级操作：反馈、举报 -->
+<div class="flex items-center space-x-3">
+<button class="flex flex-col items-center justify-center text-ink-2 hover:text-primary transition-colors active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[20px]">rate_review</span>
+<span class="font-caption text-caption text-ink-2 mt-0.5">反馈</span>
+</button>
+<div class="w-[1px] h-6 bg-line"></div>
+<button class="flex flex-col items-center justify-center text-ink-2 hover:text-danger transition-colors active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[20px]">flag</span>
+<span class="font-caption text-caption text-ink-2 mt-0.5">举报</span>
+</button>
+</div>
+<!-- 右侧主操作：重新生成（会员专属）置灰禁用态，注明到期只读 -->
+<div class="flex items-center">
+<button aria-disabled="true" class="h-11 px-4 rounded-xl bg-surface-container text-ink-3 border border-line flex flex-col items-center justify-center cursor-not-allowed opacity-80 select-none" disabled="" type="button">
+<div class="flex items-center space-x-1">
+<span class="material-symbols-outlined text-[16px] text-ink-3">lock</span>
+<span class="font-sub text-sub font-semibold text-ink-3 leading-none">重新生成（会员专属）</span>
+</div>
+<span class="font-caption text-[10px] text-ink-3 leading-tight mt-0.5">会员到期只读</span>
+</button>
+</div>
+</footer>
+</div>
+</body></html>

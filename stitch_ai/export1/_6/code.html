@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>家伴后台管理系统 - 个人信息权利请求处理与系统开关</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=-apple-system,+BlinkMacSystemFont,+PingFang+SC,+system-ui,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-container": "#ffcfc0",
+            "surface-container-highest": "#e0e3e1",
+            "on-primary": "#ffffff",
+            "inverse-primary": "#85d5c7",
+            "primary-container": "#0a6b60",
+            "on-secondary-container": "#566865",
+            "accent-line": "#8FBFB7",
+            "on-tertiary-fixed": "#390c00",
+            "surface-bright": "#f7faf8",
+            "on-primary-container": "#98e8da",
+            "error-container": "#ffdad6",
+            "secondary": "#50625f",
+            "accent-soft": "#E1EFEC",
+            "ink-2": "#455754",
+            "ink-3": "#5F6F6C",
+            "on-surface-variant": "#3e4946",
+            "ink-1": "#0F1E1C",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed-dim": "#ffb59d",
+            "warn": "#7A5600",
+            "on-primary-fixed-variant": "#005048",
+            "primary-fixed-dim": "#85d5c7",
+            "outline-variant": "#bec9c5",
+            "accent": "#0A6B60",
+            "warn-soft": "#F6EDD8",
+            "secondary-fixed-dim": "#b7cbc7",
+            "error": "#ba1a1a",
+            "primary-fixed": "#a1f1e3",
+            "outline": "#6f7976",
+            "surface": "#FFFFFF",
+            "on-secondary-fixed-variant": "#384a47",
+            "on-primary-fixed": "#00201c",
+            "inverse-on-surface": "#eef1ef",
+            "secondary-fixed": "#d3e7e2",
+            "surface-2": "#E9EFED",
+            "surface-container": "#ebefec",
+            "surface-variant": "#e0e3e1",
+            "background": "#f7faf8",
+            "inverse-surface": "#2d3130",
+            "on-tertiary-fixed-variant": "#713621",
+            "on-accent": "#FFFFFF",
+            "bg": "#F2F5F4",
+            "on-background": "#181c1b",
+            "secondary-container": "#d3e7e2",
+            "surface-container-low": "#f1f4f2",
+            "on-secondary-fixed": "#0d1f1c",
+            "danger": "#A8231B",
+            "on-error-container": "#93000a",
+            "tertiary": "#723622",
+            "surface-dim": "#d7dbd9",
+            "accent-press": "#074E46",
+            "primary": "#005148",
+            "surface-tint": "#086a5f",
+            "surface-container-high": "#e6e9e7",
+            "line": "#D5DEDB",
+            "on-surface": "#181c1b",
+            "danger-soft": "#F7E4E2",
+            "tertiary-fixed": "#ffdbd0",
+            "tertiary-container": "#8f4d37",
+            "line-strong": "#B4C3BF",
+            "on-secondary": "#ffffff",
+            "on-error": "#ffffff",
+            "on-tertiary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin": "16px",
+            "space-sm": "8px",
+            "space-xxl": "48px",
+            "space-xl": "32px",
+            "gutter": "16px",
+            "space-md": "16px",
+            "space-lg": "24px",
+            "space-xs": "6px"
+          },
+          "fontFamily": {
+            "display": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "title": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "numeric": ["\"ui-monospace, SF Mono, Consolas, monospace\""],
+            "sub": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "body": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "caption": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""]
+          },
+          "fontSize": {
+            "display": ["23px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "title": ["19px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "numeric": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "sub": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "body": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "caption": ["12px", { "lineHeight": "1.5", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-bg text-ink-1 min-h-screen flex font-body antialiased selection:bg-accent-soft selection:text-accent">
+<!-- ==================== 左侧导航栏 SideNavBar (240px) ==================== -->
+<aside class="w-60 h-screen fixed left-0 top-0 flex flex-col justify-between py-space-lg px-space-md border-r border-line bg-surface z-30 select-none">
+<div class="flex flex-col gap-space-md">
+<!-- 品牌标识 -->
+<div class="flex items-center gap-space-sm px-space-sm pb-space-sm border-b border-line">
+<div class="w-8 h-8 rounded-xl bg-accent text-on-accent flex items-center justify-center font-title font-semibold shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="shield_with_heart">shield_with_heart</span>
+</div>
+<div>
+<h1 class="font-title text-title font-semibold text-ink-1 tracking-tight leading-none">家伴管理中心</h1>
+<p class="font-caption text-caption text-ink-3 mt-1 leading-none">临床级智能监护平台</p>
+</div>
+</div>
+<!-- 快捷创建操作 -->
+<button class="w-full flex items-center justify-center gap-space-xs bg-surface-2 hover:bg-line border border-line-strong text-ink-1 font-sub text-sub font-medium py-2 rounded-xl transition-colors duration-150 cursor-pointer active:scale-[0.99]">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+<span>新建知识文档</span>
+</button>
+<!-- 主导航链接列表 -->
+<nav class="flex flex-col gap-1 mt-space-xs">
+<!-- 1. 知识库管理 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer active:scale-[0.99]" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="auto_stories">auto_stories</span>
+<span class="font-sub text-sub">知识库管理</span>
+</a>
+<!-- 2. 词库维护 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer active:scale-[0.99]" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="spellcheck">spellcheck</span>
+<span class="font-sub text-sub">词库维护</span>
+</a>
+<!-- 3. Agent调用日志 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer active:scale-[0.99]" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="terminal">terminal</span>
+<span class="font-sub text-sub">Agent调用日志</span>
+</a>
+<!-- 4. 反馈与举报 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer active:scale-[0.99]" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="flag">flag</span>
+<span class="font-sub text-sub">反馈与举报</span>
+</a>
+<!-- 5. 高风险事件 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer active:scale-[0.99]" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="warning">warning</span>
+<span class="font-sub text-sub">高风险事件</span>
+</a>
+<!-- 6. 权利请求 (高亮1) -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg bg-accent-soft text-accent font-medium transition-colors duration-150 cursor-pointer active:scale-[0.99]" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="shield_person" data-weight="fill" style="font-variation-settings: 'FILL' 1;">shield_person</span>
+<span class="font-sub text-sub font-semibold">权利请求</span>
+<span class="ml-auto bg-accent text-on-accent text-[11px] px-1.5 py-0.5 rounded-full font-numeric font-medium">3</span>
+</a>
+<!-- 7. 系统开关与配置 (高亮2) -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg bg-accent-soft text-accent font-medium transition-colors duration-150 cursor-pointer active:scale-[0.99]" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[20px]" data-icon="tune" data-weight="fill" style="font-variation-settings: 'FILL' 1;">tune</span>
+<span class="font-sub text-sub font-semibold">系统开关与配置</span>
+</a>
+</nav>
+</div>
+<!-- 侧边栏底部审计与监控 -->
+<div class="border-t border-line pt-space-sm flex flex-col gap-1">
+<a class="flex items-center gap-space-sm px-space-md py-2 rounded-lg text-ink-3 hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[18px]" data-icon="history">history</span>
+<span class="font-sub text-sub">审计记录</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-2 rounded-lg text-ink-3 hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150 cursor-pointer" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[18px]" data-icon="monitoring">monitoring</span>
+<span class="font-sub text-sub">系统监控</span>
+</a>
+<div class="mt-2 px-space-md py-1.5 bg-surface-2 rounded-lg flex items-center justify-between text-ink-3">
+<span class="font-caption text-caption flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-accent inline-block"></span>
+          合规准则在线
+        </span>
+<span class="font-caption text-caption font-numeric text-[11px]">v3.4.1</span>
+</div>
+</div>
+</aside>
+<!-- ==================== 顶部导航栏 TopNavBar ==================== -->
+<header class="fixed top-0 right-0 left-60 h-16 px-space-lg flex justify-between items-center bg-surface border-b border-line z-20">
+<div class="flex items-center gap-space-md">
+<div class="font-title text-title font-semibold text-ink-1 flex items-center gap-space-sm">
+<span>家伴后台管理系统</span>
+<span class="text-line-strong font-normal">/</span>
+<span class="font-sub text-sub font-normal text-ink-2">PA-08 个人信息权利请求处理与系统开关</span>
+</div>
+</div>
+<!-- 右侧操作与管理员身份 -->
+<div class="flex items-center gap-space-md">
+<!-- 辅助功能入口 -->
+<button class="flex items-center gap-1 text-ink-2 hover:text-accent font-sub text-sub px-2.5 py-1.5 rounded-lg hover:bg-surface-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="help_outline">help_outline</span>
+<span>合规文档</span>
+</button>
+<button class="relative p-2 text-ink-2 hover:text-ink-1 hover:bg-surface-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-danger"></span>
+</button>
+<div class="h-5 w-[1px] bg-line"></div>
+<!-- 超级管理员账号信息 -->
+<div class="flex items-center gap-space-sm bg-surface-2 px-3 py-1.5 rounded-full border border-line">
+<div class="w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-numeric text-[11px] font-bold">
+          AD
+        </div>
+<div class="flex items-center gap-2">
+<span class="font-caption text-caption font-medium text-ink-1">admin@jiaban</span>
+<span class="text-[11px] px-1.5 py-0.2 bg-accent-soft text-accent rounded font-medium">超级管理员</span>
+</div>
+<button class="text-ink-3 hover:text-danger font-caption text-caption ml-1 font-medium hover:underline transition-colors cursor-pointer">
+          [退出]
+        </button>
+</div>
+</div>
+</header>
+<!-- ==================== 内容主体区 (1200px 居中) ==================== -->
+<main class="ml-60 pt-16 flex-1 min-h-screen pb-space-xxl">
+<div class="w-full max-w-[1200px] mx-auto px-space-md pt-space-lg flex flex-col gap-space-lg">
+<!-- ==================== 模块一：个人信息权利请求处理 ==================== -->
+<section class="bg-surface rounded-xl border border-line p-space-lg shadow-sm flex flex-col gap-space-md">
+<!-- 1. 标题与操作栏 -->
+<div class="flex items-center justify-between border-b border-line pb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-accent text-[26px]" data-icon="shield_person">shield_person</span>
+<h2 class="font-title text-title font-semibold text-ink-1">
+              个人信息权利请求
+              <span class="ml-2 font-numeric text-sub font-normal text-danger bg-danger-soft px-2 py-0.5 rounded-full">待处理 3</span>
+</h2>
+<span class="font-caption text-caption text-ink-3">依据《个人信息保护法》第四章与GDPR响应周期标准</span>
+</div>
+<button class="flex items-center gap-space-xs bg-surface-container-low hover:bg-surface-2 border border-line-strong text-ink-1 px-3.5 py-2 rounded-lg font-sub text-sub font-medium transition-colors cursor-pointer active:scale-[0.99]">
+<span class="material-symbols-outlined text-[18px]" data-icon="file_download">file_download</span>
+<span>导出处理记录</span>
+</button>
+</div>
+<!-- 2. 筛选控制组 -->
+<div class="flex flex-wrap items-center justify-between gap-space-md bg-surface-bright p-3 rounded-lg border border-line">
+<div class="flex flex-wrap items-center gap-3">
+<span class="font-sub text-sub text-ink-2 font-medium">快捷筛选：</span>
+<!-- 类型下拉 -->
+<div class="relative">
+<select class="appearance-none bg-surface border border-line rounded-lg px-3 py-1.5 pr-8 font-sub text-sub text-ink-1 focus:outline-none focus:border-accent cursor-pointer">
+<option>全部权利类型 ▾</option>
+<option>查阅与复制</option>
+<option>更正与补充</option>
+<option>删除个人数据</option>
+<option>撤回知情同意</option>
+<option>账号注销</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-[18px] text-ink-3 pointer-events-none" data-icon="arrow_drop_down">arrow_drop_down</span>
+</div>
+<!-- 状态下拉 -->
+<div class="relative">
+<select class="appearance-none bg-surface border border-line rounded-lg px-3 py-1.5 pr-8 font-sub text-sub text-ink-1 focus:outline-none focus:border-accent cursor-pointer">
+<option>待处理 ▾</option>
+<option>处理中</option>
+<option>已完成</option>
+<option>已合规拒绝</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-[18px] text-ink-3 pointer-events-none" data-icon="arrow_drop_down">arrow_drop_down</span>
+</div>
+<!-- SLA下拉 -->
+<div class="relative">
+<select class="appearance-none bg-surface border border-line rounded-lg px-3 py-1.5 pr-8 font-sub text-sub text-ink-1 focus:outline-none focus:border-accent cursor-pointer">
+<option>即将超时 ▾</option>
+<option>全部 SLA 状态</option>
+<option>紧急 (< 24h)</option>
+<option>正常周期内</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-[18px] text-ink-3 pointer-events-none" data-icon="arrow_drop_down">arrow_drop_down</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-caption text-caption text-ink-3">法定响应基线：15 个工作日内</span>
+<div class="w-2 h-2 rounded-full bg-accent"></div>
+</div>
+</div>
+<!-- 3. 数据表格 -->
+<div class="overflow-x-auto rounded-lg border border-line bg-surface">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-2 text-ink-2 font-sub text-sub border-b border-line">
+<th class="py-2.5 px-4 font-medium">请求号</th>
+<th class="py-2.5 px-4 font-medium">权利类型</th>
+<th class="py-2.5 px-4 font-medium">用户ID</th>
+<th class="py-2.5 px-4 font-medium">SLA剩余</th>
+<th class="py-2.5 px-4 font-medium">处理状态</th>
+<th class="py-2.5 px-4 font-medium">处理人</th>
+<th class="py-2.5 px-4 font-medium text-right">操作</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line font-sub text-sub">
+<!-- 行1：选中态 -->
+<tr class="bg-accent-soft/40 border-l-4 border-l-accent transition-colors">
+<td class="py-3 px-4 font-numeric font-medium text-ink-1">P-0041</td>
+<td class="py-3 px-4 font-medium text-ink-1 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-accent" data-icon="data_object">data_object</span>
+                  复制与导出 (JSON)
+                </td>
+<td class="py-3 px-4 font-numeric text-ink-2">u_2381</td>
+<td class="py-3 px-4">
+<span class="font-numeric font-medium text-warn bg-warn-soft px-2 py-0.5 rounded text-[13px]">剩 3 天</span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 text-accent font-medium text-[13px]">
+<span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
+                    处理中
+                  </span>
+</td>
+<td class="py-3 px-4 text-ink-2">专员A</td>
+<td class="py-3 px-4 text-right">
+<span class="inline-flex items-center px-3 py-1 rounded bg-accent text-on-accent text-[13px] font-medium shadow-sm">
+                    进入处理
+                  </span>
+</td>
+</tr>
+<!-- 行2 -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3 px-4 font-numeric font-medium text-ink-1">P-0042</td>
+<td class="py-3 px-4 text-ink-1 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-ink-3" data-icon="undo">undo</span>
+                  撤回同意
+                </td>
+<td class="py-3 px-4 font-numeric text-ink-2">u_2390</td>
+<td class="py-3 px-4">
+<span class="font-numeric text-ink-2 bg-surface-2 px-2 py-0.5 rounded text-[13px]">剩 5 天</span>
+</td>
+<td class="py-3 px-4 text-ink-3 font-medium text-[13px]">待处理</td>
+<td class="py-3 px-4 text-ink-3">--</td>
+<td class="py-3 px-4 text-right">
+<button class="text-accent hover:text-accent-press font-medium text-[13px] hover:underline cursor-pointer">
+                    [处理]
+                  </button>
+</td>
+</tr>
+<!-- 行3：红色紧急 -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3 px-4 font-numeric font-medium text-ink-1">P-0043</td>
+<td class="py-3 px-4 text-ink-1 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-danger" data-icon="delete_forever">delete_forever</span>
+                  删除个人数据
+                </td>
+<td class="py-3 px-4 font-numeric text-ink-2">u_2402</td>
+<td class="py-3 px-4">
+<span class="font-numeric font-bold text-danger bg-danger-soft px-2 py-0.5 rounded text-[13px] border border-danger/20 flex items-center gap-1 w-max">
+<span class="material-symbols-outlined text-[14px]" data-icon="alarm">alarm</span>
+                    剩 1 天 (红色紧急SLA)
+                  </span>
+</td>
+<td class="py-3 px-4 text-danger font-medium text-[13px]">待处理</td>
+<td class="py-3 px-4 text-ink-3">--</td>
+<td class="py-3 px-4 text-right">
+<button class="text-danger hover:text-on-error-container font-semibold text-[13px] hover:underline cursor-pointer">
+                    [加急处理]
+                  </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- 4. 处理详情区（针对 P-0041） -->
+<div class="border border-line-strong rounded-xl p-space-md bg-surface-container-low flex flex-col gap-space-md relative">
+<div class="flex items-center justify-between border-b border-line pb-space-sm">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-accent"></span>
+<h3 class="font-sub text-title font-semibold text-ink-1">
+                当前工单处置流程：<span class="font-numeric text-accent">P-0041</span> (用户: u_2381)
+              </h3>
+</div>
+<span class="font-caption text-caption text-ink-3">安全脱敏合规校验：已通过身份强认证</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md items-start">
+<!-- 请求类型下拉选择 -->
+<div class="flex flex-col gap-1.5">
+<label class="font-sub text-sub font-medium text-ink-2">权利请求分类变更</label>
+<div class="relative">
+<select class="w-full bg-surface border border-line rounded-lg px-3 py-2 pr-8 font-sub text-sub text-ink-1 focus:outline-none focus:border-accent">
+<option>查阅 / 更正 / 导出 / 撤回 / 删除 / 账号注销</option>
+<option selected="">导出 (用户画像与咨询留痕包)</option>
+<option>更正 (纠正基本医学/家庭档案)</option>
+<option>删除 (不可逆物理覆写)</option>
+<option>账号注销 (注销账户及全量凭据)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-[18px] text-ink-3 pointer-events-none" data-icon="arrow_drop_down">arrow_drop_down</span>
+</div>
+</div>
+<!-- 导出格式分段单选 -->
+<div class="flex flex-col gap-1.5">
+<label class="font-sub text-sub font-medium text-ink-2">导出格式规范</label>
+<div class="inline-flex p-1 bg-surface-2 rounded-lg border border-line h-[42px] items-center">
+<button class="flex-1 py-1 px-3 rounded font-sub text-sub font-medium bg-surface text-accent shadow-sm border border-line text-center transition-all" type="button">
+                  JSON (机器可读)
+                </button>
+<button class="flex-1 py-1 px-3 rounded font-sub text-sub font-medium text-ink-2 hover:text-ink-1 text-center transition-all" type="button">
+                  CSV (表格清单)
+                </button>
+</div>
+</div>
+<!-- 交付方式 -->
+<div class="flex flex-col gap-1.5">
+<label class="font-sub text-sub font-medium text-ink-2">安全交付途径</label>
+<div class="inline-flex p-1 bg-surface-2 rounded-lg border border-line h-[42px] items-center">
+<button class="flex-1 py-1 px-2.5 rounded font-sub text-sub font-medium bg-surface text-accent shadow-sm border border-line text-center transition-all flex items-center justify-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="mark_email_read">mark_email_read</span>
+                  发送至邮箱
+                </button>
+<button class="flex-1 py-1 px-2.5 rounded font-sub text-sub font-medium text-ink-2 hover:text-ink-1 text-center transition-all flex items-center justify-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="lock">lock</span>
+                  本地安全下载
+                </button>
+</div>
+</div>
+</div>
+<!-- 拒绝理由输入框 -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="font-sub text-sub font-medium text-ink-2">
+                法定拒绝抗辩理由 <span class="text-ink-3 font-normal font-caption">（若选择拒绝，必须详尽填写法律依据及事实支撑）</span>
+</label>
+<span class="font-caption text-caption text-ink-3">字数：0 / 500</span>
+</div>
+<textarea class="w-full bg-surface border border-line rounded-lg p-2.5 font-sub text-sub text-ink-1 placeholder-ink-3 focus:outline-none focus:border-accent resize-none" placeholder="拒绝理由（若拒绝必须详尽填写法定理由）：例如：根据《个人信息保护法》第十八条，涉及国家安全/诉讼证据保全，暂不予物理擦除..." rows="2"></textarea>
+</div>
+<!-- 操作按钮组与注脚 -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs border-t border-line">
+<div class="flex items-center gap-space-sm">
+<button class="bg-accent hover:bg-accent-press text-on-accent font-sub text-sub font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.99]">
+<span class="material-symbols-outlined text-[18px]" data-icon="package_2">package_2</span>
+<span>生成导出包</span>
+</button>
+<button class="bg-surface hover:bg-surface-2 border border-line-strong text-ink-1 font-sub text-sub font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer active:scale-[0.99]">
+<span class="material-symbols-outlined text-[18px] text-accent" data-icon="check_circle">check_circle</span>
+<span>标记为完成</span>
+</button>
+<button class="bg-danger-soft hover:bg-error-container text-danger font-sub text-sub font-medium px-4 py-2 rounded-lg border border-danger/20 transition-colors flex items-center gap-1.5 cursor-pointer active:scale-[0.99]">
+<span class="material-symbols-outlined text-[18px]" data-icon="cancel">cancel</span>
+<span>拒绝请求</span>
+</button>
+</div>
+<div class="flex items-center gap-1.5 text-ink-3 font-caption text-caption bg-surface-2 px-3 py-1.5 rounded-lg border border-line">
+<span class="material-symbols-outlined text-[16px] text-accent" data-icon="verified_user">verified_user</span>
+<span>全部操作写入区块链式审计留痕</span>
+</div>
+</div>
+</div>
+</section>
+<!-- ==================== 模块二：系统开关与配置（变更留痕 / 一键回滚） ==================== -->
+<section class="bg-surface rounded-xl border border-line p-space-lg shadow-sm flex flex-col gap-space-md">
+<!-- 1. 模块标题 -->
+<div class="flex items-center justify-between border-b border-line pb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-accent text-[26px]" data-icon="tune">tune</span>
+<h2 class="font-title text-title font-semibold text-ink-1">系统开关与全局风控配置</h2>
+<span class="text-caption font-caption text-ink-3 bg-surface-2 px-2 py-0.5 rounded border border-line">生产集群实时同步</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-accent"></span>
+<span class="font-caption text-caption text-ink-2">配置同步引擎：健康正常</span>
+</div>
+</div>
+<!-- 2. 紧急下线熔断开关组 -->
+<div class="bg-warn-soft/50 border border-warn/30 rounded-xl p-space-md flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-warn text-[20px]" data-icon="bolt">bolt</span>
+<span class="font-sub text-sub font-semibold text-ink-1">业务模块紧急下线（一键熔断）</span>
+</div>
+<span class="font-caption text-caption text-warn font-medium">勾选后将即刻截断端侧路由，并返回合规降级页面</span>
+</div>
+<div class="flex flex-wrap items-center gap-space-lg pt-1">
+<span class="font-sub text-sub text-ink-2">业务模块紧急下线：</span>
+<label class="inline-flex items-center gap-2 cursor-pointer select-none">
+<input class="w-4 h-4 rounded text-accent focus:ring-accent border-line-strong" type="checkbox"/>
+<span class="font-sub text-sub text-ink-1">育儿问答</span>
+</label>
+<label class="inline-flex items-center gap-2 cursor-pointer select-none">
+<input class="w-4 h-4 rounded text-accent focus:ring-accent border-line-strong" type="checkbox"/>
+<span class="font-sub text-sub text-ink-1">宠物问答</span>
+</label>
+<label class="inline-flex items-center gap-2 cursor-pointer select-none">
+<input class="w-4 h-4 rounded text-accent focus:ring-accent border-line-strong" type="checkbox"/>
+<span class="font-sub text-sub text-ink-1">家庭综合问答</span>
+</label>
+<label class="inline-flex items-center gap-2 cursor-pointer select-none">
+<input class="w-4 h-4 rounded text-accent focus:ring-accent border-line-strong" type="checkbox"/>
+<span class="font-sub text-sub text-ink-1">气质测评</span>
+</label>
+<label class="inline-flex items-center gap-2 cursor-pointer select-none">
+<input class="w-4 h-4 rounded text-accent focus:ring-accent border-line-strong" type="checkbox"/>
+<span class="font-sub text-sub text-ink-1">会员服务</span>
+</label>
+</div>
+</div>
+<!-- 3. 核心动态配置行 (刻度线标定风格卡片) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- 配置项 1: 价格配置 -->
+<div class="border border-line rounded-xl p-space-md bg-surface-bright flex items-center justify-between hover:border-line-strong transition-colors">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-ink-2 text-[18px]" data-icon="payments">payments</span>
+<span class="font-sub text-sub font-medium text-ink-1">价格配置</span>
+</div>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-numeric text-title font-semibold text-accent">19.9</span>
+<span class="font-sub text-sub text-ink-2">元/月</span>
+<span class="font-caption text-caption text-ink-3 ml-2">（实时下发生效）</span>
+</div>
+</div>
+<button class="bg-surface hover:bg-surface-2 border border-line-strong text-ink-1 font-sub text-sub px-3 py-1.5 rounded-lg transition-colors cursor-pointer active:scale-[0.99]">
+              修改价格
+            </button>
+</div>
+<!-- 配置项 2: AI 标识文案 -->
+<div class="border border-line rounded-xl p-space-md bg-surface-bright flex items-center justify-between hover:border-line-strong transition-colors">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-ink-2 text-[18px]" data-icon="smart_toy">smart_toy</span>
+<span class="font-sub text-sub font-medium text-ink-1">AI 标识文案编码</span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="font-numeric text-sub font-medium text-ink-1 bg-surface px-2 py-0.5 rounded border border-line">AI_GEN_LABEL_V1</span>
+<span class="font-caption text-caption text-ink-3">《生成式人工智能服务管理暂行办法》标引</span>
+</div>
+</div>
+<button class="bg-surface hover:bg-surface-2 border border-line-strong text-ink-1 font-sub text-sub px-3 py-1.5 rounded-lg transition-colors cursor-pointer active:scale-[0.99]">
+              编辑文案
+            </button>
+</div>
+<!-- 配置项 3: 危机求助渠道清单 -->
+<div class="border border-line rounded-xl p-space-md bg-surface-bright flex items-center justify-between hover:border-line-strong transition-colors">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-ink-2 text-[18px]" data-icon="emergency">emergency</span>
+<span class="font-sub text-sub font-medium text-ink-1">危机求助渠道清单</span>
+</div>
+<div class="flex flex-wrap items-center gap-2 mt-1">
+<span class="font-numeric text-sub font-medium text-ink-1 bg-surface px-2 py-0.5 rounded border border-line">CRISIS_CHANNELS_V1</span>
+<span class="font-caption text-caption text-warn bg-warn-soft px-2 py-0.5 rounded border border-warn/20">
+                  复核到期提醒：2026-12-01
+                </span>
+</div>
+</div>
+<button class="bg-surface hover:bg-surface-2 border border-line-strong text-ink-1 font-sub text-sub px-3 py-1.5 rounded-lg transition-colors cursor-pointer active:scale-[0.99]">
+              编辑清单
+            </button>
+</div>
+<!-- 配置项 4: 灰度发布状态 -->
+<div class="border border-line rounded-xl p-space-md bg-surface-bright flex items-center justify-between hover:border-line-strong transition-colors">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-ink-2 text-[18px]" data-icon="alt_route">alt_route</span>
+<span class="font-sub text-sub font-medium text-ink-1">灰度开关与发布网络</span>
+</div>
+<div class="flex items-center gap-3 mt-1 font-sub text-sub">
+<span class="flex items-center gap-1.5">
+<span class="text-ink-2">体验版:</span>
+<span class="px-2 py-0.5 bg-accent-soft text-accent rounded font-medium text-[13px]">已开启</span>
+</span>
+<span class="flex items-center gap-1.5">
+<span class="text-ink-2">正式版:</span>
+<span class="px-2 py-0.5 bg-surface-2 text-ink-3 rounded font-medium text-[13px]">未开启</span>
+</span>
+</div>
+</div>
+<button class="bg-surface hover:bg-surface-2 border border-line-strong text-ink-1 font-sub text-sub px-3 py-1.5 rounded-lg transition-colors cursor-pointer active:scale-[0.99]">
+              切换策略
+            </button>
+</div>
+</div>
+<!-- 4. 底部回滚与保存控制 -->
+<div class="pt-space-md border-t border-line flex flex-col gap-3">
+<div class="flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<button class="bg-surface hover:bg-surface-2 border border-line-strong text-ink-1 font-sub text-sub font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer active:scale-[0.99]">
+<span class="material-symbols-outlined text-[18px]" data-icon="manage_search">manage_search</span>
+<span>查看配置变更历史</span>
+</button>
+<button class="bg-surface-2 hover:bg-line border border-line-strong text-ink-1 font-sub text-sub font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer active:scale-[0.99]">
+<span class="material-symbols-outlined text-[18px]" data-icon="restore">restore</span>
+<span>一键回滚到上一版本</span>
+</button>
+</div>
+<button class="bg-accent hover:bg-accent-press text-on-accent font-sub text-sub font-medium px-6 py-2.5 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.99]">
+<span class="material-symbols-outlined text-[18px]" data-icon="save">save</span>
+<span>保存当前配置</span>
+</button>
+</div>
+<!-- 底部审计合规提示小字 -->
+<div class="flex items-center gap-2 text-ink-3 font-caption text-caption pt-1">
+<span class="material-symbols-outlined text-[16px] text-accent" data-icon="info">info</span>
+<p>开关变更将在 1 分钟内全网全量生效；操作全程留痕并记录超级管理员签名。</p>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

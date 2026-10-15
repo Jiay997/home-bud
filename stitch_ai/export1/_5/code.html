@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>家伴后台管理系统 - 高风险事件值班复核与内容追溯处置</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=-apple-system,+BlinkMacSystemFont,+PingFang+SC,+system-ui,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-container": "#ffcfc0",
+            "surface-container-highest": "#e0e3e1",
+            "on-primary": "#ffffff",
+            "inverse-primary": "#85d5c7",
+            "primary-container": "#0a6b60",
+            "on-secondary-container": "#566865",
+            "accent-line": "#8FBFB7",
+            "on-tertiary-fixed": "#390c00",
+            "surface-bright": "#f7faf8",
+            "on-primary-container": "#98e8da",
+            "error-container": "#ffdad6",
+            "secondary": "#50625f",
+            "accent-soft": "#E1EFEC",
+            "ink-2": "#455754",
+            "ink-3": "#5F6F6C",
+            "on-surface-variant": "#3e4946",
+            "ink-1": "#0F1E1C",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed-dim": "#ffb59d",
+            "warn": "#7A5600",
+            "on-primary-fixed-variant": "#005048",
+            "primary-fixed-dim": "#85d5c7",
+            "outline-variant": "#bec9c5",
+            "accent": "#0A6B60",
+            "warn-soft": "#F6EDD8",
+            "secondary-fixed-dim": "#b7cbc7",
+            "error": "#ba1a1a",
+            "primary-fixed": "#a1f1e3",
+            "outline": "#6f7976",
+            "surface": "#FFFFFF",
+            "on-secondary-fixed-variant": "#384a47",
+            "on-primary-fixed": "#00201c",
+            "inverse-on-surface": "#eef1ef",
+            "secondary-fixed": "#d3e7e2",
+            "surface-2": "#E9EFED",
+            "surface-container": "#ebefec",
+            "surface-variant": "#e0e3e1",
+            "background": "#f7faf8",
+            "inverse-surface": "#2d3130",
+            "on-tertiary-fixed-variant": "#713621",
+            "on-accent": "#FFFFFF",
+            "bg": "#F2F5F4",
+            "on-background": "#181c1b",
+            "secondary-container": "#d3e7e2",
+            "surface-container-low": "#f1f4f2",
+            "on-secondary-fixed": "#0d1f1c",
+            "danger": "#A8231B",
+            "on-error-container": "#93000a",
+            "tertiary": "#723622",
+            "surface-dim": "#d7dbd9",
+            "accent-press": "#074E46",
+            "primary": "#005148",
+            "surface-tint": "#086a5f",
+            "surface-container-high": "#e6e9e7",
+            "line": "#D5DEDB",
+            "on-surface": "#181c1b",
+            "danger-soft": "#F7E4E2",
+            "tertiary-fixed": "#ffdbd0",
+            "tertiary-container": "#8f4d37",
+            "line-strong": "#B4C3BF",
+            "on-secondary": "#ffffff",
+            "on-error": "#ffffff",
+            "on-tertiary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin": "16px",
+            "space-sm": "8px",
+            "space-xxl": "48px",
+            "space-xl": "32px",
+            "gutter": "16px",
+            "space-md": "16px",
+            "space-lg": "24px",
+            "space-xs": "6px"
+          },
+          "fontFamily": {
+            "display": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "title": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "numeric": ["\"ui-monospace, SF Mono, Consolas, monospace\""],
+            "sub": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "body": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""],
+            "caption": ["\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""]
+          },
+          "fontSize": {
+            "display": ["23px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "title": ["19px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "numeric": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "sub": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "body": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "caption": ["12px", { "lineHeight": "1.5", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg font-body text-body text-ink-1 min-h-screen antialiased flex flex-col selection:bg-accent-soft selection:text-accent">
+<!-- ==================== 左侧固定边栏 (SideNavBar) ==================== -->
+<aside class="w-60 h-screen fixed left-0 top-0 flex flex-col justify-between py-space-lg px-space-md border-r border-line dark:border-outline-variant bg-surface dark:bg-surface-container z-30 select-none">
+<div class="flex flex-col gap-space-md">
+<!-- 品牌标识与平台定义 -->
+<div class="flex items-center gap-space-sm px-space-xs pb-space-sm border-b border-line">
+<div class="w-9 h-9 rounded-lg bg-accent text-on-accent flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-title" style="font-variation-settings: 'FILL' 1;">health_and_safety</span>
+</div>
+<div class="flex flex-col overflow-hidden">
+<span class="font-title text-title font-semibold text-ink-1 tracking-tight truncate">家伴管理中心</span>
+<span class="font-caption text-caption text-ink-3 truncate">临床级智能监护平台</span>
+</div>
+</div>
+<!-- 快捷操作 CTA -->
+<button class="w-full h-10 px-space-md bg-accent-soft text-accent hover:bg-accent hover:text-on-accent rounded-lg flex items-center justify-center gap-space-xs font-sub text-sub font-medium transition-all duration-150 cursor-pointer border border-accent-line/40">
+<span class="material-symbols-outlined text-sub">add</span>
+<span>新建知识文档</span>
+</button>
+<!-- 核心导航标签列表 -->
+<nav class="flex flex-col gap-1">
+<!-- 知识库管理 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 dark:text-on-surface-variant font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-sub">auto_stories</span>
+<span class="font-sub text-sub">知识库管理</span>
+</a>
+<!-- 词库维护 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 dark:text-on-surface-variant font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-sub">spellcheck</span>
+<span class="font-sub text-sub">词库维护</span>
+</a>
+<!-- Agent调用日志 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 dark:text-on-surface-variant font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-sub">terminal</span>
+<span class="font-sub text-sub">Agent调用日志</span>
+</a>
+<!-- 反馈与举报 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 dark:text-on-surface-variant font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-sub">flag</span>
+<span class="font-sub text-sub">反馈与举报</span>
+</a>
+<!-- 高风险事件 [高亮激活] -->
+<a class="flex items-center justify-between px-space-md py-space-sm rounded-lg bg-accent-soft dark:bg-primary-container text-accent dark:text-on-primary-container font-medium border-l-4 border-accent" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-sub" style="font-variation-settings: 'FILL' 1;">warning</span>
+<span class="font-sub text-sub">高风险事件</span>
+</div>
+<span class="font-caption text-caption px-1.5 py-0.5 rounded-full bg-danger text-on-error font-semibold">2</span>
+</a>
+<!-- 权利请求 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 dark:text-on-surface-variant font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-sub">shield_person</span>
+<span class="font-sub text-sub">权利请求</span>
+</a>
+<!-- 系统开关与配置 -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 dark:text-on-surface-variant font-normal hover:bg-surface-2 hover:text-ink-1 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-sub">tune</span>
+<span class="font-sub text-sub">系统开关与配置</span>
+</a>
+</nav>
+</div>
+<!-- 底部运维与系统状态 -->
+<div class="pt-space-md border-t border-line flex flex-col gap-1">
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-sub text-sub hover:bg-surface-2 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-sub">history</span>
+<span>审计记录</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-ink-2 font-sub text-sub hover:bg-surface-2 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-sub">monitoring</span>
+<span>系统监控</span>
+</a>
+<div class="mt-2 px-space-md py-2 rounded bg-surface-2 flex items-center justify-between text-caption font-caption text-ink-3">
+<span>风控专网连接</span>
+<span class="inline-flex items-center gap-1 text-accent font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>正常
+        </span>
+</div>
+</div>
+</aside>
+<!-- ==================== 顶部全局栏 (TopNavBar) ==================== -->
+<header class="fixed top-0 right-0 left-60 h-16 px-space-lg flex justify-between items-center bg-surface dark:bg-surface-container border-b border-line dark:border-outline-variant z-20 select-none">
+<!-- 左侧搜索与标题定位 -->
+<div class="flex items-center gap-space-md">
+<span class="font-title text-title font-semibold text-ink-1 flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-accent" style="font-variation-settings: 'FILL' 1;">security</span>
+<span>家伴后台管理系统</span>
+</span>
+<div class="h-4 w-px bg-line"></div>
+<div class="relative w-72">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-sub text-ink-3">search</span>
+<input class="w-full h-9 pl-9 pr-3 rounded border border-line bg-surface-bright font-sub text-sub placeholder-ink-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" placeholder="全局检索事件号、主体、特征词..." type="text"/>
+</div>
+</div>
+<!-- 右侧值班人员状态及操作 -->
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 rounded-lg hover:bg-surface-2 text-ink-2 flex items-center justify-center transition-colors" title="通知">
+<span class="material-symbols-outlined text-sub">notifications</span>
+</button>
+<button class="w-8 h-8 rounded-lg hover:bg-surface-2 text-ink-2 flex items-center justify-center transition-colors" title="帮助支持">
+<span class="material-symbols-outlined text-sub">help_outline</span>
+</button>
+</div>
+<div class="h-4 w-px bg-line"></div>
+<!-- 操作专员标识 -->
+<div class="flex items-center gap-space-sm font-sub text-sub">
+<div class="w-7 h-7 rounded-full bg-surface-2 border border-line-strong flex items-center justify-center text-accent font-bold text-caption">
+          管
+        </div>
+<div class="flex items-center gap-1.5">
+<span class="font-numeric text-ink-1 font-medium">admin@jiaban</span>
+<span class="text-ink-3">·</span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-ink-2 font-caption text-caption border border-line">内容运营</span>
+<span class="text-ink-3">·</span>
+<button class="text-danger hover:text-error transition-colors font-medium">
+            [退出]
+          </button>
+</div>
+</div>
+</div>
+</header>
+<!-- ==================== 内容主体区 (1200px 居中，器械灰底 #F2F5F4) ==================== -->
+<main class="ml-60 pt-16 flex-1 bg pb-space-xxl">
+<div class="max-w-[1200px] mx-auto px-4 pt-space-lg flex flex-col gap-space-lg">
+<!-- 1. 页面头部卡片 -->
+<section class="bg-surface rounded-xl border border-line p-space-lg flex items-center justify-between shadow-none">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-danger-soft text-danger flex items-center justify-center shrink-0 border border-line">
+<span class="material-symbols-outlined text-display" style="font-variation-settings: 'FILL' 1;">shield_with_heart</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-3">
+<h1 class="font-title text-title font-semibold text-ink-1 tracking-tight">高风险事件</h1>
+<!-- 计数标签 -->
+<div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-surface-2 border border-line font-sub text-sub">
+<span class="text-ink-2">今日 <span class="font-numeric font-medium text-ink-1">7</span> 起</span>
+<span class="text-line-strong">|</span>
+<span class="text-danger font-medium">待复核 <span class="font-numeric font-bold">2</span></span>
+</div>
+</div>
+<p class="font-caption text-caption text-ink-3 mt-1">临床级防护专班 7×24h 应急值守 · 执行涉童涉危内容硬拦截与溯源销账规程</p>
+</div>
+</div>
+<button class="h-10 px-space-md rounded-lg bg-surface border border-line-strong hover:bg-surface-2 text-ink-1 flex items-center gap-space-xs font-sub text-sub font-medium transition-all shadow-none cursor-pointer">
+<span class="material-symbols-outlined text-sub">file_download</span>
+<span>导出事件清单</span>
+</button>
+</section>
+<!-- 2. 筛选过滤栏 -->
+<section class="bg-surface rounded-xl border border-line p-space-md flex items-center justify-between shadow-none">
+<div class="flex items-center gap-space-md flex-wrap">
+<!-- 时间筛选 -->
+<div class="flex items-center gap-2 font-sub text-sub">
+<span class="text-ink-3">时间</span>
+<div class="relative">
+<select class="h-9 pl-3 pr-8 rounded border border-line bg-surface text-ink-1 font-sub text-sub appearance-none focus:outline-none focus:border-accent cursor-pointer">
+<option>近7天</option>
+<option>今日 (24h)</option>
+<option>近30天</option>
+<option>本季度</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-sub text-ink-3 pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<!-- 类别筛选 -->
+<div class="flex items-center gap-2 font-sub text-sub">
+<span class="text-ink-3">类别</span>
+<div class="relative">
+<select class="h-9 pl-3 pr-8 rounded border border-line bg-surface text-ink-1 font-sub text-sub appearance-none focus:outline-none focus:border-accent cursor-pointer">
+<option>全部类别</option>
+<option>孩子自伤想法</option>
+<option>儿童虐待</option>
+<option>持续高烧惊厥</option>
+<option>宠物中毒</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-sub text-ink-3 pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<!-- 处置筛选 -->
+<div class="flex items-center gap-2 font-sub text-sub">
+<span class="text-ink-3">处置</span>
+<div class="relative">
+<select class="h-9 pl-3 pr-8 rounded border border-line bg-surface text-ink-1 font-sub text-sub appearance-none focus:outline-none focus:border-accent cursor-pointer">
+<option>全部状态</option>
+<option>已阻断</option>
+<option>已引导</option>
+<option>待复核</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-sub text-ink-3 pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<!-- 过滤按钮 -->
+<button class="h-9 px-space-md bg-accent text-on-accent hover:bg-accent-press rounded font-sub text-sub font-medium flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sub">filter_alt</span>
+<span>过滤</span>
+</button>
+</div>
+<div class="flex items-center gap-2 text-caption font-caption text-ink-3">
+<span class="w-2 h-2 rounded-full bg-accent"></span>
+<span>规则引擎运行中：v3.12-临床严审</span>
+</div>
+</section>
+<!-- 3. 密集型事件数据表 -->
+<section class="bg-surface rounded-xl border border-line overflow-hidden shadow-none">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-2/70 border-b border-line font-sub text-sub text-ink-2">
+<th class="py-3 px-4 font-medium">事件号</th>
+<th class="py-3 px-4 font-medium">时间</th>
+<th class="py-3 px-4 font-medium">命中类别</th>
+<th class="py-3 px-4 font-medium">置信度</th>
+<th class="py-3 px-4 font-medium">层级</th>
+<th class="py-3 px-4 font-medium">处置状态</th>
+<th class="py-3 px-4 font-medium">值班人员</th>
+<th class="py-3 px-4 font-medium text-right">操作</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line font-sub text-sub">
+<!-- 行 1: E-2211 -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3.5 px-4 font-numeric font-medium text-ink-1">E-2211</td>
+<td class="py-3.5 px-4 font-numeric text-ink-2">09:12</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1 text-danger font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-danger"></span>
+                    儿童虐待
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<span class="font-numeric font-semibold text-danger">0.93</span>
+<div class="w-16 h-1.5 bg-surface-2 rounded-full overflow-hidden">
+<div class="bg-danger h-full" style="width: 93%;"></div>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-caption font-caption bg-danger-soft text-danger border border-danger/20 font-medium">一级硬拦截</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-caption font-caption bg-surface-2 text-ink-2 border border-line">已阻断</span>
+</td>
+<td class="py-3.5 px-4 text-ink-2 font-numeric">专员A</td>
+<td class="py-3.5 px-4 text-right">
+<button class="text-accent hover:underline font-medium">查看</button>
+</td>
+</tr>
+<!-- 行 2: E-2212 (选中高亮行) -->
+<tr class="bg-accent-soft/30 border-l-4 border-l-accent transition-colors">
+<td class="py-3.5 px-4 font-numeric font-bold text-accent">E-2212</td>
+<td class="py-3.5 px-4 font-numeric text-ink-1 font-medium">10:03</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 text-danger font-bold">
+<span class="w-2 h-2 rounded-full bg-danger animate-ping"></span>
+                    孩子自伤想法
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<span class="font-numeric font-bold text-danger">0.88</span>
+<div class="w-16 h-1.5 bg-surface-2 rounded-full overflow-hidden">
+<div class="bg-danger h-full" style="width: 88%;"></div>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-caption font-caption bg-warn-soft text-warn border border-warn/20 font-medium">二级语义模型</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-caption font-caption bg-danger text-on-error font-medium">已阻断 · 待复核</span>
+</td>
+<td class="py-3.5 px-4 text-ink-1 font-numeric font-medium">专员A</td>
+<td class="py-3.5 px-4 text-right">
+<span class="px-2.5 py-1 rounded bg-accent text-on-accent font-sub text-sub font-medium inline-block shadow-none">复核处置中</span>
+</td>
+</tr>
+<!-- 行 3: E-2213 -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3.5 px-4 font-numeric font-medium text-ink-1">E-2213</td>
+<td class="py-3.5 px-4 font-numeric text-ink-2">11:20</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1 text-warn font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-warn"></span>
+                    持续高烧惊厥
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<span class="font-numeric font-medium text-ink-2">0.61</span>
+<div class="w-16 h-1.5 bg-surface-2 rounded-full overflow-hidden">
+<div class="bg-warn h-full" style="width: 61%;"></div>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-caption font-caption bg-warn-soft text-warn border border-warn/20 font-medium">二级语义模型</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-caption font-caption bg-surface-2 text-ink-2 border border-line">已引导</span>
+</td>
+<td class="py-3.5 px-4 text-ink-2 font-numeric">专员B</td>
+<td class="py-3.5 px-4 text-right">
+<button class="text-accent hover:underline font-medium">查看</button>
+</td>
+</tr>
+<!-- 行 4: E-2214 -->
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3.5 px-4 font-numeric font-medium text-ink-1">E-2214</td>
+<td class="py-3.5 px-4 font-numeric text-ink-2">12:44</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1 text-danger font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-danger"></span>
+                    宠物中毒
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<span class="font-numeric font-semibold text-danger">0.90</span>
+<div class="w-16 h-1.5 bg-surface-2 rounded-full overflow-hidden">
+<div class="bg-danger h-full" style="width: 90%;"></div>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-caption font-caption bg-danger-soft text-danger border border-danger/20 font-medium">一级硬拦截</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-caption font-caption bg-surface-2 text-ink-2 border border-line">已阻断</span>
+</td>
+<td class="py-3.5 px-4 text-ink-2 font-numeric">专员B</td>
+<td class="py-3.5 px-4 text-right">
+<button class="text-accent hover:underline font-medium">查看</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- 4. 复核与上报面板 (针对 E-2212 展开) -->
+<section class="bg-surface rounded-xl border-2 border-accent p-space-lg flex flex-col gap-space-md shadow-none relative">
+<!-- 装饰锚点 -->
+<div class="absolute -top-3 left-6 px-3 py-0.5 bg-accent text-on-accent text-caption font-caption rounded font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-caption" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+<span>当前值班复核焦点</span>
+</div>
+<div class="flex items-center justify-between border-b border-line pb-space-md pt-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-accent text-title">verified_user</span>
+<h2 class="font-title text-title font-semibold text-ink-1">复核与处置决策 · E-2212（孩子自伤想法）</h2>
+</div>
+<!-- SLA 标识 -->
+<div class="flex items-center gap-2 px-3 py-1 rounded bg-warn-soft border border-warn/30 text-warn font-sub text-sub">
+<span class="material-symbols-outlined text-sub" style="font-variation-settings: 'FILL' 1;">timer</span>
+<span>复核 SLA：24 小时（<span class="font-numeric font-bold text-danger">剩余 18 小时</span>）</span>
+</div>
+</div>
+<!-- 触发上下文快速概览 -->
+<div class="p-3 bg-surface-2/60 rounded border border-line flex flex-col gap-1.5 text-sub font-sub">
+<div class="flex items-center justify-between text-ink-3 font-caption text-caption">
+<span>触发对话段落哈希: <span class="font-numeric text-ink-2">#0x7a29f8c4</span></span>
+<span>模型判定依据: 包含未成年极端心理自损暗示关键词组合</span>
+</div>
+<div class="p-2.5 bg-surface rounded border border-line-strong/60 text-ink-1 font-body text-body">
+            “我最近觉得活着真的好累，如果我不小心吃了一整板药睡过去，爸爸妈妈是不是就不会吵架了……”
+          </div>
+</div>
+<!-- 单选决策 -->
+<div class="flex items-center gap-space-lg pt-1">
+<span class="font-sub text-sub font-semibold text-ink-1">复核结论：</span>
+<div class="flex items-center gap-6 font-sub text-sub">
+<label class="flex items-center gap-2 cursor-pointer font-medium text-accent">
+<input checked="" class="w-4 h-4 text-accent focus:ring-accent border-line cursor-pointer" name="review_decision" type="radio"/>
+<span>维持阻断</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer text-ink-2">
+<input class="w-4 h-4 text-accent focus:ring-accent border-line cursor-pointer" name="review_decision" type="radio"/>
+<span>判定误报</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer text-ink-2">
+<input class="w-4 h-4 text-accent focus:ring-accent border-line cursor-pointer" name="review_decision" type="radio"/>
+<span>需补充信息</span>
+</label>
+</div>
+</div>
+<!-- 上报控制区 -->
+<div class="p-space-md rounded bg-surface-bright border border-line flex flex-col gap-space-md">
+<div class="flex items-center gap-2">
+<input checked="" class="w-4 h-4 rounded text-accent focus:ring-accent border-line cursor-pointer" id="report_lead" type="checkbox"/>
+<label class="font-sub text-sub font-semibold text-danger flex items-center gap-1 cursor-pointer" for="report_lead">
+<span class="material-symbols-outlined text-sub" style="font-variation-settings: 'FILL' 1;">campaign</span>
+<span>上报主管部门（启动跨部门未成年人紧急心理防护协作）</span>
+</label>
+</div>
+<div class="grid grid-cols-3 gap-space-md">
+<!-- 上报对象 -->
+<div class="flex flex-col gap-1.5 font-sub text-sub">
+<span class="text-ink-2 font-medium">上报对象</span>
+<div class="h-10 px-3 rounded border border-line bg-surface text-ink-1 font-sub flex items-center">
+<span>当地未成年人保护专班</span>
+</div>
+</div>
+<!-- 上报时间 -->
+<div class="flex flex-col gap-1.5 font-sub text-sub">
+<span class="text-ink-2 font-medium">上报时间</span>
+<div class="h-10 px-3 rounded border border-line bg-surface text-ink-1 font-numeric flex items-center">
+<span>2026-10-02 10:30</span>
+</div>
+</div>
+<!-- 留痕责任人 -->
+<div class="flex flex-col gap-1.5 font-sub text-sub">
+<span class="text-ink-2 font-medium">留痕责任人</span>
+<div class="h-10 px-3 rounded border border-line bg-surface text-ink-1 font-numeric flex items-center justify-between">
+<span>专员A</span>
+<span class="material-symbols-outlined text-caption text-accent">verified</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 面板底部确认栏 -->
+<div class="flex items-center justify-between pt-2">
+<span class="text-caption font-caption text-ink-3">该复核行为将计入网络安全国家级风控专网审计日志，责任终身倒查。</span>
+<div class="flex items-center gap-space-sm">
+<button class="h-9 px-space-md rounded border border-line text-ink-2 hover:bg-surface-2 font-sub text-sub transition-colors">
+              暂存并保持静默
+            </button>
+<button class="h-9 px-space-lg rounded bg-accent text-on-accent hover:bg-accent-press font-sub text-sub font-semibold transition-colors flex items-center gap-1 shadow-none">
+<span class="material-symbols-outlined text-sub">done_all</span>
+<span>确认提交处置结论</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 5. 内容追溯处置面板 (按知识库条目反查受影响历史) -->
+<section class="bg-surface rounded-xl border border-line p-space-lg flex flex-col gap-space-md shadow-none">
+<div class="flex items-center justify-between border-b border-line pb-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-accent text-title">manage_search</span>
+<h2 class="font-title text-title font-semibold text-ink-1">内容追溯处置（按 kb_id 反查受影响内容）</h2>
+</div>
+<span class="text-caption font-caption text-ink-3">溯源图谱反向遍历模型：BFS-v2</span>
+</div>
+<!-- 基础追溯信息与统计 -->
+<div class="grid grid-cols-2 gap-space-lg p-space-md rounded bg-surface-2/40 border border-line">
+<div class="flex flex-col gap-1 font-sub text-sub">
+<span class="text-ink-3">来源条目：</span>
+<div class="flex items-center gap-2">
+<span class="font-numeric font-semibold text-ink-1">KB-014</span>
+<span class="text-ink-1 font-medium">（辅食添加顺序·已下架）</span>
+<span class="px-2 py-0.5 rounded text-caption font-caption bg-danger-soft text-danger border border-danger/20 font-medium">风险下架</span>
+</div>
+</div>
+<div class="flex flex-col gap-1 font-sub text-sub">
+<span class="text-ink-3">影响面统计：</span>
+<div class="flex items-center gap-3 font-sub text-sub">
+<div class="flex items-center gap-1 text-ink-1 font-medium">
+<span class="material-symbols-outlined text-sub text-accent">chat_bubble</span>
+<span>历史问答 <span class="font-numeric font-bold text-accent">128</span> 条</span>
+</div>
+<span class="text-line-strong">/</span>
+<div class="flex items-center gap-1 text-ink-1 font-medium">
+<span class="material-symbols-outlined text-sub text-accent">assignment</span>
+<span>测评报告 <span class="font-numeric font-bold text-accent">12</span> 份</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 分级处置选择 -->
+<div class="flex items-center gap-space-lg pt-1">
+<span class="font-sub text-sub font-semibold text-ink-1">分级处置：</span>
+<div class="flex items-center gap-6 font-sub text-sub">
+<label class="flex items-center gap-2 cursor-pointer text-ink-2">
+<input class="w-4 h-4 text-accent focus:ring-accent border-line cursor-pointer" name="trace_level" type="radio"/>
+<span>A级 无影响</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer font-medium text-accent">
+<input checked="" class="w-4 h-4 text-accent focus:ring-accent border-line cursor-pointer" name="trace_level" type="radio"/>
+<span>B级 追溯加提示（向前追溯历史生成，在卡片标注科学勘误说明）</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer text-ink-2">
+<input class="w-4 h-4 text-accent focus:ring-accent border-line cursor-pointer" name="trace_level" type="radio"/>
+<span>C级 批量下架</span>
+</label>
+</div>
+</div>
+<!-- 详细配置与行动执行条 -->
+<div class="flex items-center justify-between pt-space-sm border-t border-line">
+<!-- 处置时限注脚 -->
+<div class="flex items-center gap-1.5 text-caption font-caption text-ink-3">
+<span class="material-symbols-outlined text-sub text-warn">schedule</span>
+<span>闭环时限：<span class="font-numeric font-medium text-ink-1">7 个工作日内全部完成处置</span>（医疗养育临床知识纠偏专则）</span>
+</div>
+<!-- 操作按钮组 -->
+<div class="flex items-center gap-space-sm">
+<button class="h-10 px-space-md rounded border border-line-strong bg-surface hover:bg-surface-2 text-ink-1 font-sub text-sub font-medium transition-colors cursor-pointer flex items-center gap-1">
+<span class="material-symbols-outlined text-sub">format_list_bulleted</span>
+<span>查看受影响清单</span>
+</button>
+<button class="h-10 px-space-lg rounded bg-accent text-on-accent hover:bg-accent-press font-sub text-sub font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shadow-none">
+<span class="material-symbols-outlined text-sub">play_arrow</span>
+<span>执行处置</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

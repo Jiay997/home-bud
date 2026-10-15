@@ -1,0 +1,608 @@
+/**
+ * 小光景设计系统令牌（DESIGN.md）
+ * 浅色 :root + 深色 html.dark 双主题；全局基础样式与 Element Plus 变量覆盖。
+ */
+
+/* ---------- 浅色主题 ---------- */
+:root {
+  /* 品牌色 */
+  --accent: #0a6b60;
+  --accent-press: #074e46;
+  --accent-soft: #e1efec;
+  --accent-line: #8fbfb7;
+
+  /* 小光景三视角：儿童与宠物色只标识领域；安全继续使用品牌主色。 */
+  --perspective-child: #a3483c;
+  --perspective-child-soft: #f4e5e0;
+  --perspective-pet: #236e63;
+  --perspective-pet-soft: #e2efeb;
+
+  /* 文字 */
+  --ink-1: #0f1e1c;
+  --ink-2: #455754;
+  --ink-3: #5f6f6c;
+
+  /* 背景与面 */
+  --bg: #f2f5f4;
+  --surface: #ffffff;
+  --surface-2: #e9efed;
+  --line: #d5dedb;
+  --line-strong: #b4c3bf;
+
+  /* 语义色 */
+  --danger: #a8231b;
+  --danger-soft: #f7e4e2;
+  --warn: #7a5600;
+  --warn-soft: #f6edd8;
+
+  /* 亮色底上的前景字：浅色主题主色/语义色为深色，配白字 */
+  --on-accent: #fff;
+  --on-danger: #fff;
+  --on-warn: #fff;
+
+  /* 字体 */
+  --font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC',
+    'HarmonyOS Sans SC', 'Noto Sans CJK SC', 'Microsoft YaHei', system-ui,
+    sans-serif;
+  --font-numeric: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas,
+    monospace;
+
+  /* 字号 */
+  --fs-display: 23px;
+  --fs-title: 19px;
+  --fs-body: 16px;
+  --fs-sub: 14px;
+  --fs-caption: 12px;
+
+  /* 间距（4 的倍数；与 DESIGN.md spacing 表一一对应，禁止再出现未定义档位）
+     s0=6 s1=8 s1b=10 s2=16 s3=24 s4=32 s5=48 */
+  --sp-1: 4px;
+  --sp-2: 6px;
+  --sp-3: 8px;
+  --sp-4: 10px;
+  --sp-5: 20px;
+  --sp-6: 16px;
+  --sp-8: 24px;
+  --sp-10: 32px;
+  --sp-12: 48px;
+
+  /* 触控目标下限（DESIGN.md：主操作 ≥88rpx = 44px） */
+  --touch-min: 44px;
+
+  /* 焦点环：与主色同源，保证键盘可达性可见 */
+  --focus-ring: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent);
+
+  /* 圆角：仅两档 + 999（头像/刻度槽） */
+  --radius-face: 12px;
+  --radius-ctl: 8px;
+  --radius-pill: 999px;
+
+  /* 阴影两级 */
+  --shadow-e1: 0 1px 3px rgba(15, 30, 28, 0.08);
+  --shadow-e2: 0 4px 12px rgba(15, 30, 28, 0.12);
+
+  /* 线稿专用下限（DESIGN.md：装饰性线条 ≥3:1，两主题各自测量）
+     浅色：对 surface 3.9:1 / 对 bg 3.6:1；强调线稿对 surface 4.0:1 */
+  --art-line: #738480;
+  --art-line-accent: #4a8a80;
+}
+
+/* ---------- 深色主题（独立取值，非反相） ---------- */
+html.dark {
+  --accent: #4fb3a4;
+  --accent-press: #3a9a8c;
+  --accent-soft: #16332e;
+  --accent-line: #2e5a53;
+
+  --perspective-child: #e79b86;
+  --perspective-child-soft: #3b2521;
+  --perspective-pet: #67b8a7;
+  --perspective-pet-soft: #183530;
+
+  --ink-1: #e8efec;
+  --ink-2: #aebfbb;
+  --ink-3: #93a5a1;
+
+  --bg: #0c1614;
+  --surface: #13201e;
+  --surface-2: #1b2a27;
+  --line: #2a3b38;
+  --line-strong: #3d524e;
+
+  --danger: #e8776d;
+  --danger-soft: #3a1d1a;
+  --warn: #dcb25c;
+  --warn-soft: #33290f;
+
+  /* 深色主题主色与语义色转为浅色调，白字对比不足（主色仅 2.5:1），
+     改用深墨字：主色 7.1:1、危险色 6.2:1 均过 AA */
+  --on-accent: #0e1a18;
+  --on-danger: #0e1a18;
+  --on-warn: #0e1a18;
+
+  /* 夜灯：阴影关闭，层级靠发丝线（DESIGN.md 夜灯 §2） */
+  --shadow-e1: none;
+  --shadow-e2: none;
+
+  /* 夜灯：线稿下限 ≥3:1（对 surface 3.8 / surface-2 3.4 / bg 4.2） */
+  --art-line: #667d78;
+  --art-line-accent: #4a8a7f;
+
+  /* 夜灯：12→13、14→15，夜间阅读下限（DESIGN.md 夜灯 §1） */
+  --fs-sub: 15px;
+  --fs-caption: 13px;
+}
+
+/* ---------- Element Plus 主色绑定 ---------- */
+:root {
+  --el-color-primary: #0a6b60;
+  --el-color-primary-light-3: #4a9189;
+  --el-color-primary-light-5: #7fb3ac;
+  --el-color-primary-light-7: #b3d3cf;
+  --el-color-primary-light-8: #cfe3e0;
+  --el-color-primary-light-9: var(--accent-soft);
+  --el-color-primary-dark-2: #074e46;
+  --el-color-danger: #a8231b;
+  --el-color-warning: #7a5600;
+  --el-color-error: #a8231b;
+  --el-border-radius-base: 8px;
+  --el-font-family: var(--font-family);
+}
+html.dark {
+  --el-color-primary: #4fb3a4;
+  --el-color-primary-dark-2: #3a9a8c;
+  --el-bg-color: #13201e;
+  --el-bg-color-overlay: #1b2a27;
+  --el-text-color-primary: #e8efec;
+  --el-text-color-regular: #aebfbb;
+  --el-border-color: #2a3b38;
+  --el-border-color-light: #2a3b38;
+  --el-fill-color-blank: #13201e;
+  --el-fill-color-light: #1b2a27;
+}
+
+/* ---------- 全局基础 ---------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--ink-1);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ---------- 浏览器自带图层的主题化 ----------
+   craft-floor：选中底色、光标、滚动条、焦点环、下划线偏移属于设计系统的一部分。
+   不主题化是"页面被搭建过"最明显的缺口。 */
+::selection {
+  background: var(--accent-soft);
+  color: var(--ink-1);
+}
+
+html {
+  /* 滚动条：细轨 + 品牌色滑块，Firefox 走标准属性 */
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 3px solid transparent;
+  border-radius: var(--radius-pill);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-3);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* 焦点环：只在键盘导航时出现，鼠标点击不打扰 */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-ctl);
+}
+
+/* 输入光标取主色 */
+input,
+textarea,
+[contenteditable] {
+  caret-color: var(--accent);
+}
+
+/* ---------- 动效降级 ----------
+   DESIGN.md：prefers-reduced-motion 下在命名档位间跳变，不做插值动画。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 通用工具类 */
+.page {
+  padding: var(--sp-6);
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
+}
+
+.page-title {
+  font-size: var(--fs-display);
+  font-weight: 600;
+  color: var(--ink-1);
+  line-height: 1.35;
+}
+
+.page-sub {
+  font-size: var(--fs-sub);
+  color: var(--ink-3);
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-face);
+  border: 1px solid var(--line);
+  padding: var(--sp-6);
+  box-shadow: var(--shadow-e1);
+}
+
+.caption {
+  font-size: var(--fs-caption);
+  color: var(--ink-3);
+}
+
+.numeric {
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 当日额度刻度 chip：问答页对象行内随行展示（会员不限次时不渲染） */
+.quota-chip {
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  font-size: var(--fs-caption);
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+/* 触控目标：DESIGN.md 要求主操作 ≥44px；图标按钮与 chips 同样适用。
+   用 ::after 扩大热区而不改变视觉尺寸，避免破坏排版节奏。 */
+.touch-target {
+  position: relative;
+}
+
+.touch-target::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: max(100%, var(--touch-min));
+  height: max(100%, var(--touch-min));
+}
+
+/* 屏幕阅读器专用文本 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 主按钮统一风格（覆盖 ElButton） */
+.el-button--primary {
+  --el-button-bg-color: var(--accent);
+  --el-button-border-color: var(--accent);
+  --el-button-text-color: var(--on-accent);
+  --el-button-hover-bg-color: var(--accent-press);
+  --el-button-hover-border-color: var(--accent-press);
+  --el-button-hover-text-color: var(--on-accent);
+  --el-button-active-bg-color: var(--accent-press);
+  --el-button-active-border-color: var(--accent-press);
+  --el-button-active-text-color: var(--on-accent);
+  /* 禁用态：中性下沉地面（SC-01 未勾选同意时按钮置灰的合规要求） */
+  --el-button-disabled-bg-color: var(--surface-2);
+  --el-button-disabled-border-color: var(--line);
+  --el-button-disabled-text-color: var(--ink-3);
+  border-radius: var(--radius-ctl);
+  font-weight: 600;
+}
+
+.el-button {
+  border-radius: var(--radius-ctl);
+}
+
+/* 骨架扫光动画基准时长 */
+@keyframes jiaban-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* 骨架出场淡入（SkeletonBlock 内置 240ms 延迟后触发：慢响应骨架柔和出现） */
+@keyframes sk-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 淡出遮罩（付费墙摘要用） */
+.fade-mask {
+  -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 30%, transparent 100%);
+}
+
+/* ===== Stitch 视觉兼容层（Material surface 系映射小光景 token） ===== */
+:root {
+  --surface-dim: #d7dbd9;
+  --surface-bright: #f7faf8;
+  --sc-lowest: #ffffff;
+  --sc-low: #f1f4f2;
+  --sc: #ebefec;
+  --sc-high: #e6e9e7;
+  --sc-highest: #e0e3e1;
+  --on-surface: #181c1b;
+  --on-surface-variant: #3e4946;
+  --outline: #6f7976;
+  --outline-variant: #bec9c5;
+  --brand-primary: #005148;
+  --brand-primary-container: #0a6b60;
+
+  /* 品牌深色侧栏块（.st-side 配套变量） */
+  --st-side-bg: #0f3d37;
+  --st-side-ink: #f1f7f5;
+  --st-side-ink-dim: rgba(241, 247, 245, 0.6);
+  --st-side-line: rgba(255, 255, 255, 0.12);
+  --st-side-active-bg: rgba(79, 179, 164, 0.2);
+  --st-side-accent: #4fb3a4;
+}
+
+/* 深色模式：surface 系由 dark-surface（#13201E）/ dark-surface-2（#1B2A27）推导 */
+html.dark {
+  --surface-dim: #091110;
+  --surface-bright: #1b2a27;
+  --sc-lowest: #13201e;
+  --sc-low: #172622;
+  --sc: #1b2a27;
+  --sc-high: #20302d;
+  --sc-highest: #263632;
+  --on-surface: #e8efec;
+  --on-surface-variant: #aebfbb;
+  --outline: #93a5a1;
+  --outline-variant: #2a3b38;
+  --brand-primary: #4fb3a4;
+  --brand-primary-container: #16332e;
+
+  --st-side-bg: #0d1c19;
+  --st-side-ink: #e8efec;
+  --st-side-ink-dim: rgba(232, 239, 236, 0.55);
+  --st-side-line: rgba(255, 255, 255, 0.1);
+  --st-side-active-bg: rgba(79, 179, 164, 0.18);
+  --st-side-accent: #4fb3a4;
+}
+
+/* ---------- Stitch 组件样式类（全局复用，双主题随 token 自动适配） ---------- */
+
+/* 白卡：白底 / 12px 圆角 / 发丝线 / 24px 内边距 */
+.st-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-face);
+  padding: var(--sp-8);
+}
+
+/* 状态彩色标签体系（自带状态圆点，圆点取文字色 currentColor） */
+.st-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 8px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  line-height: 1.7;
+  white-space: nowrap;
+}
+
+.st-tag::before {
+  content: '';
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* 无圆点修饰（纯文字标签场景备用） */
+.st-tag--plain::before {
+  display: none;
+}
+
+/* 绿：已上架 / 已绑定 */
+.st-tag--green {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent-line);
+}
+
+/* 琥珀：待审核 / 处理中 */
+.st-tag--amber {
+  background: var(--warn-soft);
+  color: var(--warn);
+  border-color: var(--line-strong);
+}
+
+/* 红：已驳回 / 高敏感 */
+.st-tag--red {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: var(--line-strong);
+}
+
+/* 灰：已下架 / 建设中 */
+.st-tag--gray {
+  background: var(--surface-2);
+  color: var(--ink-2);
+  border-color: var(--line);
+}
+
+/* 描边：中性 / 草稿 */
+.st-tag--outline {
+  background: transparent;
+  color: var(--ink-2);
+  border-color: var(--line-strong);
+}
+
+/* 品牌深色侧栏块：#0F3D37 底 / 白字 */
+.st-side {
+  background: var(--st-side-bg);
+  color: var(--st-side-ink);
+}
+
+/* 水平进度 / 刻度条：轨道 8px 圆角 + 填充 accent */
+.st-meter {
+  position: relative;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.st-meter__fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+/* 「小节头」：左侧刻度方点 + 粗体（器械物件语汇统一为方点，替代彩色竖条） */
+.st-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-sub);
+  font-weight: 600;
+  color: var(--ink-1);
+  line-height: 1.4;
+}
+
+.st-section-head::before {
+  content: '';
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+
+/* 底部提示条：浅底 + 图标 + 小字 */
+.st-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-face);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  font-size: var(--fs-caption);
+  color: var(--ink-2);
+  line-height: 1.7;
+}
+
+/* 正文容器必须占据剩余宽度并允许收缩，否则中文会被压成一列竖排字 */
+.st-note > p,
+.st-note > div,
+.st-note > span {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.st-note strong {
+  color: var(--ink-1);
+  font-weight: 500;
+}
+
+.st-note .note-ico {
+  flex: none;
+  /* SVG 无 width/height 属性时按固有 300x150 渲染，会把旁边的文字挤成竖排；
+     必须显式钉住尺寸（根因修复，覆盖全部 10 处 note-ico 使用点） */
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  color: var(--accent);
+}
+
+/* 保险层：st-note 内任何未标注尺寸的 SVG 一律收进图标位；
+   :where() 零特异性，组件自己的 scoped 尺寸定义始终优先 */
+.st-note :where(svg:not([width]):not([height])) {
+  width: 16px;
+  height: 16px;
+}
+
+/* 圆形计数徽章：菜单项 / 页签上的小数字 */
+.st-kpi {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-numeric);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}

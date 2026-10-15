@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>育儿问答 · 0-6 岁</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=-apple-system,+BlinkMacSystemFont,+PingFang+SC,+system-ui,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+              "danger-soft": "#F7E4E2",
+              "on-primary-container": "#98e8da",
+              "surface-container-highest": "#e0e3e1",
+              "line-strong": "#B4C3BF",
+              "surface-container-high": "#e6e9e7",
+              "tertiary-container": "#8f4d37",
+              "tertiary-fixed": "#ffdbd0",
+              "primary-fixed": "#a1f1e3",
+              "on-accent": "#FFFFFF",
+              "primary": "#005148",
+              "warn": "#7A5600",
+              "line": "#D5DEDB",
+              "on-surface-variant": "#3e4946",
+              "surface-bright": "#f7faf8",
+              "on-secondary-container": "#566865",
+              "secondary": "#50625f",
+              "error": "#ba1a1a",
+              "ink-2": "#455754",
+              "on-error-container": "#93000a",
+              "secondary-container": "#d3e7e2",
+              "on-primary": "#ffffff",
+              "surface-tint": "#086a5f",
+              "on-secondary-fixed": "#0d1f1c",
+              "surface-2": "#E9EFED",
+              "bg": "#F2F5F4",
+              "on-tertiary-fixed-variant": "#713621",
+              "error-container": "#ffdad6",
+              "on-secondary-fixed-variant": "#384a47",
+              "surface-container": "#ebefec",
+              "inverse-surface": "#2d3130",
+              "on-tertiary-container": "#ffcfc0",
+              "accent-line": "#8FBFB7",
+              "surface": "#FFFFFF",
+              "ink-1": "#0F1E1C",
+              "surface-variant": "#e0e3e1",
+              "on-secondary": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "on-primary-fixed-variant": "#005048",
+              "surface-dim": "#d7dbd9",
+              "on-primary-fixed": "#00201c",
+              "on-background": "#181c1b",
+              "on-error": "#ffffff",
+              "warn-soft": "#F6EDD8",
+              "surface-container-low": "#f1f4f2",
+              "ink-3": "#5F6F6C",
+              "primary-container": "#0a6b60",
+              "accent-press": "#074E46",
+              "tertiary": "#723622",
+              "background": "#f7faf8",
+              "on-surface": "#181c1b",
+              "accent": "#0A6B60",
+              "outline-variant": "#bec9c5",
+              "primary-fixed-dim": "#85d5c7",
+              "outline": "#6f7976",
+              "inverse-on-surface": "#eef1ef",
+              "on-tertiary-fixed": "#390c00",
+              "secondary-fixed-dim": "#b7cbc7",
+              "secondary-fixed": "#d3e7e2",
+              "danger": "#A8231B",
+              "tertiary-fixed-dim": "#ffb59d",
+              "surface-container-lowest": "#ffffff",
+              "inverse-primary": "#85d5c7",
+              "accent-soft": "#E1EFEC"
+            },
+            "borderRadius": {
+              "DEFAULT": "0.125rem",
+              "lg": "0.25rem",
+              "xl": "0.5rem",
+              "full": "0.75rem"
+            },
+            "spacing": {
+              "margin": "16px",
+              "space-xxl": "48px",
+              "space-xs": "6px",
+              "space-sm": "8px",
+              "space-md": "16px",
+              "gutter": "16px",
+              "space-lg": "24px",
+              "space-xl": "32px"
+            },
+            "fontFamily": {
+              "body": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"],
+              "title": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"],
+              "numeric": ["ui-monospace, SF Mono, Consolas, monospace"],
+              "sub": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"],
+              "caption": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"],
+              "display": ["-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif"]
+            },
+            "fontSize": {
+              "body": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+              "title": ["19px", { "lineHeight": "1.3", "fontWeight": "600" }],
+              "numeric": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+              "sub": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+              "caption": ["12px", { "lineHeight": "1.5", "fontWeight": "400" }],
+              "display": ["23px", { "lineHeight": "1.3", "fontWeight": "600" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-bg text-on-background font-body antialiased flex justify-center items-center min-h-screen">
+<!-- Mobile Frame Container (375x812 viewport simulation) -->
+<div class="w-[375px] h-[812px] bg-background flex flex-col relative overflow-hidden shadow-2xl rounded-xl border border-line">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-inverse-surface text-primary dark:text-inverse-primary font-title text-title flex justify-between items-center w-full px-4 h-12 z-40 shrink-0">
+<div class="flex items-center space-x-2">
+<button class="w-10 h-10 flex items-center justify-center hover:bg-surface-variant rounded-full transition-all duration-200 active:scale-98">
+<span class="material-symbols-outlined text-primary">chevron_left</span>
+</button>
+<span class="font-bold text-ink-1 tracking-tight">育儿问答 · 0-6 岁</span>
+</div>
+<div class="flex items-center">
+<button class="w-10 h-10 flex items-center justify-center hover:bg-surface-variant rounded-full transition-all duration-200 active:scale-98">
+<span class="material-symbols-outlined text-ink-2">more_horiz</span>
+</button>
+</div>
+</header>
+<!-- Subheader Controls & Info Strip -->
+<div class="bg-surface border-b border-line px-4 py-2 flex flex-col space-y-2 z-30 shrink-0">
+<!-- Subject Selector Chip -->
+<div class="flex items-center justify-between">
+<div class="inline-flex items-center bg-surface-2 border border-line px-3 py-1 rounded-full text-sub text-ink-1 font-medium cursor-pointer hover:bg-surface-container transition-all">
+<span>问答对象：宝宝 A</span>
+<span class="material-symbols-outlined text-sm ml-1 text-ink-3">expand_more</span>
+</div>
+<span class="text-caption text-ink-3 font-numeric">多孩可切换</span>
+</div>
+<!-- Info Strip -->
+<div class="bg-warn-soft border border-line text-warn text-sub px-3 py-1.5 rounded-lg flex items-center justify-between">
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-base">info</span>
+<span class="text-caption">未选档案：按「通用 1-3 岁」回答</span>
+</div>
+<a class="text-caption font-bold text-primary underline" href="#">补充档案</a>
+</div>
+</div>
+<!-- Conversation Scrollable Area -->
+<div class="flex-1 overflow-y-auto px-4 py-4 space-y-4 pb-24">
+<!-- Right-aligned user message bubble -->
+<div class="flex flex-col items-end space-y-1">
+<div class="flex items-end space-x-2">
+<div class="bg-primary text-on-primary px-4 py-2.5 rounded-2xl rounded-br-sm max-w-[260px] text-body shadow-sm">
+                        宝宝夜醒 3 次，该不该抱睡？
+                    </div>
+</div>
+<span class="text-caption text-ink-3 font-numeric">14:22</span>
+</div>
+<!-- Status Row -->
+<div class="flex items-center space-x-2 py-1">
+<div class="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+<span class="text-caption text-ink-2">正在检查内容安全…</span>
+<span class="text-caption text-line-strong">|</span>
+<span class="text-caption text-accent font-medium">通过 · 育儿 Agent 生成中 (≤8s)</span>
+</div>
+<!-- Structured Answer Card -->
+<div class="bg-surface border border-line rounded-xl p-4 shadow-sm space-y-4">
+<!-- Card Header -->
+<div class="flex items-center justify-between pb-3 border-b border-line">
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-accent text-lg">smart_toy</span>
+<span class="text-sub font-bold text-ink-1">AI 生成内容 · 仅供参考</span>
+</div>
+<button class="inline-flex items-center space-x-1 text-sub text-accent hover:bg-surface-2 px-2 py-1 rounded transition-all active:scale-98">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+<span class="text-caption font-medium">复制</span>
+</button>
+</div>
+<!-- Section 1: 建议要点 -->
+<div class="space-y-1.5">
+<div class="text-sub font-bold text-ink-1 flex items-center space-x-1">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+<span>建议要点</span>
+</div>
+<ul class="list-disc list-inside text-body text-ink-2 space-y-1 pl-1">
+<li>8月龄夜醒多为生理性，可先观察3晚再调整入睡方式</li>
+<li>建立规律的白天小睡与睡前仪式感，减少过度疲劳导致的夜醒</li>
+</ul>
+</div>
+<div class="border-t border-line"></div>
+<!-- Section 2: 适用前提 -->
+<div class="space-y-1">
+<div class="text-sub font-bold text-ink-1 flex items-center space-x-1">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+<span>适用前提</span>
+</div>
+<p class="text-body text-ink-2 bg-accent-soft px-3 py-2 rounded-lg border border-accent-line/30">
+                        6-12 月龄 · 已加辅食 · 无发热
+                    </p>
+</div>
+<div class="border-t border-line"></div>
+<!-- Section 3: 不建议做法 -->
+<div class="space-y-1">
+<div class="text-sub font-bold text-danger flex items-center space-x-1">
+<span class="material-symbols-outlined text-base">warning</span>
+<span>不建议做法</span>
+</div>
+<p class="text-body text-ink-2 pl-4">
+                        切忌频繁强行喂奶止哭，或使用摇晃等剧烈方式哄睡，以免形成不良睡眠依赖。
+                    </p>
+</div>
+<div class="border-t border-line"></div>
+<!-- Section 4: Skeleton placeholder (观察指标) -->
+<div class="space-y-2 animate-pulse bg-surface-container-low p-3 rounded-lg border border-line">
+<div class="flex items-center justify-between">
+<div class="h-4 bg-surface-variant rounded w-28"></div>
+<span class="text-caption text-ink-3">正在生成</span>
+</div>
+<div class="h-3 bg-surface-variant rounded w-full"></div>
+<div class="h-3 bg-surface-variant rounded w-3/4"></div>
+</div>
+<!-- Section 5: Skeleton placeholder (何时咨询专业人士) -->
+<div class="space-y-2 animate-pulse bg-surface-container-low p-3 rounded-lg border border-line">
+<div class="flex items-center justify-between">
+<div class="h-4 bg-surface-variant rounded w-36"></div>
+<span class="text-caption text-ink-3">正在生成</span>
+</div>
+<div class="h-3 bg-surface-variant rounded w-5/6"></div>
+</div>
+</div>
+</div>
+<!-- Fixed Bottom Input Bar & Footer -->
+<div class="absolute bottom-0 left-0 w-full bg-surface border-t border-line px-4 py-3 flex flex-col space-y-2 z-40">
+<div class="flex items-center space-x-2">
+<!-- Grayed Mic Icon with annotation -->
+<div class="relative group">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-2 text-ink-3 cursor-not-allowed" disabled="" title="语音（本期不支持）">
+<span class="material-symbols-outlined">mic_off</span>
+</button>
+<span class="absolute -top-7 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-caption px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">语音（本期不支持）</span>
+</div>
+<!-- Input Field -->
+<div class="flex-1 relative">
+<input class="w-full h-11 bg-surface-2 border border-line rounded-lg px-3.5 text-body text-ink-1 focus:outline-none focus:border-accent placeholder:text-ink-3 transition-colors" placeholder="输入你的问题…" type="text"/>
+</div>
+<!-- Accent Teal Send Button -->
+<button class="w-11 h-11 bg-accent hover:bg-accent-press active:scale-98 text-on-accent rounded-lg flex items-center justify-center transition-all shrink-0">
+<span class="material-symbols-outlined">arrow_upward</span>
+</button>
+</div>
+<!-- Footer Disclaimer Line -->
+<div class="text-center">
+<span class="text-caption text-ink-3 tracking-wide">AI 生成内容，仅供参考，不替代医生诊断</span>
+</div>
+</div>
+</div>
+</body></html>

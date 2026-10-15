@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=375, height=812, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>四象宝宝气质测评</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "warn": "#7A5600",
+            "on-secondary-fixed-variant": "#384a47",
+            "ink-3": "#5F6F6C",
+            "outline-variant": "#bec9c5",
+            "on-surface-variant": "#3e4946",
+            "surface-tint": "#086a5f",
+            "danger": "#A8231B",
+            "accent-soft": "#E1EFEC",
+            "on-accent": "#FFFFFF",
+            "surface-bright": "#f7faf8",
+            "on-background": "#181c1b",
+            "secondary-fixed": "#d3e7e2",
+            "on-tertiary-fixed": "#390c00",
+            "tertiary-fixed": "#ffdbd0",
+            "surface": "#FFFFFF",
+            "surface-container-highest": "#e0e3e1",
+            "warn-soft": "#F6EDD8",
+            "accent-press": "#074E46",
+            "surface-2": "#E9EFED",
+            "secondary-container": "#d3e7e2",
+            "on-error-container": "#93000a",
+            "line": "#D5DEDB",
+            "background": "#f7faf8",
+            "on-secondary": "#ffffff",
+            "bg": "#F2F5F4",
+            "primary": "#005148",
+            "surface-container-low": "#f1f4f2",
+            "inverse-primary": "#85d5c7",
+            "tertiary": "#723622",
+            "on-primary": "#ffffff",
+            "on-primary-fixed-variant": "#005048",
+            "tertiary-container": "#8f4d37",
+            "on-surface": "#181c1b",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#b7cbc7",
+            "on-secondary-fixed": "#0d1f1c",
+            "on-tertiary-container": "#ffcfc0",
+            "accent": "#0A6B60",
+            "surface-container": "#ebefec",
+            "secondary": "#50625f",
+            "accent-line": "#8FBFB7",
+            "inverse-on-surface": "#eef1ef",
+            "ink-1": "#0F1E1C",
+            "line-strong": "#B4C3BF",
+            "on-error": "#ffffff",
+            "danger-soft": "#F7E4E2",
+            "tertiary-fixed-dim": "#ffb59d",
+            "outline": "#6f7976",
+            "ink-2": "#455754",
+            "error-container": "#ffdad6",
+            "surface-container-high": "#e6e9e7",
+            "surface-dim": "#d7dbd9",
+            "surface-variant": "#e0e3e1",
+            "inverse-surface": "#2d3130",
+            "on-secondary-container": "#566865",
+            "on-primary-container": "#98e8da",
+            "primary-fixed-dim": "#85d5c7",
+            "on-tertiary-fixed-variant": "#713621",
+            "error": "#ba1a1a",
+            "primary-fixed": "#a1f1e3",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed": "#00201c",
+            "primary-container": "#0a6b60"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-md": "16px",
+            "gutter": "16px",
+            "space-xxl": "48px",
+            "margin": "16px",
+            "space-xl": "32px",
+            "space-lg": "24px",
+            "space-sm": "8px",
+            "space-xs": "6px"
+          },
+          "fontFamily": {
+            "title": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "caption": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "body": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "numeric": [
+              "\"ui-monospace, SF Mono, Consolas, monospace\""
+            ],
+            "sub": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "display": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ]
+          },
+          "fontSize": {
+            "title": [
+              "19px",
+              {
+                "lineHeight": "1.3",
+                "fontWeight": "600"
+              }
+            ],
+            "caption": [
+              "12px",
+              {
+                "lineHeight": "1.5",
+                "fontWeight": "400"
+              }
+            ],
+            "body": [
+              "16px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "numeric": [
+              "16px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "sub": [
+              "14px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "display": [
+              "23px",
+              {
+                "lineHeight": "1.3",
+                "fontWeight": "600"
+              }
+            ]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#F2F5F4] text-ink-1 flex justify-center items-start min-h-screen">
+<!-- 微信小程序容器标准规格 375x812 居中自适应展示 -->
+<div class="w-[375px] min-h-[812px] bg-[#F2F5F4] flex flex-col relative overflow-hidden shadow-2xl pb-10">
+<!-- 1. 微信小程序顶部状态与导航条 (遵循 TopAppBar 规格) -->
+<header class="bg-surface text-primary font-title text-title flex justify-between items-center w-full px-4 h-12 sticky top-0 z-40">
+<button aria-label="返回" class="flex items-center justify-center w-8 h-8 -ml-1 text-ink-1 rounded-full active:scale-95 transition-transform hover:bg-surface-variant" type="button">
+<span class="material-symbols-outlined text-[24px]">chevron_left</span>
+</button>
+<h1 class="font-title text-title text-ink-1 tracking-tight text-center flex-1 pr-1">四象宝宝气质测评</h1>
+<button aria-label="小程序更多选项" class="flex items-center justify-center w-8 h-8 -mr-1 text-ink-2 rounded-full hover:bg-surface-variant" type="button">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</header>
+<!-- 滚动内容画卷 -->
+<main class="flex-1 px-4 pt-3 pb-6 flex flex-col gap-3">
+<!-- 2. 断点续填卡片（置顶高亮提示条，具备量具刻度感） -->
+<section class="bg-surface rounded-xl border border-line p-3 flex flex-col gap-2 relative overflow-hidden shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+<span class="font-sub text-sub font-semibold text-ink-1">继续上次填写 · 第 5 / 12 题</span>
+</div>
+<span class="font-numeric text-caption px-1.5 py-0.5 rounded bg-accent-soft text-accent font-medium">41%</span>
+</div>
+<!-- 刻度量具测量带 (Measurement Scale Token) -->
+<div class="w-full flex flex-col gap-1">
+<div class="w-full h-1.5 bg-surface-container rounded-full overflow-hidden flex">
+<div class="h-full bg-accent rounded-full transition-all duration-300" style="width: 41.6%;"></div>
+</div>
+<div class="flex justify-between items-center text-[10px] text-ink-3 font-caption">
+<span>起点 (第 1 题)</span>
+<span class="font-medium text-accent">已答 4 题</span>
+<span>终点 (第 12 题)</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-line/60">
+<p class="font-caption text-caption text-ink-3">断点已保存，可随时继续；断点保留 90 天</p>
+<button class="text-accent text-[12px] font-semibold active:opacity-75 flex items-center" type="button">
+            直接恢复
+            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- 3. 主引导卡片：严肃严谨认知界限划定 -->
+<section class="bg-surface rounded-xl border border-line p-4 flex flex-col gap-3.5 shadow-sm">
+<!-- 标题组与副标题 -->
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-accent text-[20px]">tune</span>
+<h2 class="font-display text-title text-ink-1">四象宝宝气质测评</h2>
+</div>
+<p class="font-caption text-caption text-ink-3">
+            四象为趣味包装名，四类用中性命名
+          </p>
+</div>
+<!-- 刻度分界对比模块：Bento Grid 对比划清科学认知边界 -->
+<div class="flex flex-col gap-2.5">
+<!-- 对比分块 1：正面定义（这是什么） -->
+<div class="bg-accent-soft/70 border border-accent-line/70 rounded-xl p-3 flex flex-col gap-1.5">
+<div class="flex items-center gap-1.5 text-primary">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="font-sub text-sub font-semibold text-primary">这是什么</span>
+</div>
+<p class="font-sub text-sub text-ink-1 leading-relaxed pl-5">
+              一份 0-6 岁通俗情境问卷，了解孩子近期的行为倾向，用于选养育方式与亲子沟通方法。
+            </p>
+</div>
+<!-- 对比分块 2：负面边界排除（这不是什么 - 严苛排他） -->
+<div class="bg-danger-soft/50 border border-line rounded-xl p-3 flex flex-col gap-1.5">
+<div class="flex items-center gap-1.5 text-danger">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+<span class="font-sub text-sub font-semibold text-danger">这不是什么</span>
+</div>
+<p class="font-sub text-sub text-ink-2 leading-relaxed pl-5">
+              非心理测评工具，非终身性格判定；不做诊断、治疗与心理评估；不算命、不判定天生注定。
+            </p>
+</div>
+</div>
+<!-- 参数规格矩阵 (Calibrated Meta Matrix) -->
+<div class="bg-surface-container-low rounded-xl p-3 border border-line/70 flex flex-col gap-2">
+<div class="grid grid-cols-2 gap-2 text-ink-2">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-ink-3">timer</span>
+<span class="font-caption text-caption">预计 3 分钟 · 12 题 · 4 个维度</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-ink-3">ballot</span>
+<span class="font-caption text-caption">题型：5 点情境选择题</span>
+</div>
+</div>
+<!-- 量具级校准标注 -->
+<div class="pt-2 border-t border-line/60 flex items-center justify-between text-ink-3">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-warn">info</span>
+<span class="font-caption text-caption">仅供养育参考，不替代专业人士。</span>
+</div>
+<span class="font-caption text-caption text-accent bg-surface px-1.5 py-0.5 rounded border border-line">动态调整</span>
+</div>
+</div>
+<!-- 当前档案选择指示条 -->
+<div class="flex items-center justify-between bg-surface-bright rounded-lg px-3 py-2 border border-line text-ink-2">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-caption font-bold">宝</span>
+<div class="flex flex-col">
+<span class="font-sub text-sub font-medium text-ink-1">已选档案：乐乐 (2岁3个月)</span>
+<span class="font-caption text-[11px] text-ink-3">出生日期：2022年11月 · 男宝</span>
+</div>
+</div>
+<button class="font-caption text-caption text-accent font-medium hover:underline flex items-center" type="button">
+            切换
+            <span class="material-symbols-outlined text-[14px]">unfold_more</span>
+</button>
+</div>
+</section>
+<!-- 问卷规范准则小贴士 (卡片式增强) -->
+<section class="bg-surface rounded-xl border border-line p-3 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[18px] mt-0.5">verified_user</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-sub text-sub font-semibold text-ink-1">作答建议</span>
+<p class="font-caption text-caption text-ink-3 leading-normal">
+            请依据孩子近 1-2 个月在日常生活中的自然反应作答，无需追求“完美标准”，中立观察最具参考价值。
+          </p>
+</div>
+</section>
+</main>
+<!-- 4. 底部主操作区与免责条（固定下底布局） -->
+<footer class="mt-auto px-4 pt-2 pb-5 bg-surface border-t border-line/80 flex flex-col gap-2">
+<!-- 墨青高冲击全宽按钮 (Design System Primary Button: 44px, 8px/xl radius) -->
+<button class="w-full h-11 bg-accent hover:bg-accent-press active:bg-accent-press text-on-accent font-title text-body font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-[0.98]" type="button">
+<span>开始测评</span>
+<span class="material-symbols-outlined text-[18px]">east</span>
+</button>
+<!-- 按钮下方引导提示 -->
+<p class="font-caption text-caption text-center text-ink-3">
+        开始前建议先选好孩子档案
+      </p>
+<!-- 5. 底部固定免责（合规硬性要求，不可隐藏） -->
+<div class="pt-1 border-t border-line/40 flex items-center justify-center gap-1 text-center">
+<span class="material-symbols-outlined text-ink-3 text-[13px]">format_image_left</span>
+<p class="font-caption text-caption text-ink-3 tracking-wide">
+          AI 生成内容，仅供参考，不替代医生诊断
+        </p>
+</div>
+</footer>
+</div>
+</body></html>

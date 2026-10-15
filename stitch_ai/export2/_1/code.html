@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=375, height=812, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>SC-15 测评作答页</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-high": "#e6e9e7",
+            "background": "#f7faf8",
+            "on-secondary-fixed-variant": "#384a47",
+            "ink-2": "#455754",
+            "tertiary": "#723622",
+            "bg": "#F2F5F4",
+            "on-surface": "#181c1b",
+            "warn": "#7A5600",
+            "error": "#ba1a1a",
+            "line": "#D5DEDB",
+            "ink-1": "#0F1E1C",
+            "accent": "#0A6B60",
+            "on-primary-fixed-variant": "#005048",
+            "surface-dim": "#d7dbd9",
+            "on-accent": "#FFFFFF",
+            "line-strong": "#B4C3BF",
+            "surface-variant": "#e0e3e1",
+            "on-tertiary": "#ffffff",
+            "surface-2": "#E9EFED",
+            "surface": "#FFFFFF",
+            "accent-line": "#8FBFB7",
+            "tertiary-fixed-dim": "#ffb59d",
+            "on-primary": "#ffffff",
+            "danger-soft": "#F7E4E2",
+            "on-secondary": "#ffffff",
+            "tertiary-container": "#8f4d37",
+            "inverse-primary": "#85d5c7",
+            "on-tertiary-fixed-variant": "#713621",
+            "outline": "#6f7976",
+            "on-secondary-container": "#566865",
+            "on-tertiary-container": "#ffcfc0",
+            "tertiary-fixed": "#ffdbd0",
+            "ink-3": "#5F6F6C",
+            "surface-container-low": "#f1f4f2",
+            "on-surface-variant": "#3e4946",
+            "surface-container-highest": "#e0e3e1",
+            "primary-fixed-dim": "#85d5c7",
+            "inverse-surface": "#2d3130",
+            "error-container": "#ffdad6",
+            "accent-press": "#074E46",
+            "danger": "#A8231B",
+            "on-error-container": "#93000a",
+            "surface-container": "#ebefec",
+            "secondary-fixed-dim": "#b7cbc7",
+            "primary-fixed": "#a1f1e3",
+            "secondary-container": "#d3e7e2",
+            "inverse-on-surface": "#eef1ef",
+            "on-primary-fixed": "#00201c",
+            "secondary-fixed": "#d3e7e2",
+            "warn-soft": "#F6EDD8",
+            "secondary": "#50625f",
+            "on-error": "#ffffff",
+            "surface-tint": "#086a5f",
+            "accent-soft": "#E1EFEC",
+            "on-secondary-fixed": "#0d1f1c",
+            "surface-container-lowest": "#ffffff",
+            "on-background": "#181c1b",
+            "on-primary-container": "#98e8da",
+            "primary": "#005148",
+            "surface-bright": "#f7faf8",
+            "on-tertiary-fixed": "#390c00",
+            "outline-variant": "#bec9c5",
+            "primary-container": "#0a6b60"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "6px",
+            "margin": "16px",
+            "space-xl": "32px",
+            "gutter": "16px",
+            "space-sm": "8px",
+            "space-md": "16px",
+            "space-xxl": "48px",
+            "space-lg": "24px"
+          },
+          "fontFamily": {
+            "title": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "sub": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "caption": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "body": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "display": [
+              "\"-apple-system, BlinkMacSystemFont, PingFang SC, system-ui, sans-serif\""
+            ],
+            "numeric": [
+              "\"ui-monospace, SF Mono, Consolas, monospace\""
+            ]
+          },
+          "fontSize": {
+            "title": [
+              "19px",
+              {
+                "lineHeight": "1.3",
+                "fontWeight": "600"
+              }
+            ],
+            "sub": [
+              "14px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "caption": [
+              "12px",
+              {
+                "lineHeight": "1.5",
+                "fontWeight": "400"
+              }
+            ],
+            "body": [
+              "16px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ],
+            "display": [
+              "23px",
+              {
+                "lineHeight": "1.3",
+                "fontWeight": "600"
+              }
+            ],
+            "numeric": [
+              "16px",
+              {
+                "lineHeight": "1.6",
+                "fontWeight": "400"
+              }
+            ]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-bg text-on-surface antialiased flex justify-center items-start min-h-screen select-none font-body text-body">
+<!-- Mobile Viewport Canvas Container: 375px x 812px standard mini-program frame -->
+<main class="w-[375px] h-[812px] bg-bg relative flex flex-col justify-between overflow-hidden shadow-2xl border border-line">
+<!-- 微信小程序标准顶栏 & 胶囊占位区 (依据 Shared Components 规则定制任务特化头) -->
+<header class="w-full bg-surface z-30 shrink-0">
+<!-- 微信胶囊安全区 / 顶部状态栏 -->
+<div class="h-6 w-full flex justify-between items-center px-4 pt-1">
+<span class="font-numeric text-caption text-ink-3">09:41</span>
+<div class="flex items-center space-x-1 text-ink-3">
+<span class="material-symbols-outlined text-[13px] leading-none" data-icon="signal_cellular_alt">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[13px] leading-none" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-[13px] leading-none" data-icon="battery_full">battery_full</span>
+</div>
+</div>
+<!-- 小程序导航条 (含左侧退出与右侧微型胶囊/题号刻度) -->
+<div class="flex justify-between items-center w-full px-4 h-12">
+<!-- 退出行动点 -->
+<button class="flex items-center space-x-0.5 text-ink-2 hover:text-ink-1 transition-all active:scale-95 py-1" type="button">
+<span class="material-symbols-outlined text-[18px] text-ink-2" data-icon="chevron_left">chevron_left</span>
+<span class="font-sub text-sub font-medium">退出</span>
+</button>
+<!-- 页面主标题：精密居中 -->
+<div class="text-center font-title text-title text-ink-1 tracking-tight">
+          SC-15 儿童行为观察
+        </div>
+<!-- 微信经典胶囊模拟器 (含题号进度微标尺) -->
+<div class="flex items-center bg-surface-container-low border border-line rounded-full px-2.5 py-1 space-x-1.5 shadow-none">
+<span class="font-numeric text-caption font-semibold text-primary">第 5 / 12 题</span>
+<span class="w-[1px] h-3 bg-line"></span>
+<span class="material-symbols-outlined text-[14px] text-ink-3" data-icon="more_horiz">more_horiz</span>
+</div>
+</div>
+<!-- 1. 顶部刻度进度指示器系统 (42%) -->
+<div class="w-full bg-surface px-4 pb-2.5 pt-1">
+<div class="flex justify-between items-center mb-1.5">
+<div class="flex items-center space-x-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-accent inline-block"></span>
+<span class="font-caption text-caption text-ink-2">刻度量程 42%</span>
+</div>
+<span class="font-caption text-caption text-ink-3 flex items-center space-x-0.5">
+<span class="material-symbols-outlined text-[12px] text-accent" data-icon="lock_clock">lock_clock</span>
+<span>退出即自动保存断点</span>
+</span>
+</div>
+<!-- 标尺型进度槽：结合工业刻度线与百分比填充 -->
+<div class="relative w-full h-2 bg-surface-2 rounded-full overflow-hidden flex items-center">
+<!-- 刻度分段参考线底纹 -->
+<div class="absolute inset-0 flex justify-between px-1 pointer-events-none opacity-30">
+<span class="w-[1px] h-full bg-line-strong"></span>
+<span class="w-[1px] h-full bg-line-strong"></span>
+<span class="w-[1px] h-full bg-line-strong"></span>
+<span class="w-[1px] h-full bg-line-strong"></span>
+<span class="w-[1px] h-full bg-line-strong"></span>
+</div>
+<!-- 进度本体 -->
+<div class="h-full bg-accent rounded-full transition-all duration-300 relative" style="width: 42%;">
+<div class="absolute right-0 top-0 bottom-0 w-1 bg-white/40"></div>
+</div>
+</div>
+</div>
+<!-- 极轻底边区分线 -->
+<div class="w-full h-[1px] bg-line"></div>
+</header>
+<!-- 可滑动主体测评区 -->
+<section class="flex-1 overflow-y-auto px-4 py-3 space-y-3.5 no-scrollbar">
+<!-- 4. 断点轻提示浮层/卡条 (状态条) -->
+<div class="w-full bg-accent-soft/70 border border-accent-line/40 rounded-xl px-3 py-2 flex items-center justify-between shadow-none">
+<div class="flex items-center space-x-2">
+<div class="w-5 h-5 rounded-full bg-accent/15 flex items-center justify-center text-accent">
+<span class="material-symbols-outlined text-[13px]" data-icon="cloud_done">cloud_done</span>
+</div>
+<div class="flex flex-col">
+<span class="font-caption text-caption font-semibold text-primary">已保存断点 · 刚刚</span>
+<span class="text-[11px] leading-tight text-ink-2">已保存，可随时继续，断点保留 90 天</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-ink-3 text-[14px]" data-icon="schedule">schedule</span>
+</div>
+<!-- 2. 核心题干卡片 (采用高阶度量结构) -->
+<article class="bg-surface border border-line rounded-xl p-4 relative shadow-none">
+<div class="flex items-center justify-between pb-2.5 border-b border-line/60">
+<span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-surface-2 text-primary font-caption text-caption font-medium border border-line">
+            第 5 题 · 单选
+          </span>
+<span class="font-numeric text-caption text-ink-3 flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-accent" data-icon="tune">tune</span>
+            社会退缩维度
+          </span>
+</div>
+<div class="pt-3 pb-1">
+<h2 class="font-title text-title text-ink-1 font-semibold leading-relaxed">
+            带孩子去陌生亲戚家时，他通常会：
+          </h2>
+</div>
+</article>
+<!-- 3. 5点李克特式单选选项列表 (精密量具刻度卡片系统) -->
+<div class="space-y-2.5">
+<!-- 选项 1 (已选中态：墨青色描边高亮 + 选中单选框 + 刻度分阶标识) -->
+<label class="block relative cursor-pointer">
+<input checked="" class="sr-only peer" name="assessment_opt" type="radio"/>
+<div class="w-full p-3.5 bg-surface border-2 border-accent rounded-xl flex items-center justify-between transition-all bg-accent-soft/20 shadow-none">
+<div class="flex items-center space-x-3 pr-2">
+<span class="w-6 h-6 rounded-lg bg-accent text-on-accent font-numeric text-caption flex items-center justify-center font-medium shrink-0">
+                1
+              </span>
+<span class="font-body text-sub text-ink-1 font-semibold leading-snug">
+                先躲在你身后，很久才出来
+              </span>
+</div>
+<!-- 激活态墨青单选圈钮 -->
+<div class="w-5 h-5 rounded-full border-2 border-accent flex items-center justify-center shrink-0 bg-surface">
+<div class="w-2.5 h-2.5 rounded-full bg-accent"></div>
+</div>
+</div>
+</label>
+<!-- 选项 2 (未选中) -->
+<label class="block relative cursor-pointer">
+<input class="sr-only peer" name="assessment_opt" type="radio"/>
+<div class="w-full p-3.5 bg-surface border border-line rounded-xl flex items-center justify-between transition-all hover:bg-surface-2 active:bg-surface-container shadow-none">
+<div class="flex items-center space-x-3 pr-2">
+<span class="w-6 h-6 rounded-lg bg-surface-2 text-ink-2 font-numeric text-caption flex items-center justify-center font-medium shrink-0 border border-line">
+                2
+              </span>
+<span class="font-body text-sub text-ink-2 leading-snug">
+                观察一会儿，再慢慢靠近
+              </span>
+</div>
+<div class="w-5 h-5 rounded-full border border-line-strong flex items-center justify-center shrink-0 bg-surface"></div>
+</div>
+</label>
+<!-- 选项 3 (未选中) -->
+<label class="block relative cursor-pointer">
+<input class="sr-only peer" name="assessment_opt" type="radio"/>
+<div class="w-full p-3.5 bg-surface border border-line rounded-xl flex items-center justify-between transition-all hover:bg-surface-2 active:bg-surface-container shadow-none">
+<div class="flex items-center space-x-3 pr-2">
+<span class="w-6 h-6 rounded-lg bg-surface-2 text-ink-2 font-numeric text-caption flex items-center justify-center font-medium shrink-0 border border-line">
+                3
+              </span>
+<span class="font-body text-sub text-ink-2 leading-snug">
+                犹豫一下就跟人玩起来
+              </span>
+</div>
+<div class="w-5 h-5 rounded-full border border-line-strong flex items-center justify-center shrink-0 bg-surface"></div>
+</div>
+</label>
+<!-- 选项 4 (未选中) -->
+<label class="block relative cursor-pointer">
+<input class="sr-only peer" name="assessment_opt" type="radio"/>
+<div class="w-full p-3.5 bg-surface border border-line rounded-xl flex items-center justify-between transition-all hover:bg-surface-2 active:bg-surface-container shadow-none">
+<div class="flex items-center space-x-3 pr-2">
+<span class="w-6 h-6 rounded-lg bg-surface-2 text-ink-2 font-numeric text-caption flex items-center justify-center font-medium shrink-0 border border-line">
+                4
+              </span>
+<span class="font-body text-sub text-ink-2 leading-snug">
+                很快就主动找人互动
+              </span>
+</div>
+<div class="w-5 h-5 rounded-full border border-line-strong flex items-center justify-center shrink-0 bg-surface"></div>
+</div>
+</label>
+<!-- 选项 5 (未选中) -->
+<label class="block relative cursor-pointer">
+<input class="sr-only peer" name="assessment_opt" type="radio"/>
+<div class="w-full p-3.5 bg-surface border border-line rounded-xl flex items-center justify-between transition-all hover:bg-surface-2 active:bg-surface-container shadow-none">
+<div class="flex items-center space-x-3 pr-2">
+<span class="w-6 h-6 rounded-lg bg-surface-2 text-ink-2 font-numeric text-caption flex items-center justify-center font-medium shrink-0 border border-line">
+                5
+              </span>
+<span class="font-body text-sub text-ink-2 leading-snug">
+                完全不在意，自己玩自己的
+              </span>
+</div>
+<div class="w-5 h-5 rounded-full border border-line-strong flex items-center justify-center shrink-0 bg-surface"></div>
+</div>
+</label>
+</div>
+<!-- 选项底部辅助心理减负说明 -->
+<div class="py-1 text-center flex items-center justify-center space-x-1 text-ink-3">
+<span class="material-symbols-outlined text-[13px] text-accent" data-icon="info">info</span>
+<span class="font-caption text-caption">没有对错，选最接近平时表现的即可</span>
+</div>
+</section>
+<!-- 5. 底部双按钮控制栏 & 医疗免责常驻警示栏 -->
+<footer class="w-full bg-surface border-t border-line px-4 pt-3 pb-4 z-30 shrink-0">
+<!-- 双按键控制网格 -->
+<div class="grid grid-cols-2 gap-3 mb-2.5">
+<!-- 上一题 (次按钮: 44px, 8px 圆角, 极简结构) -->
+<button class="h-[44px] rounded-xl border border-line-strong bg-surface text-ink-2 font-sub text-sub font-medium hover:bg-surface-2 active:bg-surface-variant flex items-center justify-center space-x-1 transition-all active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[16px] text-ink-2" data-icon="arrow_back">arrow_back</span>
+<span>上一题</span>
+</button>
+<!-- 下一题 (主按钮: 44px, 8px 圆角, 墨青主题主导) -->
+<button class="h-[44px] rounded-xl bg-accent text-on-accent font-sub text-sub font-semibold hover:bg-accent-press active:bg-accent-press flex items-center justify-center space-x-1 transition-all active:scale-[0.98] shadow-sm" type="button">
+<span>下一题</span>
+<span class="material-symbols-outlined text-[16px] text-on-accent" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- 严谨法定声明文字 -->
+<div class="flex items-center justify-center space-x-1 text-ink-3 pt-0.5">
+<span class="material-symbols-outlined text-[12px] text-ink-3" data-icon="verified_user">verified_user</span>
+<p class="font-caption text-caption text-[11px] leading-tight text-center">
+          AI 生成内容，仅供参考，不替代医生诊断
+        </p>
+</div>
+<!-- 微信小程序 iOS 底部 Home Indicator 占位条 -->
+<div class="w-32 h-1 bg-ink-1/15 rounded-full mx-auto mt-2"></div>
+</footer>
+</main>
+<script>
+    // 选项切换微交互：支持纯点击即时视觉联动与单选状态同步
+    document.querySelectorAll('input[name="assessment_opt"]').forEach(input => {
+      input.addEventListener('change', () => {
+        document.querySelectorAll('input[name="assessment_opt"]').forEach(otherInput => {
+          const card = otherInput.closest('label').querySelector('div');
+          const badge = card.querySelector('span:first-child');
+          const radioCircle = card.querySelector('div:last-child');
+          const textSpan = card.querySelector('span:last-of-type');
+
+          if (otherInput.checked) {
+            card.className = "w-full p-3.5 bg-surface border-2 border-accent rounded-xl flex items-center justify-between transition-all bg-accent-soft/20 shadow-none";
+            badge.className = "w-6 h-6 rounded-lg bg-accent text-on-accent font-numeric text-caption flex items-center justify-center font-medium shrink-0";
+            textSpan.className = "font-body text-sub text-ink-1 font-semibold leading-snug";
+            radioCircle.className = "w-5 h-5 rounded-full border-2 border-accent flex items-center justify-center shrink-0 bg-surface";
+            radioCircle.innerHTML = '<div class="w-2.5 h-2.5 rounded-full bg-accent"></div>';
+          } else {
+            card.className = "w-full p-3.5 bg-surface border border-line rounded-xl flex items-center justify-between transition-all hover:bg-surface-2 active:bg-surface-container shadow-none";
+            badge.className = "w-6 h-6 rounded-lg bg-surface-2 text-ink-2 font-numeric text-caption flex items-center justify-center font-medium shrink-0 border border-line";
+            textSpan.className = "font-body text-sub text-ink-2 leading-snug";
+            radioCircle.className = "w-5 h-5 rounded-full border border-line-strong flex items-center justify-center shrink-0 bg-surface";
+            radioCircle.innerHTML = '';
+          }
+        });
+      });
+    });
+  </script>
+</body></html>
