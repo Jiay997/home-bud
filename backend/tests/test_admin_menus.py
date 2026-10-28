@@ -27,20 +27,30 @@ from app.api.v1.admin_api import ROLE_MENUS, _admin_menus  # noqa: E402
 BACKEND_DIR = Path(__file__).resolve().parents[1]
 ADMIN_API_PY = BACKEND_DIR / "app" / "api" / "v1" / "admin_api.py"
 ADMIN_LAYOUT_VUE = (
-    BACKEND_DIR.parent / "frontend" / "src" / "views" / "admin" / "AdminLayout.vue"
+    BACKEND_DIR.parent / "admin-web" / "src" / "views" / "admin" / "AdminLayout.vue"
 )
 
 # 前端侧边栏菜单键（AdminLayout.vue MENU_DEFS；系统监控为模板硬编码展示项，不在权限枚举内）
-FRONTEND_MENU_KEYS = {"kb", "lexicon", "logs", "feedback", "risk", "rights", "config", "audit"}
+# V3.1 增补 channel（危机渠道清单）/ triage（分级规则）/ content（专题包与轻工具）
+FRONTEND_MENU_KEYS = {
+    "kb", "lexicon", "logs", "feedback", "risk", "rights", "config", "audit",
+    "channel", "triage", "content", "weight",
+}
 
 # 角色 → 菜单行为基线（唯一事实来源：admin_api.py::ROLE_MENUS）
 # 越权修复：audit（审计记录）为超管专属，operator/support 不再下发该菜单
 EXPECTED_ROLE_MENUS = {
-    "super_admin": ["kb", "lexicon", "logs", "feedback", "risk", "rights", "config", "audit"],
-    "operator": ["kb", "lexicon", "logs", "feedback", "risk", "rights"],
-    "support": ["feedback", "rights", "logs"],
-    "expert_child": ["kb"],
-    "expert_pet": ["kb"],
+    "super_admin": [
+        "kb", "lexicon", "logs", "feedback", "risk", "rights", "config",
+        "channel", "triage", "content", "weight", "audit",
+    ],
+    "operator": [
+        "kb", "lexicon", "logs", "feedback", "risk", "rights",
+        "channel", "triage", "content",
+    ],
+    "support": ["feedback", "rights", "logs", "channel"],
+    "expert_child": ["kb", "triage"],
+    "expert_pet": ["kb", "triage"],
 }
 
 # /admin/audit-logs 接口角色白名单（源码内联条件，见 list_audit_logs）

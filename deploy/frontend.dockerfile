@@ -1,42 +1,56 @@
 # =============================================================================
-# 小光景前端镜像 Dockerfile（多阶段构建）
+# Babe宝伴前端镜像 Dockerfile（多阶段构建）
+#
+# 产出两个 Web 静态站点，由同一 nginx 容器托管：
+#   /app/   → uni-app 跨端工程 client/ 的 H5 产物（与微信小程序同一套源码）
+#   /admin/ → 后台管理端 admin-web/ 产物（Element Plus，Web-only）
 #
 # 构建方式（在仓库根目录执行，context 为仓库根）：
 #   docker build -f deploy/frontend.dockerfile -t jiaban-frontend .
-#
-# 阶段一：node:20-alpine 执行 vite build 产出 dist/
-# 阶段二：nginx:1.27-alpine 托管静态文件并反代 /api/
 # =============================================================================
 
-# ---------- 阶段一：前端构建 ----------
-FROM node:20-alpine AS builder
+# ---------- 阶段一：构建 uni-app H5（client） ----------
+FROM node:20-alpine AS client-builder
 
 WORKDIR /app
 
 # 先复制依赖清单并安装（利用 Docker 层缓存）
-COPY frontend/package*.json /app/
+COPY client/package*.json /app/
 RUN npm install
 
-# 复制前端源码并构建
-COPY frontend/ /app/
+# 复制源码并构建 H5 产物（base=/app/ 由 client/vite.config.ts 控制）
+COPY client/ /app/
+RUN npm run build:h5
+
+# ---------- 阶段二：构建后台管理端（admin-web） ----------
+FROM node:20-alpine AS admin-builder
+
+WORKDIR /admin
+
+COPY admin-web/package*.json /admin/
+RUN npm install
+
+# 复制源码并构建（base=/admin/ 由 admin-web/vite.config.ts 控制）
+COPY admin-web/ /admin/
 RUN npm run build
 
-# ---------- 阶段二：nginx 运行时 ----------
+# ---------- 阶段三：nginx 运行时 ----------
 FROM nginx:1.27-alpine
 
-# 移除默认站点配置，使用小光景自定义配置
+# 移除默认站点配置，使用Babe宝伴自定义配置
 RUN rm -f /etc/nginx/conf.d/default.conf
 
-# 静态资源
-COPY --from=builder /app/dist /usr/share/nginx/html
+# 两个站点的静态产物
+COPY --from=client-builder /app/dist/build/h5 /usr/share/nginx/html/app
+COPY --from=admin-builder /admin/dist /usr/share/nginx/html/admin
 
-# nginx 配置（前端 history 路由回退 + /api/ 反向代理 + SSE 流式配置）
+# nginx 配置（双站点 history 路由回退 + /api/ 反向代理 + SSE 流式配置）
 COPY deploy/nginx.conf /etc/nginx/conf.d/app.conf
 
 EXPOSE 80
 
-# nginx 官方镜像已内置健康检查指令兼容，这里显式声明，便于 compose 依赖判断
+# 健康检查显式使用 127.0.0.1：容器内 localhost 可能解析为 IPv6 ::1，而 nginx 只监听 IPv4
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD wget -q --spider http://localhost/ || exit 1
+    CMD wget -q --spider http://127.0.0.1/ || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]

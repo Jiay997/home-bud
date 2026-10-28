@@ -74,15 +74,24 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 logger = logging.getLogger("jiaban.admin")
 
 # 角色 × 可访问页面清单（mfa/verify 与 /me 返回，前端据此渲染侧边栏）
-# 单一事实来源：键集合与前端 MENU_DEFS 页面标识逐字一致（kb/lexicon/logs/feedback/risk/rights/config/audit），
+# 单一事实来源：键集合与前端 MENU_DEFS 页面标识逐字一致
+# （kb/lexicon/logs/feedback/risk/rights/config/audit + V3.1 的 channel/triage/content），
 # 前端不做任何别名/兜底映射；一致性由 tests/test_admin_menus.py 守护（含前端文件交叉校验）。
 # audit（审计记录）与 /admin/audit-logs 接口的角色白名单（仅 super_admin）保持一致。
+# V3.1 增补：channel（危机渠道清单 RQ-03）、triage（分级规则 RQ-06）、
+# content（专题包 / 轻工具 RQ-12/13/14）；rights 与 config 拆为两个独立菜单（缺陷 N4）。
 ROLE_MENUS: Dict[str, List[str]] = {
-    "super_admin": ["kb", "lexicon", "logs", "feedback", "risk", "rights", "config", "audit"],
-    "operator": ["kb", "lexicon", "logs", "feedback", "risk", "rights"],
-    "support": ["feedback", "rights", "logs"],
-    "expert_child": ["kb"],
-    "expert_pet": ["kb"],
+    "super_admin": [
+        "kb", "lexicon", "logs", "feedback", "risk", "rights", "config",
+        "channel", "triage", "content", "weight", "audit",
+    ],
+    "operator": [
+        "kb", "lexicon", "logs", "feedback", "risk", "rights",
+        "channel", "triage", "content",
+    ],
+    "support": ["feedback", "rights", "logs", "channel"],
+    "expert_child": ["kb", "triage"],
+    "expert_pet": ["kb", "triage"],
 }
 
 # 个人数据导出文件目录：<backend>/data/exports（任务约定路径）
@@ -143,6 +152,21 @@ def _admin_menus(admin: AdminUser) -> List[str]:
         页面标识列表（kb/lexicon/logs/feedback/risk/rights/config/audit）；未知角色返回空列表。
     """
     return ROLE_MENUS.get(admin.role, [])
+
+
+def _log_obs(output_json: Any) -> Dict[str, Any]:
+    """读取 Agent 日志观测快照（D-06 `_obs` 字段）。
+
+    Args:
+        output_json: AgentCallLog.output_json（JSONB）。
+
+    Returns:
+        `_obs` 字典；缺失或结构异常时返回空字典。
+    """
+    if not isinstance(output_json, dict):
+        return {}
+    obs = output_json.get("_obs")
+    return obs if isinstance(obs, dict) else {}
 
 
 def _extract_output_titles(output_json: Any) -> List[str]:
@@ -772,6 +796,13 @@ def list_agent_logs(
             "latency_ms": r.latency_ms,
             "conflict_flag": r.conflict_flag,
             "input_digest": r.input_digest,  # 摘要哈希，不提供还原
+            # D-06：列表补充脱敏输入摘要 / 权重版本 / 风险命中，避免整列为「--」
+            "input_summary": _log_obs(r.output_json).get("input_summary"),
+            "risk_hits": _log_obs(r.output_json).get("risk_hits"),
+            "risk_level": _log_obs(r.output_json).get("risk_level"),
+            "risk_reason": _log_obs(r.output_json).get("risk_reason"),
+            "weight_version": _log_obs(r.output_json).get("weight_version"),
+            "triage": _log_obs(r.output_json).get("triage"),
             "output_titles": _extract_output_titles(r.output_json),
             "created_at": _iso(r.created_at),
         }
@@ -878,6 +909,12 @@ def agent_log_detail(
             "model": log.model,
             "model_version": log.model_version,
             "input_digest": log.input_digest,
+            "input_summary": _log_obs(log.output_json).get("input_summary"),
+            "risk_hits": _log_obs(log.output_json).get("risk_hits"),
+            "risk_level": _log_obs(log.output_json).get("risk_level"),
+            "risk_reason": _log_obs(log.output_json).get("risk_reason"),
+            "weight_version": _log_obs(log.output_json).get("weight_version"),
+            "triage": _log_obs(log.output_json).get("triage"),
             "output_json": log.output_json,
             "confidence": float(log.confidence) if log.confidence is not None else None,
             "conflict_flag": log.conflict_flag,

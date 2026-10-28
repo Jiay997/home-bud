@@ -1,0 +1,63 @@
+{
+  "steps": [
+    {
+      "label": "login-page",
+      "title": "后台登录 · Babe宝伴后台"
+    },
+    {
+      "label": "empty-submit",
+      "toast": "请输入账号与密码"
+    },
+    {
+      "label": "after-password",
+      "hasMfa": true,
+      "snippet": "Babe宝伴后台管理中心\n管理端登录需完成二次验证\n|\n操作全程写入审计留痕\n管理员登录\n\nBabe宝伴后台系统 · 最小权限访问控制\n\n登录安全检查项\n账号密码 + 二次验证\n账号\n密码\n二次验证 (MFA)\n动态身份验证码\n59s 后重发\n\n验证码 5 分钟内有效，60 秒后可重发\n\n返回重新输入账号\n记住此设备（7 天）\n验证并登录\n角色说明（最小权限）：超级管理员 / 内容运营 / 客服 / 专家\n最近登录：首次登录\nBabe宝伴后台安全中心 · 管理操作写入不可篡改的审计记录\n最小权限访问\n·\n高风险操作二次确认并留原因\n\n请输入账号与密码\n\n验证码已自动发送，请输入收到的 6 位验证码"
+    },
+    {
+      "label": "mfa-filled",
+      "ok": true
+    },
+    {
+      "label": "logged-in",
+      "url": "http://localhost/admin/kb",
+      "title": "知识库管理 · Babe宝伴后台",
+      "text": "Babe宝伴管理中心\n内容审核与风险处置台\n新建知识文档\n知识库管理\n词库维护\nAgent调用日志\n反馈与举报\n高风险事件\n21\n权利请求\n系统开关与配置\n危机渠道清单\n分级规则\n内容运营\nAgent 展示权重\n审计记录\n系统监控\n版本 v0.1.0\nBabe宝伴\n/\n知识库管理\n系统超管\n超级管理员\n退出\n知识库：\n全部\n育儿\n宠物\n6\n题库\n当前分类位置校准进度：\n100%\n＋ 新建条目\n审核状态\n全部\n专业领域\n全部\n关键词检索\n搜索\n重置\n条目基线：三审三校制\n|\n最新数据标定时间：今天 20:48:04\n显示 1-20 / 31 条\n\t\nID\n\t\n标题\n\t\n状态\n\t\n版本\n\t\n审核人\n\t\n操作\n\t\nKB47C96B0E5AB2\n\t\n探针条目-宝宝口水疹日常护理边界\n育儿\n\t\n已上架\n\t\nv2\n\t\n—\n\t\n编辑\n下架\n回滚\n\n\n\t\nKBEC6B728024CD\n\t\nE2E测试条目-辅食观察\n育儿\n\t\n已上架\n\t\nv2\n\t\n—\n\t\n编辑\n下架\n回滚\n\n\n\t\nKBE08F74D5EE38\n\t\nE2E测试条目-辅食观察\n育儿\n\t\n已上架\n\t\nv2\n\t\n—\n\t\n编辑\n下架\n回滚\n\n\n\t\nkb_question_16\n\t\n气质测评题 16（EMO 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_15\n\t\n气质测评题 15（EMO 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_14\n\t\n气质测评题 14（EMO 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_13\n\t\n气质测评题 13（EMO 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_12\n\t\n气质测评题 12（ADP 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_11\n\t\n气质测评题 11（ADP 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_10\n\t\n气质测评题 10（ADP 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_09\n\t\n气质测评题 09（ADP 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_08\n\t\n气质测评题 08（APP 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_07\n\t\n气质测评题 07（APP 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_06\n\t\n气质测评题 06（APP 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_05\n\t\n气质测评题 05（APP 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_04\n\t\n气质测评题 04（ACT 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_03\n\t\n气质测评题 03（ACT 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_02\n\t\n气质测评题 02（ACT 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_question_01\n\t\n气质测评题 01（ACT 维度）\n题库\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n\n\n\t\nkb_pet_health_01\n\t\n幼宠疫苗接种区间参考\n宠物\n\t\n已上架\n\t\nv1\n\t\n—\n\t\n编辑\n下架\n全选\n批量上架\n批量下架\n导出 CSV\n1\n2\n内容合规与风控基线： 上线前 100% 双专家审核；上线后每月自动化抽检 30 条，高危类目（用药、惊厥、急性腹泻、烈性攻击）100% 专家组复核 · 合格线 ≥98%，若低于阈值将强制暂停该知识卡片输出并触发回滚报警。"
+    },
+    {
+      "label": "/admin/kb",
+      "title": "知识库管理 · Babe宝伴后台",
+      "hasKeyword": true,
+      "snippet": "Babe宝伴管理中心\n内容审核与风险处置台\n新建知识文档\n知识库管理\n词库维护\nAgent调用日志\n反馈与举报\n高风险事件\n21\n权利请求\n系统开关与配置\n危机渠道清单\n分级规则\n内容运营\nAgent 展示权重\n审计记录\n系统监控\n版本 v0.1.0\nBabe宝伴\n/\n知识库管理\n系统超管\n超级管理员\n退出\n知识库：\n全部\n育儿\n宠物\n6\n题库\n当前分类位置校准进度：\n100%\n＋ 新建条目\n审核状态\n全部\n专业领域\n全部\n关键词检索\n搜索\n重置\n条目基线：三审三校制\n|\n最新数据标定时间：今天 20:48:09\n显示 1-20 / 31 条\n\t\nID\n\t\n标题\n\t\n状态\n\t\n版本\n\t\n审核人"
+    },
+    {
+      "label": "/admin/logs",
+      "title": "Agent 调用日志 · Babe宝伴后台",
+      "hasKeyword": false,
+      "snippet": "Babe宝伴管理中心\n内容审核与风险处置台\n新建知识文档\n知识库管理\n词库维护\nAgent调用日志\n反馈与举报\n高风险事件\n21\n权利请求\n系统开关与配置\n危机渠道清单\n分级规则\n内容运营\nAgent 展示权重\n审计记录\n系统监控\n版本 v0.1.0\nBabe宝伴\n/\nAgent调用日志\n系统超管\n超级管理员\n退出\n调用日志\n近 24h 384 条\n\n多模型路由决策全链路追溯 · 调用耗时与拦截结果记录\n\n导出 CSV\n时间\n至\nAgent\n全部\n风险\n全部\n冲突\n全部\n搜索\n重置\n\t\n会话 ID\n\t\n时间\n\t\n输入摘要(脱敏)\n\t\nAgent\n\t\n耗时\n\t\n风险\n\t\n冲突\n\t\n操作\n\t\n18"
+    },
+    {
+      "label": "/admin/risk",
+      "title": "高风险事件 · Babe宝伴后台",
+      "hasKeyword": true,
+      "snippet": "Babe宝伴管理中心\n内容审核与风险处置台\n新建知识文档\n知识库管理\n词库维护\nAgent调用日志\n反馈与举报\n高风险事件\n21\n权利请求\n系统开关与配置\n危机渠道清单\n分级规则\n内容运营\nAgent 展示权重\n审计记录\n系统监控\n版本 v0.1.0\nBabe宝伴\n/\n高风险事件\n系统超管\n超级管理员\n退出\n高风险事件\n今日 5 起\n|\n待复核 17\n\n涉童涉危内容硬拦截 · 人工复核 · 处置全程留痕可溯源\n\n导出事件清单\n时间\nSelect\n类别\nSelect\n处置\nSelect\n过滤\n规则引擎运行中\n事件号\n\t\n时间\n\t\n命中类别\n\t\n置信度 / 分档\n\t\n层级\n\t\n来源场景\n\t\n处置状"
+    },
+    {
+      "label": "/admin/channels",
+      "title": "危机渠道清单 · Babe宝伴后台",
+      "hasKeyword": true,
+      "snippet": "Babe宝伴管理中心\n内容审核与风险处置台\n新建知识文档\n知识库管理\n词库维护\nAgent调用日志\n反馈与举报\n高风险事件\n21\n权利请求\n系统开关与配置\n危机渠道清单\n分级规则\n内容运营\nAgent 展示权重\n审计记录\n系统监控\n版本 v0.1.0\nBabe宝伴\n/\n危机渠道清单\n系统超管\n超级管理员\n退出\n危机渠道清单\n\n高风险问答下发的求助渠道卡与后台维护读同一张表 · 号码未核验一律占位，不编造\n\n单一数据源 crisis_channel\n旧配置项 CRISIS_CHANNELS_V1 已废弃\n刷新\n新增渠道\n渠道总数\n7\n含占位与已停用\n已核验\n1\n有号码且状态 active\n占位\n"
+    },
+    {
+      "label": "/admin/triage-rules",
+      "title": "分级规则 · Babe宝伴后台",
+      "hasKeyword": true,
+      "snippet": "Babe宝伴管理中心\n内容审核与风险处置台\n新建知识文档\n知识库管理\n词库维护\nAgent调用日志\n反馈与举报\n高风险事件\n21\n权利请求\n系统开关与配置\n危机渠道清单\n分级规则\n内容运营\nAgent 展示权重\n审计记录\n系统监控\n版本 v0.1.0\nBabe宝伴\n/\n分级规则\n系统超管\n超级管理员\n退出\n分级规则（红 / 黄 / 绿档位）\n\n条目化分级决策规则 · 阈值与档位由服务端引擎执行 · 变更留痕并受专家会签门禁约束\n\n规则快照版本 1\n快照来源 db\n刷新\n发布门禁未满足：分级决策规则尚未完成专家书面会签\n\n当前已会签 0 / 23 条； 未完成会签前，本批规则不满足 V3.1 上"
+    },
+    {
+      "label": "/admin/monitor",
+      "title": "系统监控 · Babe宝伴后台",
+      "hasKeyword": true,
+      "snippet": "Babe宝伴管理中心\n内容审核与风险处置台\n新建知识文档\n知识库管理\n词库维护\nAgent调用日志\n反馈与举报\n高风险事件\n21\n权利请求\n系统开关与配置\n危机渠道清单\n分级规则\n内容运营\nAgent 展示权重\n审计记录\n系统监控\n版本 v0.1.0\nBabe宝伴\n/\n系统监控\n系统超管\n超级管理员\n退出\n系统监控\n\n进程内运行指标 · 请求/Agent/降级/拦截/额度计数 · P50/P95 延迟 · 超阈值告警 最近刷新 20:48:35\n\n自动刷新 30s\n刷新\n运行正常\n当前无触发告警的指标（阈值口径见后端 METRIC_ALERT_* 配置）\n请求总数\n888\nHTTP 请求累计计"
+    }
+  ]
+}

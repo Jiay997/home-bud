@@ -321,6 +321,16 @@ def get_qa_detail(
             item["blocks"] = sec.blocks
         out_sections.append(item)
 
+    # V3.1 RQ-01/RQ-06/RQ-07：历史详情同样下发合规契约（标识 / 档位 / 信任条），
+    # 口径与 SSE completed、轮询兜底一致；档位与月龄取**回答时**快照（AC-RQ07-4）
+    from ...services import answer_contract
+
+    contract = answer_contract.contract_from_stored(
+        db,
+        session,
+        kb_refs=session.kb_refs or [],
+        sections=out_sections,
+    )
     return ok({
         "session_uid": session.session_uid,
         "status": session.status,
@@ -338,6 +348,12 @@ def get_qa_detail(
         # 非会员（free 或会员已到期）历史只读
         "readonly": not member,
         "sections": out_sections,
+        # V3.1 合规契约（历史页信任条 / 档位卡数据来源）
+        "ai_label": contract["ai_label"],
+        "disclaimer_id": contract["disclaimer_id"],
+        "trust_bar": contract["trust_bar"],
+        "triage": contract["triage"],
+        "input_mode": session.input_mode,
     })
 
 

@@ -2,7 +2,7 @@
 """前端调用 × OpenAPI 契约快照校验（评估文档 §4.1 系统性建议落地）。
 
 作用：
-1. 扫描 frontend/src/api/ 下全部 .ts 文件，提取其中对后端的 HTTP 调用：
+1. 扫描各前端 api 目录（admin-web/src/api、client/src/api）下全部 .ts 文件，提取其中对后端的 HTTP 调用：
    - admin.ts 自带 request(method, path) 方法优先式；BASE_URL + '...' 直接 fetch；
    - client.ts request(path, opts) / request<Generic>(path, opts) 路径优先式；
    - stream.ts fetch(`/api/v1/...`) SSE 直连。
@@ -27,12 +27,17 @@ from pathlib import Path
 
 
 BACKEND_DIR = Path(__file__).resolve().parents[1]
-API_DIR = BACKEND_DIR.parent / "frontend" / "src" / "api"
+# 前端 API 目录：后台管理端（admin-web，Web-only）与 uni-app 跨端 C 端（client，小程序 + H5）
+API_DIRS = [
+    BACKEND_DIR.parent / "admin-web" / "src" / "api",
+    BACKEND_DIR.parent / "client" / "src" / "api",
+]
 
 METHOD_NAMES = {"GET", "POST", "PUT", "DELETE", "PATCH"}
 
-# 匹配 request( 或 request<T>( 的调用起点（停在左括号）
-CALLEE_RE = r"request\s*(?:<[^>]*>)?\s*\("
+# 匹配 request( / request<T>( / upload<T>( 的调用起点（停在左括号）；
+# 泛型段允许跨行与嵌套（如 request<{ items: Array<{ uid: string }> }>），非贪婪回溯到调用括号
+CALLEE_RE = r"(?:request|upload)\s*(?:<[\s\S]*?>)?\s*\("
 # 匹配 fetch(`...`) 的调用起点（SSE 直连）
 FETCH_RE = r"fetch\s*\("
 # 匹配 BASE_URL + '...' 直接拼 URL
@@ -142,9 +147,7 @@ def extract_fetch_streams(text: str) -> list[tuple[str, str]]:
 
 
 def collect_frontend_calls() -> tuple[list[tuple[str, str, str]], list[str]]:
-    """扫描 api 目录 → ([(file, method, 相对路径)], [错误信息])。"""
-    if not API_DIR.is_dir():
-        return [], [f"前端 API 目录不存在：{API_DIR}"]
+    """扫描各前端 api 目录 → ([(file, method, 相对路径)], [错误信息])。"""
     calls: list[tuple[str, str, str]] = []
     errors: list[str] = []
     extractors = {
@@ -152,22 +155,26 @@ def collect_frontend_calls() -> tuple[list[tuple[str, str, str]], list[str]]:
         "client.ts": extract_client_calls,
         "stream.ts": extract_fetch_streams,
     }
-    for name, extractor in extractors.items():
-        f = API_DIR / name
-        if not f.exists():
+    for api_dir in API_DIRS:
+        if not api_dir.is_dir():
+            errors.append(f"前端 API 目录不存在：{api_dir}")
             continue
-        found = extractor(f.read_text(encoding="utf-8"))
-        if not found:
-            errors.append(f"{name} 未提取到任何调用（提取规则可能失效，请检查文件结构）")
-        for method, path in found:
-            calls.append((name, method, path))
-    # 目录内其余 .ts（如未来新增模块）按大杂烩提取，避免遗漏
-    for f in sorted(API_DIR.glob("*.ts")):
-        if f.name in extractors:
-            continue
-        text = f.read_text(encoding="utf-8")
-        for method, path in extract_admin_calls(text) + extract_client_calls(text) + extract_direct_urls(text) + extract_fetch_streams(text):
-            calls.append((f.name, method, path))
+        for name, extractor in extractors.items():
+            f = api_dir / name
+            if not f.exists():
+                continue
+            found = extractor(f.read_text(encoding="utf-8"))
+            if not found:
+                errors.append(f"{name} 未提取到任何调用（提取规则可能失效，请检查文件结构）")
+            for method, path in found:
+                calls.append((name, method, path))
+        # 目录内其余 .ts（如未来新增模块）按大杂烩提取，避免遗漏
+        for f in sorted(api_dir.glob("*.ts")):
+            if f.name in extractors:
+                continue
+            text = f.read_text(encoding="utf-8")
+            for method, path in extract_admin_calls(text) + extract_client_calls(text) + extract_direct_urls(text) + extract_fetch_streams(text):
+                calls.append((f.name, method, path))
     return calls, errors
 
 
@@ -288,7 +295,7 @@ def main() -> None:
     for file, _, _ in calls:
         by_file[file] = by_file.get(file, 0) + 1
     dist = "、".join(f"{k} {v}" for k, v in sorted(by_file.items()))
-    print("== 契约校验：frontend/src/api/*.ts × app.openapi() ==")
+    print("== 契约校验：admin-web + client 的 src/api/*.ts × app.openapi() ==")
     print(f"提取调用 {total} 处（{dist}）；OpenAPI 路径 {len(path_keys)} 个")
     for file, method, rel, _ in drift:
         print(f"[DRIFT] {method:6s} {rel} 未匹配任何契约端点（{file}）")

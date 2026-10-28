@@ -1,8 +1,8 @@
-# 小光景后端 API 接口文档
+# Babe宝伴后端 API 接口文档
 
 > **生成信息**：由 `backend/scripts/export_api_doc.py` 自动生成（可重复执行，勿手改）
-> 生成时间：2026-10-15 20:17:29 ｜ 生成方式：优先抓取运行中服务 `http://127.0.0.1:8000/openapi.json`，失败则本地导入 `app.main.app.openapi()`
-> 端点总数：113 ｜ 分组：13 个 tag（12 个正式 tags + history 补充组）
+> 生成时间：2026-10-20 20:57:18 ｜ 生成方式：优先抓取运行中服务 `http://127.0.0.1:8000/openapi.json`，失败则本地导入 `app.main.app.openapi()`
+> 端点总数：153 ｜ 分组：13 个 tag（12 个正式 tags + history 补充组）
 
 **统一包络**：所有接口返回 `{code, message, data, request_id, trace_id}`；
 `code=0` 成功，非 0 为业务错误码（分段：1000 参数 / 1100 鉴权 / 1200 限流额度 / 1300 合规同意 / 1400 问答风险 / 1500 支付 / 1600 后台 / 1900 故障）。
@@ -37,18 +37,18 @@
 
 ## 目录
 
-- [系统](#系统)（5 个端点）
+- [系统](#系统)（9 个端点）
 - [C端-认证同意](#C端-认证同意)（6 个端点）
-- [C端-档案](#C端-档案)（14 个端点）
-- [C端-问答](#C端-问答)（9 个端点）
+- [C端-档案](#C端-档案)（20 个端点）
+- [C端-问答](#C端-问答)（18 个端点）
 - [C端-测评](#C端-测评)（5 个端点）
-- [C端-商业化](#C端-商业化)（6 个端点）
+- [C端-商业化](#C端-商业化)（9 个端点）
 - [C端-权利反馈](#C端-权利反馈)（7 个端点）
-- [C端-健康与笔记](#C端-健康与笔记)（11 个端点）
+- [C端-健康与笔记](#C端-健康与笔记)（14 个端点）
 - [后台-知识库](#后台-知识库)（11 个端点）
 - [后台-词库](#后台-词库)（7 个端点）
 - [后台-处置](#后台-处置)（14 个端点）
-- [后台-配置](#后台-配置)（13 个端点）
+- [后台-配置](#后台-配置)（28 个端点）
 - [history](#history)（5 个端点）
 
 # 系统
@@ -63,6 +63,51 @@
 - **鉴权**：需后台角色（get_admin 登录态，无额外权限矩阵）
 - **响应 data**：{items:[{id, metric, value, threshold, message, status, started_at}]}（最近 50 条）
 - **主要错误码**：1101 未登录（其余见「通用错误码」）
+
+## GET /api/v1/compliance/ai-label
+
+**AI 生成标识组件下发**
+
+返回标识可见性、文案 text_id、页面固定位与备案号；前端只渲染 text_id 对应文案
+
+- **Tag**：系统
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **查询参数**：
+  - `page`（string，可选），默认 `answer`
+- **响应 data**：{visible, text_id, position, fallback_text, filing_no, pages, min_ratio, min_count}
+
+## GET /api/v1/compliance/copy-checklist
+
+**文案合规检查清单**
+
+RQ-02 §3.2.3 五项检查清单（发布流程勾选留痕）与禁用表述词表
+
+- **Tag**：系统
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **响应 data**：{checklist[5 项], forbidden_phrases[], replacements{}, scope[]}
+
+## POST /api/v1/compliance/png-metadata
+
+**PNG 隐式标识写入**
+
+为客户端 canvas 导出的 PNG 补写 AI 隐式标识（tEXt），写入后回读断言，返回合规 PNG
+
+- **Tag**：系统
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **查询参数**：
+  - `content_type`（string，可选），默认 `share_card`
+- **响应 data**：{render_id, metadata{}, label_check{ratio,count,metadata_ok,passed,errors}, byte_size, png_base64}
+- **主要错误码**：1001 非 PNG/超 8MB/空文件(422)；1901 隐式标识写入或回读失败(500)；1101（其余见「通用错误码」）
+
+## GET /api/v1/compliance/privacy-pledge
+
+**隐私承诺**
+
+四条（及以上）已实现承诺，每条附可操作跳转；未实现能力不写入承诺
+
+- **Tag**：系统
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **响应 data**：{version, items:[{id,title,promise,implemented,evidence,action{label,route}}], training_statement, honesty_note}
 
 ## GET /api/v1/health
 
@@ -399,7 +444,138 @@ multipart 单文件（file 字段）；数量上限按配置（默认 30 张）�
 - **响应 data**：{deleted: true}
 - **主要错误码**：1002 档案或照片不存在/越权；1302 儿童同意缺失或已撤回(403)（其余见「通用错误码」）
 
+## GET /api/v1/reminders
+
+**提醒列表与订阅偏好**
+
+返回提醒任务（含站内补达）、订阅偏好总览与待展示数；不展示问答原文
+
+- **Tag**：C端-档案
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **查询参数**：
+  - `limit`（integer，可选），默认 `50`
+- **响应 data**：{items:[{task_uid,type,title,body,planned_at,status,trace_id,sent_at,opened_at,delivery}], prefs{items,any_enabled,weekly_max,template_reported}, due_count, weekly_cap}
+- **主要错误码**：1301（其余见「通用错误码」）
+
+## PUT /api/v1/reminders/prefs
+
+**设置订阅偏好**
+
+逐类型开启/关闭；关闭即时生效并不再发送任何订阅消息
+
+- **Tag**：C端-档案
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **请求体**（application/json）：
+  - `pref_type`（string，必填）：偏好类型（含 all 总开关）
+  - `enabled`（boolean，必填）：是否开启
+- **响应 data**：{pref_type, enabled, prefs{...}}
+- **主要错误码**：1001 pref_type 非法(422)；1301（其余见「通用错误码」）
+
+## POST /api/v1/reminders/prefs/off
+
+**关闭全部触达**
+
+立即生效：待发任务转 skipped、全部类型置关闭；周报站内页仍可回看
+
+- **Tag**：C端-档案
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **响应 data**：{disabled:true, canceled_tasks, prefs{...}}（关闭即时生效，站内周报仍可回看）
+- **主要错误码**：1301（其余见「通用错误码」）
+
+## GET /api/v1/reminders/weekly-question
+
+**每周一问**
+
+分龄话题卡 + 预置问题，点击直达问答输入态
+
+- **Tag**：C端-档案
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **响应 data**：{title, question, kb_id, trace_id, enabled}
+- **主要错误码**：1301（其余见「通用错误码」）
+
+## GET /api/v1/reminders/weekly-report
+
+**成长周报**
+
+站内周报：本月龄变化、可问主题推荐、上周问答主题标签（不含原文）
+
+- **Tag**：C端-档案
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **响应 data**：{period{start,end}, profiles[], last_week_topics[], suggested_questions[], privacy_note}（不含问答原文）
+- **主要错误码**：1301（其余见「通用错误码」）
+
+## POST /api/v1/reminders/{task_uid}/open
+
+**标记提醒已打开**
+
+归因链起点：返回 reminder_trace_id，提问时透传以支撑 M21
+
+- **Tag**：C端-档案
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`task_uid`（string，必填）
+- **响应 data**：{task_uid, status, trace_id}（归因链起点，提问时透传 reminder_trace_id）
+- **主要错误码**：1002 任务不存在或非本人；1301（其余见「通用错误码」）
+
 # C端-问答
+
+## GET /api/v1/compliance/ai-label/check
+
+**AI 标识三链路自检**
+
+校验页面契约 / 长图标识 / 导出元数据三条链路的关键断言（抽检辅助，非门禁替代）
+
+- **Tag**：C端-问答
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **响应 data**：{links[3 条链路], passed, min_ratio, min_count}
+- **主要错误码**：1101（其余见「通用错误码」）
+
+## GET /api/v1/history/report/{report_uid}/image.png
+
+**测评报告长图**
+
+服务端模板渲染（信任条+分节+免责+双标识）+ PNG tEXt 隐式标识
+
+- **Tag**：C端-问答
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`report_uid`（string，必填）
+- **响应 data**：image/png 二进制（含 tEXt 隐式标识与双处显式标识）
+- **主要错误码**：1002 报告不存在/越权；1901 标识校验失败(500)（其余见「通用错误码」）
+
+## POST /api/v1/qa/photos
+
+**上传图片并送检**
+
+顺序执行压缩→送检；未通过或配额超限即拒绝（不进入推理、不扣额度）
+
+- **Tag**：C端-问答
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **响应 data**：{photo_uid, scene, moderation_result, expires_at, notice, parse_notice}（multipart：file + scene）
+- **主要错误码**：1001 空文件/超 8MB/格式不支持(422)；1303 送检未通过或配额超限(403/429)；1301（其余见「通用错误码」）
+
+## GET /api/v1/qa/photos/guide
+
+**图片提问前置说明**
+
+场景化告知：拍什么、照片如何被处理、何时删除（拒绝授权可改用文字问答）
+
+- **Tag**：C端-问答
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **查询参数**：
+  - `scene`（string，可选），默认 `unknown`
+- **响应 data**：{scenes[], selected, privacy_notice, max_count, ttl_hours, degradation}
+- **主要错误码**：1301（其余见「通用错误码」）
+
+## GET /api/v1/qa/photos/{photo_uid}
+
+**图片元数据**
+
+仅返回元数据（场景/送检结果/删除时间），无原图、无 URL、无后台查看入口
+
+- **Tag**：C端-问答
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`photo_uid`（string，必填）
+- **响应 data**：{photo_uid, scene, moderation_result, expires_at, deleted_at}（**无原图无 URL**）
+- **主要错误码**：1002 不存在或非本人（其余见「通用错误码」）
 
 ## POST /api/v1/qa/sessions
 
@@ -414,6 +590,9 @@ multipart 单文件（file 字段）；数量上限按配置（默认 30 张）�
   - `question`（string，必填）：问题原文
   - `profile_uid`（，可选）：档案 UID
   - `client_request_id`（string，必填）：幂等键
+  - `input_mode`（string，可选）：输入形态 text/voice/photo（RQ-05 预留）
+  - `photo_uids`（array<string>，可选）：图片标识（photo 模式，≤3 张）
+  - `reminder_trace_id`（，可选）：触达归因标识（RQ-08）
 - **响应 data**：{session_uid, status: pending}；幂等重放附 idempotent_replay/result_ref
 - **主要错误码**：1406 入口维护中(503)；1004 同键处理中(409)；1203 已有活跃流(409, retry_after=30)；1202 免费额度用尽(429)；1002 档案不存在；1001 参数/指纹不符（其余见「通用错误码」）
 
@@ -458,6 +637,18 @@ multipart 单文件（file 字段）；数量上限按配置（默认 30 张）�
 - **响应 data**：{session_uid, section, section_version, status}
 - **主要错误码**：1002 不存在/越权；1102 非会员(403)；1401 风险拦截(HTTP 200)；1001 非法分节（其余见「通用错误码」）
 
+## GET /api/v1/qa/sessions/{session_uid}/share-card.png
+
+**问答分享长图**
+
+服务端模板渲染（信任条+正文+免责+双标识）+ PNG tEXt 隐式标识；被拦截会话 403
+
+- **Tag**：C端-问答
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`session_uid`（string，必填）
+- **响应 data**：image/png 二进制；响应头 X-Render-Id / X-Share-Trace-Id / X-AI-Generated / X-AI-Label-Ratio / X-AI-Label-Count
+- **主要错误码**：1002 会话不存在/越权；1102 会话不可分享（被拦截/未完成）403；1901 标识校验失败(500)（其余见「通用错误码」）
+
 ## GET /api/v1/qa/sessions/{session_uid}/stream
 
 **断线续发**
@@ -483,6 +674,23 @@ multipart 单文件（file 字段）；数量上限按配置（默认 30 张）�
 - **路径参数**：`session_uid`（string，必填）
 - **响应 data**：SSE 流：started→section_delta/section_done→completed（blocked 单帧）
 - **主要错误码**：1002 会话不存在/越权（其余见「通用错误码」）
+
+## POST /api/v1/qa/sessions/{session_uid}/triage/recheck
+
+**追问后重判档位**
+
+把追问内容与首轮问题拼接重判；🟢→🔴 时返回置顶强提醒标记
+
+- **Tag**：C端-问答
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`session_uid`（string，必填）
+- **请求体**（application/json）：
+  - `followup`（string，必填）：追问原文
+  - `temperature`（，可选）：体温（℃）
+  - `mental_state`（，可选）：精神状态 normal/poor
+  - `duration_hours`（，可选）：持续小时数
+- **响应 data**：{triage, previous_level, level_changed, escalate_banner, banner_text}
+- **主要错误码**：1002 会话不存在/越权；1301 未同意基础协议（其余见「通用错误码」）
 
 ## POST /api/v1/risk/appeals
 
@@ -522,6 +730,39 @@ multipart 单文件（file 字段）；数量上限按配置（默认 30 张）�
   - `category`（，可选）：风险类别过滤
 - **响应 data**：{channels:[渠道卡]}
 - **主要错误码**：1001 类别参数非法（其余见「通用错误码」）
+
+## POST /api/v1/risk/referral
+
+**就近就医转介**
+
+按场景返回合规机构指引；POI 未接入时降级为城市级急诊指引，不排名不导流
+
+- **Tag**：C端-问答
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **请求体**（application/json）：
+  - `scene`（string，可选）：emergency_block / triage_red / pet_redflag
+  - `region_city`（，可选）：城市（唯一可落库位置字段）
+  - `region_district`（，可选）：区县
+  - `lat`（，可选）：纬度（仅本次计算，不落库）
+  - `lng`（，可选）：经度（仅本次计算，不落库）
+  - `session_uid`（，可选）：关联会话（归因）
+- **响应 data**：{available, enabled, items[], notice, fallback_guide, region}（精确坐标不落库；POI 未接时降级城市级指引）
+- **主要错误码**：1001 scene 非法(422)；1101（其余见「通用错误码」）
+
+## GET /api/v1/triage/decide
+
+**分级判定（独立）**
+
+按问题与档案（月龄/宠龄）执行规则引擎判定，返回红/黄/绿档位与观察项；未命中分级场景返回 triage=null
+
+- **Tag**：C端-问答
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **查询参数**：
+  - `question`（string，必填）：问题原文
+  - `domain`（string，可选）：child / pet，默认 `child`
+  - `profile_uid`（，可选）：档案 UID
+- **响应 data**：{triage:{level,level_label,rule_hits[],observations[],escalation_flags[],contraindications[],disclaimers[],night_notice,rule_version}|null, rule_snapshot{source,total,by_scene,signed}, note}
+- **主要错误码**：1001 domain 非 child/pet(422)；1002 档案不存在/越权；1301 未同意基础协议（其余见「通用错误码」）
 
 # C端-测评
 
@@ -671,6 +912,45 @@ upsert 即存即返；raw_score=null 表示跳题
 - **鉴权**：需登录（Bearer token，get_current_user）
 - **响应 data**：{member_status, member_expire_at, subscription?}
 - **主要错误码**：1101（其余见「通用错误码」）
+
+## GET /api/v1/topics
+
+**专题包列表**
+
+交叉主题包与宠物行为内容线；红旗前置，交叉内容育儿+宠物专家双签后才上架
+
+- **Tag**：C端-商业化
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **查询参数**：
+  - `domain`（，可选）
+- **响应 data**：{items:[专题包视图], member_included:false}
+- **主要错误码**：1301（其余见「通用错误码」）
+
+## GET /api/v1/topics/recommended
+
+**专题包场景化推荐**
+
+按入口推荐（family 优先育儿×宠物交叉），挂问答尾部，不做弹窗打扰
+
+- **Tag**：C端-商业化
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **查询参数**：
+  - `entry`（string，可选）：child / pet / family，默认 `family`
+  - `limit`（integer，可选），默认 `2`
+- **响应 data**：{items[]}（family 入口优先交叉主题）
+- **主要错误码**：1301（其余见「通用错误码」）
+
+## GET /api/v1/topics/{topic_code}
+
+**专题包详情**
+
+返回红旗前置块 + 正文块；不含会员权益（专题独立计费）
+
+- **Tag**：C端-商业化
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`topic_code`（string，必填）
+- **响应 data**：专题包详情（红旗块前置 + 正文块；会员不含）
+- **主要错误码**：1002 不存在或未上架；1301（其余见「通用错误码」）
 
 # C端-权利反馈
 
@@ -910,6 +1190,46 @@ multipart 单文件（file 字段），覆盖旧的自动删除。用 POST 而�
   - `version`（integer，必填）：乐观锁版本号
 - **响应 data**：统一包络 data（详见端点 docstring）
 
+## GET /api/v1/tools
+
+**轻工具列表**
+
+结构化内容 + 简单交互；不消耗问答额度，工具页带 AI 标识与免责
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **查询参数**：
+  - `domain`（，可选）
+- **响应 data**：{items:[{tool_code,title,tool_type,domain,summary,kb_refs,content,disclaimer,ai_label,quota_cost:0}], quota_cost:0, entry:'secondary'}
+- **主要错误码**：1301（其余见「通用错误码」）
+
+## GET /api/v1/tools/{tool_code}
+
+**轻工具详情**
+
+返回工具内容（清单步骤 / 解析口径）与免责；不消耗问答额度
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`tool_code`（string，必填）
+- **响应 data**：工具视图（含 content 与免责；不消耗问答额度）
+- **主要错误码**：1002 工具不存在或未上架；1301（其余见「通用错误码」）
+
+## POST /api/v1/tools/{tool_code}/complete
+
+**完成轻工具自查**
+
+记录完成项数与去向（转化归因）；不消耗问答额度
+
+- **Tag**：C端-健康与笔记
+- **鉴权**：需登录（Bearer token，get_current_user）
+- **路径参数**：`tool_code`（string，必填）
+- **请求体**（application/json）：
+  - `completed_items`（integer，可选）：完成项数
+  - `next`（，可选）：去向 qa/topic/done
+- **响应 data**：{tool_code, completed_items, next, quota_cost:0}
+- **主要错误码**：1002 工具不存在；1301（其余见「通用错误码」）
+
 # 后台-知识库
 
 ## GET /api/v1/admin/kb/entries
@@ -948,6 +1268,7 @@ multipart 单文件（file 字段），覆盖旧的自动删除。用 POST 而�
   - `preconditions`（string，必填）：适用前提（一票否决项，必填）
   - `source_type`（string，必填）：来源类型
   - `source_ref`（string，必填）：来源引用（必填，可溯源）
+  - `source_level`（，可选）：来源等级（DR-10）：guide / academic / institution / media；缺省按 source_type 推导
   - `age_band`（，可选）：年龄段
   - `pet_stage`（，可选）：宠物生命周期
   - `species`（，可选）：物种（cat/dog）
@@ -973,6 +1294,7 @@ multipart 单文件（file 字段），覆盖旧的自动删除。用 POST 而�
   - `topic_category`（，可选）：主题类目
   - `source_type`（，可选）：来源类型
   - `source_ref`（，可选）：来源引用
+  - `source_level`（，可选）：来源等级 guide/academic/institution/media
   - `age_band`（，可选）：年龄段
   - `pet_stage`（，可选）：宠物生命周期
   - `species`（，可选）：物种
@@ -1430,6 +1752,92 @@ term_hash 去重，明文加密落库，删词库缓存快照
 - **响应 data**：{items, total, page, page_size}（快照仅返回键名）
 - **主要错误码**：1103 非超管（其余见「通用错误码」）
 
+## GET /api/v1/admin/channels
+
+**危机渠道清单**
+
+单一数据源：问答渠道卡与后台维护读同一张 crisis_channel 表（RQ-03 / DR-26）
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **响应 data**：{items[], summary{total,verified,placeholder,pending_review,missing_required}, categories{}, data_source:'crisis_channel'}
+- **主要错误码**：1103 缺 channel:view（其余见「通用错误码」）
+
+## POST /api/v1/admin/channels
+
+**新增危机渠道**
+
+号码未核验时留空（禁止编造）；新增后需走核验接口留痕
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **请求体**（application/json）：
+  - `channel_code`（string，必填）：渠道编码
+  - `channel_name`（string，必填）：渠道名称
+  - `category`（string，可选）：psychological / pediatric_emergency / pet_emergency / police / minor_protection
+  - `phone_number`（，可选）：号码（未核验留空，禁止编造）
+  - `region`（string，可选）：覆盖地域
+  - `service_hours`（，可选）：服务时段
+  - `applicable_categories`（array<string>，可选）：适用的风险类别编码清单
+  - `script`（，可选）：引导话术
+  - `sort_weight`（integer，可选）：排序权重（小者优先）
+- **响应 data**：渠道视图（号码未核验留空，禁止编造）
+- **主要错误码**：1001 编码已存在(409)；1103 缺 channel:edit（其余见「通用错误码」）
+
+## PUT /api/v1/admin/channels/{channel_code}
+
+**编辑危机渠道**
+
+修改号码需二次确认 + 原因 + 渠道编码后 4 位（对齐 V3.0 §3.4）
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **路径参数**：`channel_code`（string，必填）
+- **请求体**（application/json）：
+  - `channel_name`（，可选）
+  - `phone_number`（，可选）
+  - `category`（，可选）
+  - `region`（，可选）
+  - `service_hours`（，可选）
+  - `applicable_categories`（，可选）
+  - `script`（，可选）
+  - `sort_weight`（，可选）
+  - `status`（，可选）
+  - `reason`（string，可选）：变更原因（改号码必填）
+  - `channel_code_suffix`（，可选）：改号码二次确认：输入渠道编码后 4 位
+  - `confirm_token`（，可选）：危险操作二次确认凭证
+- **响应 data**：渠道视图（乐观字段更新）
+- **主要错误码**：1002 不存在；1001 后 4 位校验不通过/缺原因(422)；1103；1602 改号码缺二次确认（其余见「通用错误码」）
+
+## POST /api/v1/admin/channels/{channel_code}/review
+
+**提交渠道核验记录**
+
+人工拨测/官网核对结论留痕（≥3 年），成功核验后自动顺延复核到期日
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **路径参数**：`channel_code`（string，必填）
+- **请求体**（application/json）：
+  - `review_method`（string，必填）：call_dial / official_site / verbal / document
+  - `review_result`（string，必填）：reachable / unreachable / changed / pending
+  - `conclusion`（，可选）：结论说明
+  - `note`（，可选）：备注
+- **响应 data**：{review_no, channel, summary}（核验留痕 ≥3 年，成功核验顺延复核到期日）
+- **主要错误码**：1002 不存在；1001 方式/结论非法(422)；1103 缺 channel:review（其余见「通用错误码」）
+
+## GET /api/v1/admin/channels/{channel_code}/reviews
+
+**渠道核验记录**
+
+按时间倒序返回核验留痕（核验人/方式/结论/时间/版本）
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **路径参数**：`channel_code`（string，必填）
+- **响应 data**：{items[]}（核验人/方式/结论/时间/版本）
+- **主要错误码**：1103 缺 channel:view（其余见「通用错误码」）
+
 ## GET /api/v1/admin/configs
 
 **配置键最新版本列表（仅超管）**
@@ -1483,6 +1891,30 @@ term_hash 去重，明文加密落库，删词库缓存快照
   - `confirm_token`（，可选）：二次确认凭证
 - **响应 data**：{config_key, version}（回滚至指定版本）
 - **主要错误码**：1002 版本不存在；1103 非超管；1602 缺二次确认（其余见「通用错误码」）
+
+## POST /api/v1/admin/copy-scan
+
+**文案合规扫描**
+
+全量仓库扫描或指定文案扫描；命中即 blocked（fail-closed 口径）
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **请求体**（application/json）：
+  - `texts`（object，可选）：{名称: 文案}
+- **响应 data**：{mode, result{hits[],hit_count,scanned_files,blocked,errors}, checklist[]}（texts 为空时扫全仓库）
+- **主要错误码**：1103 缺 content:view（其余见「通用错误码」）
+
+## GET /api/v1/admin/gates/summary
+
+**V3.1 发布门禁自检**
+
+四项阻塞门禁（AI 标识三链路 / 拟人化零命中 / 渠道核验 / 分级规则专家确认）当前状态
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **响应 data**：{gates[4 项发布门禁], passed}（未达标如实显示 false）
+- **主要错误码**：1103 缺 content:view（其余见「通用错误码」）
 
 ## POST /api/v1/admin/login
 
@@ -1597,6 +2029,138 @@ term_hash 去重，明文加密落库，删词库缓存快照
 - **响应 data**：{request_no, status, entitlement_recycled}
 - **主要错误码**：1002 工单不存在；1001 已处置(409)/驳回缺理由码(422)/action 非法(422)；1103 rights:handle（其余见「通用错误码」）
 
+## GET /api/v1/admin/reminders/stats
+
+**触达任务统计**
+
+按类型/状态统计提醒任务；仅出统计与状态，不展示问答原文
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **响应 data**：{total, by_type, by_status, delivered_by_channel, send_fail, privacy_note}（不含问答原文）
+- **主要错误码**：1103 缺 content:view（其余见「通用错误码」）
+
+## GET /api/v1/admin/tools
+
+**轻工具列表（后台）**
+
+含未上架条目；内容命中确定性进食结论即拒绝保存
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **响应 data**：{items[]}（含未上架与 issues）
+- **主要错误码**：1103 缺 content:view（其余见「通用错误码」）
+
+## POST /api/v1/admin/tools
+
+**新增或更新轻工具**
+
+内容来自知识资产（kb_refs 可追溯）；含确定性进食结论即拒绝（AC-RQ12-4）
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **请求体**（application/json）：
+  - `tool_code`（string，必填）
+  - `title`（string，必填）
+  - `tool_type`（string，必填）：checklist / parser
+  - `domain`（string，可选）：child / pet
+  - `summary`（，可选）
+  - `kb_refs`（array<string>，可选）
+  - `content`（object，可选）
+  - `sort_order`（integer，可选）
+  - `status`（string，可选）：on / off
+  - `confirm_token`（，可选）
+- **响应 data**：{tool_code, status}
+- **主要错误码**：1001 含确定性进食结论或类型非法(422)；1103 缺 content:edit（其余见「通用错误码」）
+
+## GET /api/v1/admin/topics
+
+**专题包列表（后台）**
+
+含未上架草稿；交叉主题包展示双签状态与上架校验问题
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **响应 data**：{items[]}（含草稿、双签状态与 publish_issues）
+- **主要错误码**：1103 缺 content:view（其余见「通用错误码」）
+
+## POST /api/v1/admin/topics
+
+**新增或更新专题包**
+
+交叉主题包须育儿+宠物专家双签；行为内容线须红旗前置结构合规
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **请求体**（application/json）：
+  - `topic_code`（string，必填）
+  - `title`（string，必填）
+  - `domain`（string，必填）：cross / behavior / child / pet
+  - `summary`（，可选）
+  - `price_micro`（integer，可选）
+  - `product_code`（，可选）
+  - `redflag_first`（boolean，可选）
+  - `redflag_blocks`（array<object>，可选）
+  - `content_blocks`（array<object>，可选）
+  - `review_child_signoff`（，可选）
+  - `review_pet_signoff`（，可选）
+  - `status`（string，可选）：draft / on / off
+- **响应 data**：{topic, publish_issues}（status=on 且不满足条件即拒绝并列出问题）
+- **主要错误码**：1001 domain/结构/双签不满足(422)；1103 缺 content:edit（其余见「通用错误码」）
+
+## GET /api/v1/admin/triage-rules
+
+**分级规则列表**
+
+条目化分级规则（RQ-06 AC-6）：可配置、带来源与专家审核记录
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **查询参数**：
+  - `scene`（，可选）
+- **响应 data**：{items[], snapshot, signed, total, gate_ready}
+- **主要错误码**：1103 缺 triage:view（其余见「通用错误码」）
+
+## PUT /api/v1/admin/triage-rules/{rule_id}
+
+**编辑分级规则**
+
+阈值/档位变更需二次确认 + 原因；变更后规则快照 60 秒内生效
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **路径参数**：`rule_id`（string，必填）
+- **请求体**（application/json）：
+  - `title`（，可选）
+  - `level`（，可选）：red / yellow / green
+  - `priority`（，可选）
+  - `conditions`（，可选）
+  - `basis`（，可选）
+  - `observations`（，可选）
+  - `escalation_flags`（，可选）
+  - `contraindications`（，可选）
+  - `disclaimers`（，可选）
+  - `status`（，可选）：active / inactive / draft
+  - `reason`（string，可选）：变更原因
+  - `confirm_token`（，可选）：危险操作二次确认凭证
+- **响应 data**：{rule, snapshot}（阈值/档位变更需二次确认 + 原因，60s 内生效）
+- **主要错误码**：1002 不存在；1001 level 非法(422)；1602 缺二次确认；1103 缺 triage:edit（其余见「通用错误码」）
+
+## POST /api/v1/admin/triage-rules/{rule_id}/review
+
+**分级规则专家确认**
+
+首批/变更规则须专家书面确认后才满足发布门禁（§7.2）
+
+- **Tag**：后台-配置
+- **鉴权**：需后台角色（get_admin + 角色权限矩阵）
+- **路径参数**：`rule_id`（string，必填）
+- **请求体**（application/json）：
+  - `expert_signoff`（string，必填）：专家签署（姓名/工号）
+  - `note`（，可选）
+- **响应 data**：{rule, signed, total, gate_ready}（专家书面确认留痕，§7.2 门禁前置）
+- **主要错误码**：1002 不存在；1103 缺 triage:review（其余见「通用错误码」）
+
 # history
 
 > 补充分组：4 个历史端点在 OpenAPI 中使用独立 `history` tag（未列入 12 个正式 tags），建议后续任务归并至 C端-问答 或补登正式 tag。
@@ -1665,4 +2229,4 @@ term_hash 去重，明文加密落库，删词库缓存快照
 - **主要错误码**：1001 非 report 类型(422)；1002 不存在或越权（其余见「通用错误码」）
 
 ---
-*本文档由脚本自动生成于 2026-10-15 20:17:29，共 113 个端点。*
+*本文档由脚本自动生成于 2026-10-20 20:57:18，共 153 个端点。*

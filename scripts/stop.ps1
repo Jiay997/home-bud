@@ -1,10 +1,21 @@
-﻿# =====================================================================
-# 小光景 - 一键停止脚本 (stop.ps1)
-# 功能：安全终止后端(8000)与前端(5173)全部相关进程，并验证无残留监听。
+# =====================================================================
+# Babe宝伴 - 一键停止脚本 (stop.ps1)
+#
+# 功能：安全终止后端(8000)、用户端 H5(5174) 与后台管理端(5175) 相关进程，
+#       并验证无残留监听。
+# 说明：V3.0 起前端拆分为 client/（H5，5174）与 admin-web/（5175），
+#       旧版单站点前端 5173 一并兼容清理，避免历史进程残留。
 # 用法：powershell -ExecutionPolicy Bypass -File scripts\stop.ps1
 # =====================================================================
 
 $ErrorActionPreference = "Continue"
+
+# 端口清单：后端 / 用户端 H5 / 后台管理端 / 旧版前端（兼容清理）
+$backendPort = 8000
+$clientPort = 5174
+# D-17：后台端口支持 ADMIN_PORT 覆盖，默认 5175
+$adminPort = if ($env:ADMIN_PORT) { [int]$env:ADMIN_PORT } else { 5175 }
+$legacyFrontendPort = 5173
 
 function Stop-PortProcess {
     # 终止占用指定端口的进程（含子进程树）。
@@ -31,13 +42,15 @@ function Stop-PortProcess {
     }
 }
 
-Write-Host "停止小光景服务 ..." 
+Write-Host "停止Babe宝伴服务 ..."
 
-# 1. 终止前端 Vite（5173）
-Stop-PortProcess -port 5173 -name "前端 Vite"
+# 1. 终止两端前端 Vite（用户端 5174 / 管理端 5175）与旧版 5173
+Stop-PortProcess -port $clientPort -name "用户端 H5 Vite"
+Stop-PortProcess -port $adminPort -name "后台管理端 Vite"
+Stop-PortProcess -port $legacyFrontendPort -name "旧版前端 Vite(兼容)"
 
 # 2. 终止后端 uvicorn（8000）
-Stop-PortProcess -port 8000 -name "后端 FastAPI"
+Stop-PortProcess -port $backendPort -name "后端 FastAPI"
 
 # 3. 兜底：清理残留进程（仅限本项目路径，避免误杀其他业务进程：
 #    命令行需同时包含 HomeBud 项目特征与 app.main / vite 特征）
@@ -52,20 +65,18 @@ Get-CimInstance Win32_Process -Filter "Name='python.exe' OR Name='node.exe' OR N
 
 # 4. 验证无残留监听
 Start-Sleep -Seconds 2
-$beLeft = Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue
-$feLeft = Get-NetTCPConnection -LocalPort 5173 -State Listen -ErrorAction SilentlyContinue
-if ($beLeft -or $feLeft) {
+$ports = @($backendPort, $clientPort, $adminPort, $legacyFrontendPort)
+$left = $ports | Where-Object { Get-NetTCPConnection -LocalPort $_ -State Listen -ErrorAction SilentlyContinue }
+if ($left) {
     Write-Host "存在残留监听，已强制再次清理 ..." -ForegroundColor Red
-    if ($beLeft) { Stop-PortProcess -port 8000 -name "后端(残留)" }
-    if ($feLeft) { Stop-PortProcess -port 5173 -name "前端(残留)" }
+    foreach ($port in $left) { Stop-PortProcess -port $port -name "残留监听" }
 }
 
-$beLeft2 = Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue
-$feLeft2 = Get-NetTCPConnection -LocalPort 5173 -State Listen -ErrorAction SilentlyContinue
-if (-not $beLeft2 -and -not $feLeft2) {
-    Write-Host "全部服务已停止，端口 8000 / 5173 无残留监听。" -ForegroundColor Green
+$leftAgain = $ports | Where-Object { Get-NetTCPConnection -LocalPort $_ -State Listen -ErrorAction SilentlyContinue }
+if (-not $leftAgain) {
+    Write-Host "全部服务已停止，端口 $($ports -join ' / ') 无残留监听。" -ForegroundColor Green
     exit 0
 } else {
-    Write-Host "仍有残留监听，请手工检查：8000=$([bool]$beLeft2) 5173=$([bool]$feLeft2)" -ForegroundColor Red
+    Write-Host "仍有残留监听，请手工检查：$($leftAgain -join ', ')" -ForegroundColor Red
     exit 1
 }

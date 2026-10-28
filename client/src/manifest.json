@@ -1,0 +1,40 @@
+{
+  "name": "Babe宝伴",
+  "appid": "__UNI__JIABAN_MP__",
+  "description": "家庭养育与共居观察助手",
+  "versionName": "0.1.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "uniStatistics": {
+    "enable": false
+  },
+  "mp-weixin": {
+    "appid": "wxda753600c836d3f5",
+    "libVersion": "3.17.4",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "minified": true
+    },
+    "usingComponents": true,
+    "uniStatistics": {
+      "enable": false
+    }
+  },
+  "h5": {
+    "title": "Babe宝伴",
+    "router": {
+      "mode": "history",
+      "base": "/app/"
+    },
+    "uniStatistics": {
+      "enable": false
+    }
+  },
+  "networkTimeout": {
+    "request": 120000,
+    "connectSocket": 20000,
+    "uploadFile": 60000,
+    "downloadFile": 60000
+  }
+}

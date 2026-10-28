@@ -8,6 +8,7 @@
 import math
 import subprocess
 import sys
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
@@ -41,8 +42,11 @@ class TestMockEmbed:
 
     def test_deterministic_cross_process(self):
         """跨进程复算一致（MD5 hashing 纯函数，无进程内状态）。"""
+        # 子进程 anchor 到本仓库 backend 目录（此前硬编码 d:\HomeBud\backend，
+        # 仓库迁移后必然 ModuleNotFoundError，属环境假设缺陷）
+        backend_dir = Path(__file__).resolve().parents[1]
         code = (
-            "import sys; sys.path.insert(0, r'd:\\HomeBud\\backend');"
+            f"import sys; sys.path.insert(0, r'{backend_dir}');"
             "from app.llm.embed_client import mock_embed_2048;"
             f"print(sum(mock_embed_2048({T1!r})))"
         )

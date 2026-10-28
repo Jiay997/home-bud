@@ -11,6 +11,7 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
 from sqlalchemy import update
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import Session
 
 from ..core.config import get_settings
@@ -85,15 +86,25 @@ class QuotaService:
             .first()
         )
         if row is None:
-            row = QuotaUsage(
-                user_id=user.id,
-                biz_date=today,
-                used_count=0,
-                limit_snapshot=limit,
-                is_member=QuotaService.is_member(user),
+            # 并发首查：多个请求同时插入会撞 uk_quota 唯一约束，导致 500/1902。
+            # 使用 ON CONFLICT DO NOTHING 让失败方等待赢家提交后复用其行。
+            db.execute(
+                pg_insert(QuotaUsage)
+                .values(
+                    user_id=user.id,
+                    biz_date=today,
+                    used_count=0,
+                    limit_snapshot=limit,
+                    is_member=QuotaService.is_member(user),
+                )
+                .on_conflict_do_nothing(index_elements=["user_id", "biz_date"])
             )
-            db.add(row)
             db.flush()
+            row = (
+                db.query(QuotaUsage)
+                .filter(QuotaUsage.user_id == user.id, QuotaUsage.biz_date == today)
+                .one()
+            )
         return row
 
     @staticmethod

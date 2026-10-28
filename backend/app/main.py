@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""小光景后端 FastAPI 应用入口。
+"""Babe宝伴后端 FastAPI 应用入口。
 
 装配职责：
 - 全局中间件（request_id/trace_id、CORS）
@@ -66,24 +66,25 @@ async def lifespan(app: FastAPI):
         pass
 
 
-# OpenAPI 文档分组标签（12 组，与各路由 tags 对应）
+# OpenAPI 文档分组标签（16 组，与各路由 tags 对应）
 OPENAPI_TAGS = [
-    {"name": "系统", "description": "健康检查、合规文案下发、运行指标与告警"},
+    {"name": "系统", "description": "健康检查、合规文案下发、AI 标识与隐私承诺、运行指标与告警"},
     {"name": "C端-认证同意", "description": "登录认证与用户协议/儿童信息分层同意、撤回"},
-    {"name": "C端-档案", "description": "儿童/宠物档案管理与当前问答对象设置"},
-    {"name": "C端-问答", "description": "问答会话创建、SSE 流式问答、风险拦截与申诉、危机渠道"},
+    {"name": "C端-档案", "description": "儿童/宠物档案管理与当前问答对象设置、留存提醒（RQ-08）"},
+    {"name": "C端-问答", "description": "问答会话、SSE 流式、风险拦截与申诉、危机渠道、分级决策（RQ-06）、分享长图（RQ-09）"},
     {"name": "C端-测评", "description": "气质测评作答/提交/报告与历史记录查询"},
-    {"name": "C端-商业化", "description": "商品、订单与会员权益"},
+    {"name": "C端-商业化", "description": "商品、订单与会员权益、专题包（RQ-13/RQ-14）"},
     {"name": "C端-权利反馈", "description": "个人信息权利请求与意见反馈"},
-    {"name": "C端-健康与笔记", "description": "孩子/宠物健康档案、体检报告上传与复查提醒、个人笔记知识手册"},
+    {"name": "C端-健康与笔记", "description": "健康档案、体检报告上传与复查提醒、个人笔记、轻工具（RQ-12）"},
+    {"name": "C端-知识科普", "description": "每日一则小知识与科普全书（按业务模块分类）"},
     {"name": "后台-知识库", "description": "知识条目 CRUD、审核发布、版本回滚与内容追溯"},
-    {"name": "后台-词库", "description": "风险/敏感词库维护与规则配置、规则测试器"},
+    {"name": "后台-词库", "description": "风险/敏感/拟人化词库维护与规则配置、规则测试器"},
     {"name": "后台-处置", "description": "后台处置类操作（申诉复核、追溯处置等）"},
-    {"name": "后台-配置", "description": "系统开关与配置版本管理"},
+    {"name": "后台-配置", "description": "系统开关与配置版本管理、危机渠道清单（RQ-03）、分级规则（RQ-06）、发布门禁自检"},
 ]
 
 app = FastAPI(
-    title="小光景 · 一家人的养育参考 API",
+    title="Babe宝伴｜AI 多智能体，家庭养育科普参考工具 API",
     version="1.0.0",
     description="FastAPI + LangGraph 多智能体后端。统一包络：{code,message,data,request_id,trace_id}。",
     openapi_tags=OPENAPI_TAGS,
@@ -222,9 +223,11 @@ def health():
 def _register_routers() -> None:
     """注册全部业务路由（集中装配，避免循环导入）。"""
     from .api.v1 import (
-        admin_api, assessment_api, auth_api, billing_api, consent_api,
-        feedback_api, health_api, history_api, kb_api, lexicon_api, metrics_api,
-        notes_api, profiles_api, qa_api, rights_api, risk_api, safety_api, texts_api,
+        admin_api, admin_v31_api, assessment_api, auth_api, billing_api,
+        compliance_api, consent_api, feedback_api, health_api, history_api, kb_api,
+        knowledge_api, lexicon_api, metrics_api, notes_api, photo_api, profiles_api,
+        qa_api, reminders_api, rights_api, risk_api, safety_api, share_api, texts_api,
+        tools_api, topics_api, triage_api,
     )
 
     prefix = "/api/v1"
@@ -234,6 +237,12 @@ def _register_routers() -> None:
     app.include_router(profiles_api.router, prefix=prefix)
     app.include_router(health_api.router, prefix=prefix)
     app.include_router(qa_api.router, prefix=prefix)
+    app.include_router(photo_api.router, prefix=prefix)
+    app.include_router(triage_api.router, prefix=prefix)
+    app.include_router(share_api.router, prefix=prefix)
+    app.include_router(reminders_api.router, prefix=prefix)
+    app.include_router(tools_api.router, prefix=prefix)
+    app.include_router(topics_api.router, prefix=prefix)
     app.include_router(risk_api.router, prefix=prefix)
     app.include_router(assessment_api.router, prefix=prefix)
     app.include_router(history_api.router, prefix=prefix)
@@ -241,8 +250,13 @@ def _register_routers() -> None:
     app.include_router(rights_api.router, prefix=prefix)
     app.include_router(feedback_api.router, prefix=prefix)
     app.include_router(notes_api.router, prefix=prefix)
+    # 知识科普（每日一则小知识 / 科普全书）
+    app.include_router(knowledge_api.router, prefix=prefix)
+    # 合规要素（AI 标识 / 隐私承诺 / PNG 隐式标识）
+    app.include_router(compliance_api.router, prefix=prefix)
     # 后台路由
     app.include_router(admin_api.router, prefix=prefix)
+    app.include_router(admin_v31_api.router, prefix=prefix)
     app.include_router(kb_api.router, prefix=prefix)
     app.include_router(lexicon_api.router, prefix=prefix)
     # 运行指标（系统观测）

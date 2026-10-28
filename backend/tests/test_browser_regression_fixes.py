@@ -106,23 +106,31 @@ class TestBrowserQuestionSemanticBlock:
 # ---------------------------------------------------------------------------
 # 问题 2：测评 start 档案标识兼容（uid / 字符串 profile_id / 整型）
 # ---------------------------------------------------------------------------
-def user_token_headers(client, device_id: str) -> dict:
-    """dev-login 登录并返回鉴权头。
+def user_token_headers(client, device_id: str, agree: bool = True) -> dict:
+    """dev-login 登录并返回鉴权头（默认顺带签署基础同意）。
 
     Args:
         client: TestClient。
         device_id: 设备唯一标识。
+        agree: 是否签署基础同意（问答入口 1301 门禁所需）。
 
     Returns:
         鉴权 headers dict。
 
     Raises:
-        AssertionError: 登录失败。
+        AssertionError: 登录/同意失败。
     """
     resp = client.post(f"{API}/auth/dev-login", json={"device_id": device_id})
     assert resp.status_code == 200, resp.text
     token = resp.json()["data"]["access_token"]
-    return {"Authorization": f"Bearer {token}"}
+    headers = {"Authorization": f"Bearer {token}"}
+    if agree:
+        consent = client.post(
+            f"{API}/consent/agree", json={"consent_type": "base"}, headers=headers
+        )
+        assert consent.status_code == 200, consent.text
+        assert consent.json()["code"] == 0, consent.text
+    return headers
 
 
 def _create_child_profile(client, headers) -> dict:

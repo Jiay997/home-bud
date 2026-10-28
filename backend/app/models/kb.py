@@ -40,6 +40,9 @@ class KbEntry(Base, VersionMixin):
     conclusion_fingerprint: Mapped[str | None] = mapped_column(String(64), nullable=True)
     source_type: Mapped[str] = mapped_column(String(24), nullable=False)
     source_ref: Mapped[str] = mapped_column(String(256), nullable=False)
+    # 来源等级（DR-10：权威指南 guide / 学术 academic / 机构 institution /
+    # 媒体 media）；为空时按 source_type 映射推导，RQ-07 信任条据此渲染徽标
+    source_level: Mapped[str | None] = mapped_column(String(16), nullable=True)
     license_id: Mapped[str | None] = mapped_column(String(32), nullable=True)
     license_expire_at: Mapped[object | None] = mapped_column(DateTime(timezone=True), nullable=True)
     status: Mapped[str] = mapped_column(String(16), nullable=False, default="draft")

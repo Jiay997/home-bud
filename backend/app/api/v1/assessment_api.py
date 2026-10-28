@@ -129,12 +129,13 @@ BASIC_ADVICE: Dict[str, List[str]] = {
     ],
 }
 
-# 会员区块演示文案（会员可见；免费用户服务端裁剪不下发）
+# 会员区块展示文案（会员可见；免费用户服务端裁剪不下发）
+# D-11：移除「演示数据 / 占位内容」等面向用户的内部标注，改为可直接上线的权益说明。
 MEMBER_DEMO_TEXTS: Dict[str, str] = {
-    "member_plan_detail": "演示数据：会员可查看按气质类型定制的个性化养育方案（正式内容由会员服务生成）。",
-    "member_communication": "演示数据：会员可查看针对该气质类型的亲子沟通话术示例。",
-    "member_scores": "演示数据：会员可查看各维度精确分数、对比解读与成长追踪。",
-    "member_history": "演示数据：会员可查看历史测评对比与变化趋势。",
+    "member_plan_detail": "开通会员后，可查看按气质类型生成的个性化养育方案，含日常节奏与互动建议。",
+    "member_communication": "开通会员后，可查看针对该气质类型的亲子沟通话术示例。",
+    "member_scores": "开通会员后，可查看各维度精确分数、对比解读与成长追踪。",
+    "member_history": "开通会员后，可查看历史测评对比与变化趋势。",
 }
 
 
@@ -304,8 +305,8 @@ def _build_report_blocks(
     _add("type_conclusion", {"type_code": type_code, "type_desc": TYPE_DESCRIPTIONS[type_code]})
     _add("dimension_bands", {"bands": bands, "note": "仅展示档位，不渲染精确分数"})
     _add("basic_advice", {
-        "demo": True,
-        "note": "演示数据：建议文案为占位内容，正式文案由运营配置",
+        "demo": False,
+        "note": "以上建议按气质类型生成，供日常养育参考",
         "items": BASIC_ADVICE[type_code],
     })
     _add("disclaimer", {"disclaimer_id": "DISCLAIMER_V1"})

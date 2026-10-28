@@ -4,24 +4,27 @@
 提供用户反馈提交、内容举报与当前用户信息查询：
 - POST /feedback        反馈提交（敏感词前置检查 + 内容安全送检闭环，正文加密）
 - POST /reports         内容举报（涉未成年人 24h SLA，其余 72h）
-- GET  /me              当前用户信息（会员状态 + 档案计数）
+- GET  /me              当前用户信息（账号资料 + 会员状态 + 档案计数）
+- PUT  /me/profile      更新账号资料（昵称）
+- POST /me/avatar       上传账号头像（multipart，覆盖旧图）
+- DELETE /me/avatar     移除账号头像（幂等）
 - GET  /me/consents     同意状态简版
 
 业务口径：反馈正文 Fernet 加密落库，附图 ≤3；反馈回执 72h；
 送检流程 submit(reviewing) → 本地规则裁决 → resolve 回调（真实平台接入后改异步），
 拒绝时反馈仍留档（audit_status=rejected）并返回 1303；
-举报四分类，harmful_to_minor 加急。
+举报四分类，harmful_to_minor 加急；账号昵称加密落库、头像规范化 JPEG 存储。
 """
 import uuid
 from datetime import timedelta
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, Tuple
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, File, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from ...core.crypto import encrypt_field
+from ...core.crypto import decrypt_field, encrypt_field
 from ...core.deps import get_current_user
 from ...core.envelope import ok
 from ...core.errors import ApiError
@@ -35,6 +38,12 @@ from ...models import (
     PetProfile,
 )
 from ...models.base import utcnow
+from ...services.media_store import (
+    AVATAR_MAX_SIDE,
+    MediaValidationError,
+    delete_file,
+    save_image,
+)
 from ...services.safety_scan import VERDICT_TO_AUDIT_STATUS, SafetyScanService
 
 router = APIRouter(tags=["feedback", "C端-权利反馈"])
@@ -262,19 +271,85 @@ def create_report(
     return ok({"report_no": report.report_no, "sla_due_at": _iso(sla_due_at)})
 
 
+# 账号昵称长度上限（与儿童昵称保持同一输入约束）
+NICKNAME_MAX_LENGTH = 20
+# 账号头像媒体子目录（upload_dir 下）
+USER_AVATAR_SUBDIR = "users"
+
+
+def _media_url(rel_path: Optional[str]) -> Optional[str]:
+    """媒体相对路径转对外 URL（/media 静态挂载）。
+
+    Args:
+        rel_path: 入库相对路径（如 "users/xxx.jpg"）。
+
+    Returns:
+        "/media/..." 前缀 URL；未设置时返回 None。
+    """
+    return f"/media/{rel_path}" if rel_path else None
+
+
+def _user_profile_view(user: AppUser) -> Dict[str, Any]:
+    """构造账号资料展示视图（昵称明文 + 头像 URL）。
+
+    Args:
+        user: 当前用户 ORM 实例。
+
+    Returns:
+        {"nickname": str, "avatar_url": str | None} 字典；未设置昵称时为空串，
+        由客户端按默认称呼兜底。
+    """
+    nickname = decrypt_field(user.nickname_enc) if user.nickname_enc else ""
+    return {"nickname": nickname, "avatar_url": _media_url(user.avatar_path)}
+
+
+def _save_user_avatar_or_raise(data: bytes) -> Tuple[str, int, int, int]:
+    """规范化保存账号头像（校验失败统一映射 1001）。
+
+    Args:
+        data: 原始上传字节。
+
+    Returns:
+        (相对路径, 宽, 高, 字节数)。
+
+    Raises:
+        ApiError: 1001 图片格式不支持或文件过大。
+    """
+    try:
+        return save_image(data, USER_AVATAR_SUBDIR, AVATAR_MAX_SIDE)
+    except MediaValidationError:
+        raise ApiError(
+            code=1001,
+            message="图片格式不支持或文件过大，请换一张试试。",
+            http_status=422,
+        ) from None
+
+
+class MeProfileUpdateBody(BaseModel):
+    """账号资料更新请求体。
+
+    Attributes:
+        nickname: 昵称（1-20 字，加密存储）。
+    """
+
+    nickname: str = Field(
+        min_length=1, max_length=NICKNAME_MAX_LENGTH, description="账号昵称"
+    )
+
+
 @router.get("/me", summary="我的信息")
 def get_me(
     db: Session = Depends(get_db),
     user: AppUser = Depends(get_current_user),
 ) -> dict:
-    """当前用户信息：user_uid、会员状态与到期时间、档案计数。
+    """当前用户信息：账号资料、会员状态与到期时间、档案计数。
 
     Args:
         db: 数据库会话。
         user: 当前用户。
 
     Returns:
-        统一包络：用户信息字典。
+        统一包络：用户信息字典（含 nickname / avatar_url）。
     """
     child_count = (
         db.query(func.count(ChildProfile.id))
@@ -290,12 +365,103 @@ def get_me(
     )
     return ok({
         "user_uid": user.user_uid,
+        **_user_profile_view(user),
         "member_status": user.member_status,
         "member_expire_at": _iso(user.member_expire_at),
         "child_profile_count": child_count,
         "pet_profile_count": pet_count,
         "register_at": _iso(user.register_at),
     })
+
+
+@router.put("/me/profile", summary="更新账号资料")
+def update_me_profile(
+    body: MeProfileUpdateBody,
+    db: Session = Depends(get_db),
+    user: AppUser = Depends(get_current_user),
+) -> dict:
+    """更新账号资料：仅修改昵称，保存后立即生效。
+
+    Args:
+        body: {nickname}。
+        db: 数据库会话。
+        user: 当前用户。
+
+    Returns:
+        统一包络：更新后的账号资料视图。
+
+    Raises:
+        ApiError: 1001 昵称仅含空白字符。
+    """
+    nickname = body.nickname.strip()
+    if not nickname:
+        raise ApiError(code=1001, message="昵称不能为空", http_status=422)
+    # 昵称按手机号/儿童昵称同口径加密落库，响应回传明文供客户端即时回显
+    user.nickname_enc = encrypt_field(nickname)
+    db.flush()
+    return ok(_user_profile_view(user))
+
+
+@router.post(
+    "/me/avatar",
+    summary="上传账号头像",
+    description="multipart 单文件（file 字段），服务端规范化 JPEG 存储并返回 avatar_url；"
+    "覆盖旧头像时自动删除旧文件。",
+)
+def upload_me_avatar(
+    file: UploadFile = File(..., description="图片文件（jpeg/png/webp，≤8MB）"),
+    db: Session = Depends(get_db),
+    user: AppUser = Depends(get_current_user),
+) -> dict:
+    """上传/更换账号头像（覆盖旧文件，幂等替换）。
+
+    Args:
+        file: 图片文件。
+        db: 数据库会话。
+        user: 当前用户。
+
+    Returns:
+        统一包络：{avatar_url, width, height, size}。
+
+    Raises:
+        ApiError: 1001 图片格式不支持或文件过大。
+    """
+    rel, width, height, size = _save_user_avatar_or_raise(file.file.read())
+    old_rel = user.avatar_path
+    user.avatar_path = rel
+    db.flush()
+    if old_rel:
+        # 数据库先行、旧文件后删（与档案头像同一口径）
+        delete_file(old_rel)
+    return ok(
+        {"avatar_url": _media_url(rel), "width": width, "height": height, "size": size}
+    )
+
+
+@router.delete(
+    "/me/avatar",
+    summary="移除账号头像",
+    description="置空头像并删除文件；未设置时同样成功（幂等）",
+)
+def remove_me_avatar(
+    db: Session = Depends(get_db),
+    user: AppUser = Depends(get_current_user),
+) -> dict:
+    """移除账号头像（幂等：未设置时也返回成功）。
+
+    Args:
+        db: 数据库会话。
+        user: 当前用户。
+
+    Returns:
+        统一包络：{"deleted": true}。
+    """
+    old_rel = user.avatar_path
+    user.avatar_path = None
+    db.flush()
+    if old_rel:
+        delete_file(old_rel)
+    return ok({"deleted": True})
 
 
 @router.get("/me/consents", summary="我的同意状态")

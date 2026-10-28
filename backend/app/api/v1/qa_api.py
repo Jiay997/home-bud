@@ -15,15 +15,19 @@ SSE 帧格式：`event: {type}\\ndata: {json}\\n\\n`，sequence 递增，
 被拦截/失败/缓存命中（含断线重连）不计次。
 """
 import json
+import re
 import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Generator, List, Optional, Tuple
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ...agents.graph import run_qa_graph
+from ...agents.nodes import build_triage_blocks
+from ...compliance import ai_label as labels
 from ...core.cache import cache
 from ...core.crypto import decrypt_field, encrypt_field, sha256_hex
 from ...core.deps import get_current_user
@@ -53,8 +57,11 @@ from ...models import (
     RiskAppeal,
 )
 from ...models.base import gen_uuid
+from ...services import agent_weight_service, answer_contract
 from ...services.quota_service import QuotaService
 from ...risk.service import RiskService
+from ...triage import engine as triage_engine
+from .consent_api import require_base_consent
 
 router = APIRouter(tags=["C端-问答"])
 
@@ -71,8 +78,11 @@ IDEMPOTENT_TTL_HOURS = 24
 CHUNK_CHARS = 1200
 
 # 合规文案 ID（服务端下发，前端不得硬编码）
-DISCLAIMER_ID = "DISCLAIMER_V1"
-AI_GEN_LABEL_ID = "AI_GEN_LABEL_V1"
+DISCLAIMER_ID = answer_contract.DISCLAIMER_ID
+AI_GEN_LABEL_ID = labels.AI_LABEL_TEXT_ID
+
+# 输入形态枚举（RQ-05 预留：V1.0 仅 text；voice 为 V3.0 范围内能力）
+INPUT_MODES = ("text", "voice", "photo")
 
 # 上海时区（UTC+8 固定偏移）
 _TZ_SHANGHAI = timezone(timedelta(hours=8))
@@ -90,17 +100,33 @@ MIN_SEQUENCE = 0
 class SessionCreateBody(BaseModel):
     """创建问答会话请求体。
 
+    V3.1 增量字段：
+    - `input_mode`（RQ-05 预留）：text / voice / photo；photo 需先上传并送检；
+    - `photo_uids`：已送检通过的图片标识（单次 ≤3 张，AC-RQ05-8）；
+    - `reminder_trace_id`：触达归因透传（RQ-08 AC-RQ08-8，支撑 M21）。
+
     Attributes:
         entry: 显式入口 child/pet/family。
         question: 问题原文（≤2000 字）。
         profile_uid: 档案对外标识（可选，越权按不存在处理）。
         client_request_id: 客户端幂等键（必填）。
+        input_mode: 输入形态（默认 text）。
+        photo_uids: 图片标识列表（photo 模式）。
+        reminder_trace_id: 提醒归因标识。
     """
 
     entry: str = Field(..., description="入口 child/pet/family")
-    question: str = Field(..., min_length=1, max_length=2000, description="问题原文")
+    # 长度在路由内按 trim 后校验，便于返回明确的中文提示（AC-F4-01-1）
+    question: str = Field(..., max_length=2000, description="问题原文")
     profile_uid: Optional[str] = Field(None, max_length=64, description="档案 UID")
     client_request_id: str = Field(..., min_length=1, max_length=64, description="幂等键")
+    input_mode: str = Field("text", description="输入形态 text/voice/photo（RQ-05 预留）")
+    photo_uids: List[str] = Field(
+        default_factory=list, description="图片标识（photo 模式，≤3 张）"
+    )
+    reminder_trace_id: Optional[str] = Field(
+        None, max_length=64, description="触达归因标识（RQ-08）"
+    )
 
 
 class CancelBody(BaseModel):
@@ -275,6 +301,24 @@ def _set_idem_done(db: Session, session_uid: str) -> None:
         db.rollback()
 
 
+def _validate_photos(
+    db: Session, user: AppUser, photo_uids: List[str]
+) -> Optional[Tuple[int, str, int]]:
+    """校验图片标识（封装 photo_service，便于单测替换）。
+
+    Args:
+        db: 数据库会话。
+        user: 当前用户。
+        photo_uids: 图片标识列表。
+
+    Returns:
+        None 表示通过；否则 (code, message, http_status)。
+    """
+    from ...services import photo_service
+
+    return photo_service.validate_photo_refs(db, user.id, photo_uids)
+
+
 # ----------------------------------------------------------------------
 # POST /qa/sessions
 # ----------------------------------------------------------------------
@@ -286,8 +330,8 @@ def create_session(
 ):
     """创建问答会话（流式接口的前置步骤）。
 
-    校验链：入口紧急开关 → 幂等 → 申诉放行 → 活跃会话 → 额度预检（不扣）
-    → 落库 pending。
+    校验链：基础同意（N1）→ 入口紧急开关 → 幂等 → 申诉放行 → 活跃会话
+    → 额度预检（不扣）→ 落库 pending。
 
     Args:
         body: 创建请求体。
@@ -299,12 +343,28 @@ def create_session(
         idempotent_replay=True 与 result_ref。
 
     Raises:
-        ApiError: 1406 入口维护中(503)；1004 相同请求处理中；
+        ApiError: 1301 未同意基础协议（N1 门禁，不可跳过）；
+            1406 入口维护中(503)；1004 相同请求处理中；
             1203 已有活跃流(retry_after=30)；1202 免费额度用尽；
             1002 档案不存在或无权限。
     """
     if body.entry not in ("child", "pet", "family"):
         raise ApiError(*ERR_PARAM)
+    # 输入边界：trim 后必须 5–2000 字（与前端 canSend 一致）
+    body.question = body.question.strip()
+    if len(body.question) < 5:
+        raise ApiError(code=1001, message="问题至少需要 5 个字", http_status=422)
+    # 输入形态（RQ-05 预留）：V1.1 起支持 text/voice/photo，photo 需已送检
+    if body.input_mode not in INPUT_MODES:
+        raise ApiError(*ERR_PARAM)
+    if body.input_mode == "photo":
+        photo_error = _validate_photos(db, user, body.photo_uids)
+        if photo_error is not None:
+            raise ApiError(*photo_error)
+    elif body.photo_uids:
+        raise ApiError(*ERR_PARAM)
+    # 0. 同意节点（N1）：未完成基础同意不得进入问答链路（不落库、不计次）
+    require_base_consent(db, user.id)
     # 1. 入口紧急开关（config_type='switch' 最新 active 版本）
     switch = (
         db.query(ConfigVersion)
@@ -322,8 +382,13 @@ def create_session(
                 code=1406, message="该功能维护中，请稍后再试", http_status=503
             )
     # 2. 幂等：done 回放 / processing 拒绝 / 新建指纹
+    # 指纹含输入形态与图片标识：同一 client_request_id 换了图片必须判为不同请求
     fingerprint = sha256_hex(
-        body.entry + body.question + (body.profile_uid or "")
+        body.entry
+        + body.question
+        + (body.profile_uid or "")
+        + body.input_mode
+        + ",".join(body.photo_uids or [])
     )
     idem = (
         db.query(IdempotencyKey)
@@ -410,9 +475,16 @@ def create_session(
         status="pending",
         risk_level="none",
         is_retry=is_retry,
+        # V3.1 增量列（RQ-05 输入形态 / RQ-08 触达归因）
+        input_mode=body.input_mode,
+        reminder_trace_id=body.reminder_trace_id,
     )
     db.add(session)
     db.flush()
+    if body.input_mode == "photo" and body.photo_uids:
+        from ...services import photo_service
+
+        session.photo_meta = photo_service.bind_to_session(db, session.id, body.photo_uids)
     if idem is None:
         idem = IdempotencyKey(
             scope="qa",
@@ -426,7 +498,35 @@ def create_session(
     else:
         idem.status = "processing"
         idem.result_ref = {"session_uid": session.session_uid}
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        # 并发同幂等键：唯一约束竞争失败方回滚，按已存在的幂等记录返回重放/处理中，
+        # 不得把数据库唯一键冲突暴露为 500（E2E-05 并发边界）。
+        db.rollback()
+        concurrent = (
+            db.query(IdempotencyKey)
+            .filter(
+                IdempotencyKey.scope == "qa",
+                IdempotencyKey.client_request_id == body.client_request_id,
+            )
+            .first()
+        )
+        if concurrent is None:
+            raise
+        if concurrent.request_fingerprint != fingerprint:
+            raise ApiError(*ERR_PARAM)
+        if concurrent.status == "done":
+            ref = concurrent.result_ref or {}
+            return ok(
+                {
+                    "session_uid": ref.get("session_uid"),
+                    "status": "done",
+                    "idempotent_replay": True,
+                    "result_ref": ref,
+                }
+            )
+        raise_err(ERR_IDEMPOTENT_PROCESSING)
     return ok({"session_uid": session.session_uid, "status": "pending"})
 
 
@@ -461,6 +561,8 @@ def _qa_stream_generator(session: QaSession, user: AppUser, db: Session) -> Gene
     question = decrypt_field(session.question_text_enc)
     member = QuotaService.is_member(user)
     profile_bound, age_band, species = _resolve_profile(db, user, session)
+    # F12.7：读取当前生效的 Agent 展示权重（60s 缓存；安全分节不参与排序）
+    weight_view = agent_weight_service.get_active(db)
     try:
         # ---- started 帧（render_order 为入口预估，实际以 aggregate 为准） ----
         first_packet_ms = int((time.monotonic() - start) * 1000)
@@ -477,47 +579,112 @@ def _qa_stream_generator(session: QaSession, user: AppUser, db: Session) -> Gene
             },
         )
         # ---- 1. 风险扫描：逐次执行，纯输入侧不读档案 ----
-        scanned = RiskService.scan(db, question, user.id, session=session)
-        risk_result = scanned["risk_result"]
-        if risk_result.get("blocked"):
-            # 命中：blocked 帧（正文为空 100%，无任何 section 帧）；不扣额度
+        # 兜底（D1 修复）：风险服务任何未预期异常一律按命中保守处理，
+        # 绝不因风险链路异常而放行正文（PRD「服务不可用按命中处理」）。
+        try:
+            scanned = RiskService.scan(db, question, user.id, session=session)
+        except Exception:  # noqa: BLE001 — 风险链路异常按命中处理
             metrics.observe_blocked()
+            db.rollback()
+            session.status = "blocked"
+            session.risk_level = "high"
+            session.risk_score_band = "rule_hit"
             db.commit()
             seq += 1
             yield _sse(
                 "blocked",
                 {
                     "sequence": seq,
-                    "reason": risk_result.get("reason"),
-                    "risk_event_no": scanned["risk_event_no"],
-                    "channels": RiskService.get_channels(
-                        db, risk_result.get("category_code")
-                    ),
-                    "appeal_allowed": not risk_result.get("hard", False),
+                    "reason": "风险扫描服务不可用，按命中保守处理",
+                    "risk_event_no": None,
+                    "channels": [],
+                    "appeal_allowed": False,
+                    "ai_label": labels.ai_label("blocked"),
                 },
             )
             return
+        risk_result = scanned["risk_result"]
+        if risk_result.get("blocked"):
+            # 命中：blocked 帧（正文为空 100%，无任何 section 帧）；不扣额度
+            metrics.observe_blocked()
+            db.commit()
+            seq += 1
+            try:
+                channels = RiskService.get_channels(
+                    db, risk_result.get("category_code")
+                )
+            except Exception:  # noqa: BLE001 — 渠道卡失败不推翻拦截结论
+                channels = []
+            yield _sse(
+                "blocked",
+                {
+                    "sequence": seq,
+                    "reason": risk_result.get("reason"),
+                    "risk_event_no": scanned["risk_event_no"],
+                    "channels": channels,
+                    "appeal_allowed": not risk_result.get("hard", False),
+                    "ai_label": labels.ai_label("blocked"),
+                },
+            )
+            return
+        # ---- 1.5 分级决策（RQ-06）：风险放行后、正文生成前定档 ----
+        # 缓存命中路径同样需要档位（缓存只存正文分节），故在缓存判定之前执行。
+        profile_ctx = answer_contract.resolve_profile_context(db, session)
+        triage = None
+        try:
+            child_obj = None
+            pet_obj = None
+            if session.profile_type == "child" and session.profile_id:
+                child_obj = (
+                    db.query(ChildProfile)
+                    .filter(ChildProfile.id == session.profile_id)
+                    .first()
+                )
+            elif session.profile_type == "pet" and session.profile_id:
+                pet_obj = (
+                    db.query(PetProfile).filter(PetProfile.id == session.profile_id).first()
+                )
+            triage = triage_engine.decide_for_session(
+                db, question, session, child=child_obj, pet=pet_obj
+            )
+        except Exception:  # noqa: BLE001 — 分级异常按「暂不可用」态，绝不放行为纯模型回答
+            triage = triage_engine.unavailable_result("分级判定异常")
+        triage_state = {"triage": triage}
+        # RQ-05 诚实口径：多模态解析未接入时，正文前置「图片未解析」说明，
+        # 不假装理解了图片（真实解析接入后此块由解析结果替代）
+        photo_notice_block = None
+        if session.input_mode == "photo":
+            from ...services import photo_service
+
+            photo_notice_block = {
+                "block_key": "photo_notice",
+                "title": "图片说明",
+                "content": photo_service.PARSE_STUB_NOTICE,
+                "access_tier": "free",
+                "immutable": True,
+            }
         # ---- 2. 回答缓存命中：跳过 LLM，直接发缓存节；不计次 ----
         cache_key = f"qa:cache:{sha256_hex(question + (age_band or '') + 'v1')}"
         cached_raw = cache.get(cache_key)
         if cached_raw:
             payload = json.loads(cached_raw)
             section_rows: List[dict] = payload.get("sections", [])
-            # 缓存提示 block 插入首个 block 之前（不落库、不回写缓存）
+            # 缓存提示 block 插入首个 block 之前（不落库、不回写缓存）；
+            # 分级档位卡同样需要前置（缓存只存正文，档位逐次重判）
+            triage_blocks = build_triage_blocks(triage_state)
             first = True
             for section in section_rows:
                 blocks = json.loads(json.dumps(section.get("blocks", [])))
                 if first:
-                    blocks.insert(
-                        0,
+                    blocks = triage_blocks + [
                         {
                             "block_key": "cache_notice",
                             "title": "提示",
                             "content": CACHE_NOTICE,
                             "access_tier": "free",
                             "immutable": True,
-                        },
-                    )
+                        }
+                    ] + ([photo_notice_block] if photo_notice_block else []) + blocks
                     first = False
                 seq += 1
                 yield _sse(
@@ -533,6 +700,15 @@ def _qa_stream_generator(session: QaSession, user: AppUser, db: Session) -> Gene
                     },
                 )
             quota_row = QuotaService.get_or_create_today(db, user)
+            # 缓存路径也要下发完整合规契约（标识 / 免责 / 信任条 / 档位）
+            cache_contract = answer_contract.build_answer_contract(
+                db,
+                session,
+                triage=triage,
+                kb_refs=session.kb_refs or payload.get("kb_refs", []),
+                text_sample=json.dumps(payload.get("sections", []), ensure_ascii=False),
+                profile_ctx=profile_ctx,
+            )
             seq += 1
             yield _sse(
                 "completed",
@@ -543,7 +719,12 @@ def _qa_stream_generator(session: QaSession, user: AppUser, db: Session) -> Gene
                     "agents_involved": payload.get("agents_involved", []),
                     "disclaimer_id": DISCLAIMER_ID,
                     "ai_generated_label": AI_GEN_LABEL_ID,
+                    "ai_label": cache_contract["ai_label"],
+                    "trust_bar": cache_contract["trust_bar"],
+                    "triage": cache_contract["triage"],
+                    "input_mode": session.input_mode,
                     "from_cache": True,
+                    "weight_version": weight_view["version"],
                     "quota": {
                         "used": quota_row.used_count,
                         "limit": quota_row.limit_snapshot,
@@ -558,6 +739,8 @@ def _qa_stream_generator(session: QaSession, user: AppUser, db: Session) -> Gene
             session.agents_involved = payload.get("agents_involved", [])
             session.first_packet_ms = first_packet_ms
             session.total_latency_ms = int((time.monotonic() - start) * 1000)
+            session.triage = triage
+            session.triage_level = (triage or {}).get("level")
             db.commit()
             _persist_sections(db, session, section_rows)
             return
@@ -579,6 +762,13 @@ def _qa_stream_generator(session: QaSession, user: AppUser, db: Session) -> Gene
             "member_status": user.member_status,
             "db": db,
             "session": session,
+            # RQ-06：档位已在流内预判，graph 内 triage 节点沿用（含缓存路径一致性）
+            "triage": triage,
+            "triage_pre_decided": True,
+            "input_mode": session.input_mode,
+            # F12.7：权重版本与权重快照随图状态传入，供排序与日志留痕
+            "agent_weights": weight_view["weights"],
+            "weight_version": weight_view["version"],
         }
         final = run_qa_graph(initial)
         if final.get("status") == "blocked":  # 双保险（正常已被预扫拦截）
@@ -592,6 +782,7 @@ def _qa_stream_generator(session: QaSession, user: AppUser, db: Session) -> Gene
                     "risk_event_no": final.get("risk_event_no"),
                     "channels": final.get("channels", []),
                     "appeal_allowed": final.get("appeal_allowed", True),
+                    "ai_label": labels.ai_label("blocked"),
                 },
             )
             db.commit()
@@ -601,6 +792,13 @@ def _qa_stream_generator(session: QaSession, user: AppUser, db: Session) -> Gene
         # ---- 4. 按 render_order 逐节下发：骨架 → 内容切片 → 完整帧 ----
         sections: Dict[str, dict] = final.get("sections", {})
         render_order: List[str] = final.get("render_order", [])
+        # RQ-05：图片模式把「未解析说明」插到首个分节最前（诚实告知，不假装理解图片）
+        if photo_notice_block and render_order:
+            first_key = render_order[0]
+            if first_key in sections:
+                sections[first_key]["blocks"] = [photo_notice_block] + list(
+                    sections[first_key].get("blocks", [])
+                )
         has_member_block = False
         for key in render_order:
             section = sections.get(key)
@@ -689,6 +887,10 @@ def _qa_stream_generator(session: QaSession, user: AppUser, db: Session) -> Gene
             }
         )
         session.kb_refs = kb_refs
+        # RQ-06 档位落库（供轮询兜底 / 历史详情 / 信任条复用，DR-29 可还原）
+        triage = final.get("triage", triage)
+        session.triage = triage
+        session.triage_level = (triage or {}).get("level")
         db.flush()
         # 分节落库（含会员块完整 content；下发侧门控裁剪，存储不裁剪）
         plain_sections = [
@@ -703,7 +905,7 @@ def _qa_stream_generator(session: QaSession, user: AppUser, db: Session) -> Gene
             if key in sections
         ]
         _persist_sections(db, session, plain_sections)
-        # agent_call_log：每节点一条（intent_route/retrieve/各 Agent）
+        # agent_call_log：每节点一条（intent_route/triage/retrieve/各 Agent）
         _persist_agent_logs(db, session, final, question)
         db.commit()
         # 回答写缓存（TTL 3600；缓存不含会员门控，下发侧裁剪）
@@ -713,11 +915,25 @@ def _qa_stream_generator(session: QaSession, user: AppUser, db: Session) -> Gene
                 {
                     "render_order": render_order,
                     "agents_involved": agents_involved,
+                    "kb_refs": kb_refs,
                     "sections": plain_sections,
                 },
                 ensure_ascii=False,
             ),
             ttl_seconds=ANSWER_CACHE_TTL,
+        )
+        # ---- 合规契约装配（RQ-01 标识 / RQ-07 信任条 / RQ-06 档位）----
+        contract = answer_contract.build_answer_contract(
+            db,
+            session,
+            triage=triage,
+            kb_refs=kb_refs,
+            text_sample="\n".join(
+                str(block.get("content") or "")
+                for section in plain_sections
+                for block in section.get("blocks", [])
+            ),
+            profile_ctx=profile_ctx,
         )
         # ---- completed 帧 ----
         seq += 1
@@ -731,6 +947,11 @@ def _qa_stream_generator(session: QaSession, user: AppUser, db: Session) -> Gene
                 "conflict_note": final.get("conflict_note"),
                 "disclaimer_id": DISCLAIMER_ID,
                 "ai_generated_label": AI_GEN_LABEL_ID,
+                "ai_label": contract["ai_label"],
+                "trust_bar": contract["trust_bar"],
+                "triage": contract["triage"],
+                "input_mode": session.input_mode,
+                "weight_version": final.get("weight_version", 0),
                 "quota": {
                     "used": quota_row.used_count,
                     "limit": quota_row.limit_snapshot,
@@ -803,6 +1024,23 @@ def _persist_sections(db: Session, session: QaSession, section_rows: List[dict])
     db.flush()
 
 
+def _mask_input_summary(question: str, limit: int = 60) -> str:
+    """生成不可还原的输入摘要（脱敏 + 截断），供后台日志列表展示。
+
+    Args:
+        question: 问题原文。
+        limit: 最大字符数。
+
+    Returns:
+        脱敏后的摘要文本（手机号/身份证/邮箱局部打码）。
+    """
+    text = re.sub(r"\s+", " ", (question or "").strip())
+    text = re.sub(r"(?<!\d)1[3-9]\d{9}(?!\d)", lambda m: m.group(0)[:3] + "****" + m.group(0)[-4:], text)
+    text = re.sub(r"(?<!\d)\d{17}[\dXx](?!\d)", lambda m: m.group(0)[:6] + "********" + m.group(0)[-4:], text)
+    text = re.sub(r"([A-Za-z0-9._%+-])[A-Za-z0-9._%+-]*@([A-Za-z0-9.-]+)", r"\1***@\2", text)
+    return text[:limit] + ("…" if len(text) > limit else "")
+
+
 def _persist_agent_logs(db: Session, session: QaSession, final: dict, question: str) -> None:
     """写 agent_call_log：每个执行节点一条（输入摘要化不可还原）。
 
@@ -815,6 +1053,29 @@ def _persist_agent_logs(db: Session, session: QaSession, final: dict, question: 
     settings = get_settings()
     node_meta: Dict[str, dict] = final.get("node_meta") or {}
     agent_outputs: Dict[str, dict] = final.get("agent_outputs") or {}
+    input_summary = _mask_input_summary(question)
+    triage = final.get("triage") or {}
+    risk_result = final.get("risk_result") or {}
+    # D-06：可追溯字段随每条日志快照留存（权重版本 / 风险命中 / 输入摘要 /
+    # 模型版本 / 冲突标记），后台详情与列表直接读取，不再显示「--」。
+    risk_hits = risk_result.get("rule_hits") or risk_result.get("categories") or []
+    obs = {
+        "input_summary": input_summary,
+        "weight_version": int(final.get("weight_version") or 0),
+        "agent_weights": final.get("agent_weights") or {},
+        "risk_hits": risk_hits,
+        "risk_level": risk_result.get("level")
+        or ("high" if risk_result.get("blocked") else "none"),
+        "risk_reason": risk_result.get("reason") or "",
+        "triage": {
+            "level": triage.get("level"),
+            "scene": triage.get("scene"),
+            "rule_version": triage.get("rule_version"),
+            "publish_gated": bool(triage.get("publish_gated")),
+        },
+        "model_version": "mock-1" if settings.llm_mock else settings.llm_model,
+        "conflict_note": final.get("conflict_note"),
+    }
     for agent_id, meta in node_meta.items():
         output = agent_outputs.get(agent_id)
         # 输出快照：agent 取其产出；路由/检索节点取 meta 本身
@@ -824,22 +1085,30 @@ def _persist_agent_logs(db: Session, session: QaSession, final: dict, question: 
         # 仅观测字段，新建 dict 不污染 agent_outputs 原始产出
         if isinstance(output_json, dict) and meta.get("intent"):
             output_json = {**output_json, "intent": meta["intent"]}
+        # 观测快照（D-06）：输入摘要 / 权重版本 / 风险命中 / 档位
+        if isinstance(output_json, dict):
+            output_json = {**output_json, "_obs": obs}
         # 观察埋点：Agent 成功/失败计数（与落库 status 同口径）
         metrics.observe_agent(meta.get("status") == "ok")
+        evidence_ref = None
+        if isinstance(output, dict):
+            evidence_ref = output.get("evidence_ref")
         db.add(
             AgentCallLog(
                 session_id=session.id,
                 agent_id=agent_id,
                 agent_version="1.0.0",
-                provider="deepseek",
+                provider="mock" if settings.llm_mock else "deepseek",
                 model=settings.llm_model,
+                model_version=obs["model_version"],
                 input_digest=sha256_hex(question),
                 output_json=output_json,
-                evidence_ref=(output or {}).get("evidence_ref")
-                if isinstance(output, dict)
-                else None,
+                evidence_ref=evidence_ref if evidence_ref is not None else [],
+                confidence=meta.get("confidence"),
+                conflict_flag=bool(final.get("conflict_note")),
                 prompt_tokens=meta.get("prompt_tokens"),
                 completion_tokens=meta.get("completion_tokens"),
+                cost_micro=meta.get("cost_micro"),
                 latency_ms=meta.get("latency_ms"),
                 status="ok" if meta.get("status") == "ok" else "fail",
             )
@@ -864,9 +1133,20 @@ def stream_session(
         StreamingResponse（text/event-stream）。
 
     Raises:
-        ApiError: 1002 会话不存在或无权限。
+        ApiError: 1002 会话不存在或无权限；1301 未同意基础协议（N1 门禁）。
     """
     session = _get_session_owned(db, user, session_uid)
+    # 同意节点（N1）在流式入口二次强制：防止「先建会话、后撤回同意」的绕过
+    require_base_consent(db, user.id)
+    # D-15：同一用户的活跃流原子互斥。此前并发的两次 POST 都能拿到 200，
+    # 会重复执行编排并重复推送 SSE；这里用 SET NX 抢占活跃键，未抢到返回
+    # 1203（活跃会话进行中，可重试），与创建会话入口口径一致。
+    active_key = f"qa:active:{user.id}"
+    claim = json.dumps(
+        {"session_uid": session_uid, "claimed_at": time.time()}, ensure_ascii=False
+    )
+    if not cache.set_nx(active_key, claim, ACTIVE_TTL):
+        raise_err(ERR_ACTIVE_STREAM, retryable=True, retry_after=30)
     headers = {
         "Cache-Control": "no-cache",
         "X-Accel-Buffering": "no",
@@ -973,6 +1253,10 @@ def get_session(
                 "status": row.status,
             }
         )
+    # 合规契约（RQ-01 标识 / RQ-07 信任条 / RQ-06 档位）：轮询兜底不得丢要素
+    contract = answer_contract.contract_from_stored(
+        db, session, kb_refs=session.kb_refs or [], sections=sections
+    )
     return ok(
         {
             "session_uid": session.session_uid,
@@ -984,7 +1268,14 @@ def get_session(
             "kb_refs": session.kb_refs or [],
             "render_order": order,
             "is_member_content": session.is_member_content,
+            "input_mode": session.input_mode,
+            "photo_meta": session.photo_meta,
+            "reminder_trace_id": session.reminder_trace_id,
             "sections": sections,
+            "ai_label": contract["ai_label"],
+            "disclaimer_id": contract["disclaimer_id"],
+            "trust_bar": contract["trust_bar"],
+            "triage": contract["triage"],
         }
     )
 
@@ -1039,6 +1330,7 @@ def resume_stream(
                     "risk_event_no": None,
                     "channels": [],
                     "appeal_allowed": session.risk_level == "high",
+                    "ai_label": labels.ai_label("blocked"),
                 },
             )
             return
@@ -1066,6 +1358,15 @@ def resume_stream(
                 },
             )
         quota_row = QuotaService.get_or_create_today(db, user)
+        contract = answer_contract.contract_from_stored(
+            db,
+            session,
+            kb_refs=session.kb_refs or [],
+            sections=[
+                {"blocks": row.blocks or []}
+                for row in by_key.values()
+            ],
+        )
         seq += 1
         yield _sse(
             "completed",
@@ -1076,6 +1377,12 @@ def resume_stream(
                 "agents_involved": session.agents_involved or [],
                 "disclaimer_id": DISCLAIMER_ID,
                 "ai_generated_label": AI_GEN_LABEL_ID,
+                "ai_label": contract["ai_label"],
+                "trust_bar": contract["trust_bar"],
+                "triage": contract["triage"],
+                "input_mode": session.input_mode,
+                # 续发路径没有本轮图状态 final，取当前生效权重版本作为可解释兜底
+                "weight_version": agent_weight_service.get_active(db)["version"],
                 "quota": {
                     "used": quota_row.used_count,
                     "limit": quota_row.limit_snapshot,
@@ -1119,9 +1426,11 @@ def regenerate_session(
 
     Raises:
         ApiError: 1002 不存在或无权限；1102 非会员；1401 被风险拦截；
-            1001 非法分节。
+            1301 未同意基础协议；1001 非法分节。
     """
     session = _get_session_owned(db, user, session_uid)
+    # 同意节点（N1）：重生成同属生成入口，未同意一律 1301
+    require_base_consent(db, user.id)
     # 会员专属
     if not QuotaService.is_member(user):
         raise ApiError(code=1102, message="会员功能", http_status=403)
@@ -1129,6 +1438,7 @@ def regenerate_session(
         raise ApiError(*ERR_PARAM)
     question = decrypt_field(session.question_text_enc)
     profile_bound, age_band, species = _resolve_profile(db, user, session)
+    weight_view = agent_weight_service.get_active(db)
     initial: Dict[str, Any] = {
         "request_id": gen_uuid(),
         "session_id": session.id,
@@ -1143,8 +1453,14 @@ def regenerate_session(
         "member_status": user.member_status,
         "db": db,
         "session": session,
+        "agent_weights": weight_view["weights"],
+        "weight_version": weight_view["version"],
     }
     final = run_qa_graph(initial)
+    # RQ-06：重生成同属生成入口，档位按当前档案与追问重判（AC-RQ06-5 口径）
+    if isinstance(final.get("triage"), dict):
+        session.triage = final["triage"]
+        session.triage_level = final["triage"].get("level")
     if final.get("status") == "blocked":
         db.commit()
         # 重生成也被风险拦截：1401（HTTP 200，业务码表达）

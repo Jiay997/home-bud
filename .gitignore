@@ -1,4 +1,4 @@
-# ===== 小光景（HomeBud）项目忽略规则 =====
+# ===== Babe宝伴（HomeBud）项目忽略规则 =====
 
 # 环境变量（含密钥，勿提交）
 .env
@@ -43,8 +43,12 @@ backups/
 # UI 审计临时产物（截图/脚本/localStorage 注入种子，含临时令牌，勿提交）
 .audit/
 
-# 过程性走查截图（前几轮中间产物，约 52MB / 316 张；权威证据见 wechat-miniapp/screenshots/）
-wechat-miniapp/walkthrough/
+# 本地构建与诊断脚本（含硬编码管理员密码/临时令牌，严禁提交）
+.build/
+backend/pytest-of-*/
+
+# 过程性走查截图（前几轮中间产物，约 52MB / 316 张；权威证据见 client/screenshots/）
+client/walkthrough/
 
 # 答辩材料与历史测试截图（体积大，不宜随源码仓库分发）
 docs/答辩/

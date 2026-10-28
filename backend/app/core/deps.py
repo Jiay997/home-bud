@@ -23,7 +23,9 @@ from .envelope import request_id_var
 from .security import decode_token
 
 # 后台角色 × 页面 × 动作 权限矩阵（PRD §16 最小权限；服务端为真边界）
-# 页面标识：kb(知识库) lex(词库) log(日志) fb(反馈举报) risk(高风险事件) rights(权利) cfg(系统开关) refund(退款)
+# 页面标识：kb(知识库) lex(词库) log(日志) fb(反馈举报) risk(高风险事件) rights(权利)
+# cfg(系统开关) refund(退款) channel(危机渠道清单 RQ-03) triage(分级规则 RQ-06)
+# content(专题包/轻工具 RQ-12/13/14)
 ADMIN_ACTIONS = {
     "super_admin": {"*"},  # 超管全部动作
     "operator": {
@@ -31,12 +33,18 @@ ADMIN_ACTIONS = {
         "lex:view", "lex:edit", "log:view",
         "fb:view", "fb:handle", "risk:view", "risk:review",
         "rights:view", "rights:handle",
+        # V3.1：内容运营维护渠道清单与分级规则（法务/专家复核留痕在同一接口）
+        "channel:view", "channel:edit", "channel:review",
+        "triage:view", "triage:edit",
+        "content:view", "content:edit",
     },
     "support": {
         "fb:view", "fb:handle", "rights:view", "rights:handle", "log:view",
+        "channel:view",  # 客服只读渠道清单（号码字段脱敏）
     },
-    "expert_child": {"kb:view", "kb:edit", "kb:review"},  # 域绑定 child 由 domain_scope 限制
-    "expert_pet": {"kb:view", "kb:edit", "kb:review"},  # 域绑定 pet
+    # 域绑定 child / pet 由 domain_scope 限制
+    "expert_child": {"kb:view", "kb:edit", "kb:review", "triage:view", "triage:review"},
+    "expert_pet": {"kb:view", "kb:edit", "kb:review", "triage:view", "triage:review"},
 }
 
 

@@ -1,8 +1,10 @@
 # =====================================================================
-# 小光景 HomeBud - CI 流水线（.github/workflows/ci.yml）
-# 口径与 scripts/ci_gate.ps1 一致：后端测试(pytest) + 契约校验
-#   (contract_check) + 前端构建(npm run build)；任一环节失败即中止，
-#   GitHub Actions 以退出码 1 标红。
+# Babe宝伴 HomeBud - CI 流水线（.github/workflows/ci.yml）
+# 口径与 scripts/ci_gate.ps1 一致：
+#   契约校验(contract_check) → 拟人化文案扫描(copy_compliance_check)
+#   → 渠道号码扫描(check_hardcoded_phones) → 后端测试(pytest)
+#   → C 端 H5 构建(client) → 后台构建(admin-web)
+#   任一环节失败即中止，GitHub Actions 以退出码 1 标红。
 # 数据库：服务容器 postgres:16 与 tests/conftest.py 无 backend/.env 时的
 #   默认连接串 postgres:postgres@localhost:5432/jiaban 对齐
 #   （pytest 使用独立测试库 jiaban_test，由 conftest.py 自行创建）。
@@ -16,7 +18,7 @@ on:
 
 jobs:
   ci:
-    name: 后端测试 + 契约校验 + 前端构建
+    name: 后端测试 + 契约校验 + 合规扫描 + 前端构建
     # 注：GitHub Actions 的 services 服务容器仅支持 Linux runner，
     # 故 CI 使用 ubuntu-latest（本地 Windows 门禁仍走 scripts/ci_gate.ps1）
     runs-on: ubuntu-latest
@@ -55,28 +57,46 @@ jobs:
       - name: 安装后端依赖
         run: pip install -r backend/requirements.txt
 
-      # ---------- 4. 后端测试（独立测试库 jiaban_test） ----------
-      - name: 后端测试（pytest）
-        working-directory: backend
-        run: python -m pytest tests -q
-
-      # ---------- 5. 契约校验（前端调用 × OpenAPI + 文档完整性门禁） ----------
+      # ---------- 4. 契约校验（前端调用 × OpenAPI + 文档完整性门禁） ----------
       - name: 契约校验（contract_check）
         working-directory: backend
         run: python scripts/contract_check.py
 
-      # ---------- 6. 安装 Node 20 ----------
+      # ---------- 5. 拟人化文案扫描（RQ-02 / NFR-C14，fail-closed） ----------
+      - name: 拟人化文案扫描（copy_compliance_check）
+        working-directory: backend
+        run: python scripts/copy_compliance_check.py
+
+      # ---------- 6. 渠道硬编码号码扫描（RQ-03 / DR-26） ----------
+      - name: 渠道号码扫描（check_hardcoded_phones）
+        working-directory: backend
+        run: python scripts/check_hardcoded_phones.py
+
+      # ---------- 7. 后端测试（独立测试库 jiaban_test） ----------
+      - name: 后端测试（pytest）
+        working-directory: backend
+        run: python -m pytest tests -q
+
+      # ---------- 8. 安装 Node 20 ----------
       - name: 安装 Node 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # ---------- 7. 安装前端依赖（按 lockfile 严格安装） ----------
-      - name: 安装前端依赖
-        working-directory: frontend
-        run: npm ci
+      # ---------- 9. 安装 C 端依赖并构建 H5 ----------
+      - name: 安装 C 端依赖
+        working-directory: client
+        run: npm ci --no-audit --no-fund
 
-      # ---------- 8. 前端构建 ----------
-      - name: 前端构建
-        working-directory: frontend
+      - name: C 端 H5 构建
+        working-directory: client
+        run: npm run build:h5
+
+      # ---------- 10. 安装后台依赖并构建 ----------
+      - name: 安装后台依赖
+        working-directory: admin-web
+        run: npm ci --no-audit --no-fund
+
+      - name: 后台管理端构建
+        working-directory: admin-web
         run: npm run build

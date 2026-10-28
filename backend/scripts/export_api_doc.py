@@ -204,6 +204,54 @@ ENDPOINT_NOTES: Dict[Tuple[str, str], Tuple[str, str]] = {
     ("GET", "/api/v1/history/qa/{session_uid}"): ("会话详情（sections 全量、非会员裁剪、readonly、content_updated）", "1002 不存在/越权/未完成"),
     ("GET", "/api/v1/history/report/{report_uid}"): ("报告视图（blocks 按会员裁剪）", "1002 不存在或越权"),
     ("GET", "/api/v1/history/{item_type}/{uid}/image"): ("{report_uid, sections, disclaimer_ratio, disclaimer_count, qr_placeholder, scale}", "1001 非 report 类型(422)；1002 不存在或越权"),
+    # ---- V3.1 合规要素（RQ-01 / RQ-02 / RQ-11） ----
+    ("GET", "/api/v1/compliance/ai-label"): ("{visible, text_id, position, fallback_text, filing_no, pages, min_ratio, min_count}", "无（未知 page 按 answer 固定位处理）"),
+    ("GET", "/api/v1/compliance/privacy-pledge"): ("{version, items:[{id,title,promise,implemented,evidence,action{label,route}}], training_statement, honesty_note}", "无（公开可读）"),
+    ("GET", "/api/v1/compliance/copy-checklist"): ("{checklist[5 项], forbidden_phrases[], replacements{}, scope[]}", "无（公开可读）"),
+    ("POST", "/api/v1/compliance/png-metadata"): ("{render_id, metadata{}, label_check{ratio,count,metadata_ok,passed,errors}, byte_size, png_base64}", "1001 非 PNG/超 8MB/空文件(422)；1901 隐式标识写入或回读失败(500)；1101"),
+    ("GET", "/api/v1/compliance/ai-label/check"): ("{links[3 条链路], passed, min_ratio, min_count}", "1101"),
+    # ---- V3.1 分级决策（RQ-06） ----
+    ("GET", "/api/v1/triage/decide"): ("{triage:{level,level_label,rule_hits[],observations[],escalation_flags[],contraindications[],disclaimers[],night_notice,rule_version}|null, rule_snapshot{source,total,by_scene,signed}, note}", "1001 domain 非 child/pet(422)；1002 档案不存在/越权；1301 未同意基础协议"),
+    ("POST", "/api/v1/qa/sessions/{session_uid}/triage/recheck"): ("{triage, previous_level, level_changed, escalate_banner, banner_text}", "1002 会话不存在/越权；1301 未同意基础协议"),
+    # ---- V3.1 触达（RQ-08） ----
+    ("GET", "/api/v1/reminders"): ("{items:[{task_uid,type,title,body,planned_at,status,trace_id,sent_at,opened_at,delivery}], prefs{items,any_enabled,weekly_max,template_reported}, due_count, weekly_cap}", "1301"),
+    ("PUT", "/api/v1/reminders/prefs"): ("{pref_type, enabled, prefs{...}}", "1001 pref_type 非法(422)；1301"),
+    ("POST", "/api/v1/reminders/prefs/off"): ("{disabled:true, canceled_tasks, prefs{...}}（关闭即时生效，站内周报仍可回看）", "1301"),
+    ("POST", "/api/v1/reminders/{task_uid}/open"): ("{task_uid, status, trace_id}（归因链起点，提问时透传 reminder_trace_id）", "1002 任务不存在或非本人；1301"),
+    ("GET", "/api/v1/reminders/weekly-report"): ("{period{start,end}, profiles[], last_week_topics[], suggested_questions[], privacy_note}（不含问答原文）", "1301"),
+    ("GET", "/api/v1/reminders/weekly-question"): ("{title, question, kb_id, trace_id, enabled}", "1301"),
+    # ---- V3.1 轻工具 / 专题包（RQ-12/13/14） ----
+    ("GET", "/api/v1/tools"): ("{items:[{tool_code,title,tool_type,domain,summary,kb_refs,content,disclaimer,ai_label,quota_cost:0}], quota_cost:0, entry:'secondary'}", "1301"),
+    ("GET", "/api/v1/tools/{tool_code}"): ("工具视图（含 content 与免责；不消耗问答额度）", "1002 工具不存在或未上架；1301"),
+    ("POST", "/api/v1/tools/{tool_code}/complete"): ("{tool_code, completed_items, next, quota_cost:0}", "1002 工具不存在；1301"),
+    ("GET", "/api/v1/topics"): ("{items:[专题包视图], member_included:false}", "1301"),
+    ("GET", "/api/v1/topics/recommended"): ("{items[]}（family 入口优先交叉主题）", "1301"),
+    ("GET", "/api/v1/topics/{topic_code}"): ("专题包详情（红旗块前置 + 正文块；会员不含）", "1002 不存在或未上架；1301"),
+    # ---- V3.1 图片提问（RQ-05） ----
+    ("GET", "/api/v1/qa/photos/guide"): ("{scenes[], selected, privacy_notice, max_count, ttl_hours, degradation}", "1301"),
+    ("POST", "/api/v1/qa/photos"): ("{photo_uid, scene, moderation_result, expires_at, notice, parse_notice}（multipart：file + scene）", "1001 空文件/超 8MB/格式不支持(422)；1303 送检未通过或配额超限(403/429)；1301"),
+    ("GET", "/api/v1/qa/photos/{photo_uid}"): ("{photo_uid, scene, moderation_result, expires_at, deleted_at}（**无原图无 URL**）", "1002 不存在或非本人"),
+    # ---- V3.1 分享长图（RQ-09） ----
+    ("GET", "/api/v1/qa/sessions/{session_uid}/share-card.png"): ("image/png 二进制；响应头 X-Render-Id / X-Share-Trace-Id / X-AI-Generated / X-AI-Label-Ratio / X-AI-Label-Count", "1002 会话不存在/越权；1102 会话不可分享（被拦截/未完成）403；1901 标识校验失败(500)"),
+    ("GET", "/api/v1/history/report/{report_uid}/image.png"): ("image/png 二进制（含 tEXt 隐式标识与双处显式标识）", "1002 报告不存在/越权；1901 标识校验失败(500)"),
+    # ---- V3.1 转介（RQ-04） ----
+    ("POST", "/api/v1/risk/referral"): ("{available, enabled, items[], notice, fallback_guide, region}（精确坐标不落库；POI 未接时降级城市级指引）", "1001 scene 非法(422)；1101"),
+    # ---- V3.1 后台：渠道清单 / 分级规则 / 内容 / 门禁 ----
+    ("GET", "/api/v1/admin/channels"): ("{items[], summary{total,verified,placeholder,pending_review,missing_required}, categories{}, data_source:'crisis_channel'}", "1103 缺 channel:view"),
+    ("POST", "/api/v1/admin/channels"): ("渠道视图（号码未核验留空，禁止编造）", "1001 编码已存在(409)；1103 缺 channel:edit"),
+    ("PUT", "/api/v1/admin/channels/{channel_code}"): ("渠道视图（乐观字段更新）", "1002 不存在；1001 后 4 位校验不通过/缺原因(422)；1103；1602 改号码缺二次确认"),
+    ("POST", "/api/v1/admin/channels/{channel_code}/review"): ("{review_no, channel, summary}（核验留痕 ≥3 年，成功核验顺延复核到期日）", "1002 不存在；1001 方式/结论非法(422)；1103 缺 channel:review"),
+    ("GET", "/api/v1/admin/channels/{channel_code}/reviews"): ("{items[]}（核验人/方式/结论/时间/版本）", "1103 缺 channel:view"),
+    ("GET", "/api/v1/admin/triage-rules"): ("{items[], snapshot, signed, total, gate_ready}", "1103 缺 triage:view"),
+    ("PUT", "/api/v1/admin/triage-rules/{rule_id}"): ("{rule, snapshot}（阈值/档位变更需二次确认 + 原因，60s 内生效）", "1002 不存在；1001 level 非法(422)；1602 缺二次确认；1103 缺 triage:edit"),
+    ("POST", "/api/v1/admin/triage-rules/{rule_id}/review"): ("{rule, signed, total, gate_ready}（专家书面确认留痕，§7.2 门禁前置）", "1002 不存在；1103 缺 triage:review"),
+    ("POST", "/api/v1/admin/copy-scan"): ("{mode, result{hits[],hit_count,scanned_files,blocked,errors}, checklist[]}（texts 为空时扫全仓库）", "1103 缺 content:view"),
+    ("GET", "/api/v1/admin/reminders/stats"): ("{total, by_type, by_status, delivered_by_channel, send_fail, privacy_note}（不含问答原文）", "1103 缺 content:view"),
+    ("GET", "/api/v1/admin/topics"): ("{items[]}（含草稿、双签状态与 publish_issues）", "1103 缺 content:view"),
+    ("POST", "/api/v1/admin/topics"): ("{topic, publish_issues}（status=on 且不满足条件即拒绝并列出问题）", "1001 domain/结构/双签不满足(422)；1103 缺 content:edit"),
+    ("GET", "/api/v1/admin/tools"): ("{items[]}（含未上架与 issues）", "1103 缺 content:view"),
+    ("POST", "/api/v1/admin/tools"): ("{tool_code, status}", "1001 含确定性进食结论或类型非法(422)；1103 缺 content:edit"),
+    ("GET", "/api/v1/admin/gates/summary"): ("{gates[4 项发布门禁], passed}（未达标如实显示 false）", "1103 缺 content:view"),
 }
 
 
@@ -212,6 +260,11 @@ def load_openapi() -> dict:
 
     优先请求运行中的服务（NO_PROXY 绕过本机系统代理），失败则本地导入
     app.main.app 生成。
+
+    **防误抓**：本机 8000 端口可能被其他项目占用，抓到外部服务的规范会
+    把文档写成别人的端点（曾发生：抓到 `/api/plans/preview` 等 38 个外部
+    端点）。因此对抓取结果做归属校验——标题须含「宝伴」且必须存在
+    `/api/v1/health`，否则回退本地导入。
 
     Returns:
         OpenAPI JSON 字典。
@@ -228,8 +281,14 @@ def load_openapi() -> dict:
         resp = httpx.get(OPENAPI_URL, timeout=10.0)
         resp.raise_for_status()
         data = resp.json()
-        print(f"[export] loaded openapi from {OPENAPI_URL}")
-        return data
+        title = str((data.get("info") or {}).get("title") or "")
+        if "宝伴" in title and "/api/v1/health" in (data.get("paths") or {}):
+            print(f"[export] loaded openapi from {OPENAPI_URL}")
+            return data
+        print(
+            f"[export] WARN: {OPENAPI_URL} 返回的不是本项目规范"
+            f"（title={title[:40]!r}），改用本地导入"
+        )
     except Exception:
         pass
     # 方式二：本地导入 app 生成
@@ -454,7 +513,7 @@ def build_markdown(spec: dict) -> str:
     total = sum(len(v) for v in groups.values())
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     out: List[str] = []
-    out.append("# 小光景后端 API 接口文档")
+    out.append("# Babe宝伴后端 API 接口文档")
     out.append("")
     out.append("> **生成信息**：由 `backend/scripts/export_api_doc.py` 自动生成（可重复执行，勿手改）")
     out.append(f"> 生成时间：{now} ｜ 生成方式：优先抓取运行中服务 `{OPENAPI_URL}`，失败则本地导入 `app.main.app.openapi()`")

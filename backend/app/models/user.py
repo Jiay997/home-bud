@@ -34,6 +34,9 @@ class AppUser(Base, OrgIdMixin):
     wx_session_key_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
     phone_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
     phone_masked: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    # 账号资料：昵称加密存储（与儿童昵称同口径），头像仅存相对路径
+    nickname_enc: Mapped[str | None] = mapped_column(Text, nullable=True)
+    avatar_path: Mapped[str | None] = mapped_column(String(255), nullable=True)
     member_status: Mapped[str] = mapped_column(
         String(16), nullable=False, default="free", server_default="free"
     )

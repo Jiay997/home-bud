@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 
 from ...core.deps import get_current_user
 from ...core.envelope import ok
-from ...core.errors import ApiError
+from ...core.errors import ApiError, ERR_BASE_CONSENT, raise_err
 from ...db import get_db
 from ...models import AppUser, ChildProfile, ConsentRecord
 
@@ -28,8 +28,57 @@ router = APIRouter(tags=["C端-认证同意"])
 # 本版本支持的同意类型清单（状态查询按此遍历）
 CONSENT_TYPES = ("base", "child_personal_info")
 
+# 基础同意类型标识（用户协议 / 免责声明 / AI 标识）
+BASE_CONSENT_TYPE = "base"
+
+# 儿童信息单独同意类型标识
+CHILD_CONSENT_TYPE = "child_personal_info"
+
 # 监护人声明式核验方法标识（child_personal_info 留痕用）
 GUARDIAN_METHOD_DECLARATION = "declaration"
+
+
+def has_active_consent(db: Session, user_id: int, consent_type: str) -> bool:
+    """判断用户某类型同意是否处于有效状态（未撤回）。
+
+    Args:
+        db: 数据库会话。
+        user_id: 用户主键。
+        consent_type: 同意类型（base / child_personal_info）。
+
+    Returns:
+        存在未撤回的同意记录返回 True。
+    """
+    active = (
+        db.query(ConsentRecord)
+        .filter(
+            ConsentRecord.user_id == user_id,
+            ConsentRecord.consent_type == consent_type,
+            ConsentRecord.withdraw_at.is_(None),
+        )
+        .first()
+    )
+    return active is not None
+
+
+def require_base_consent(db: Session, user_id: int) -> None:
+    """前置校验：必须已完成基础同意（用户协议 / 免责声明 / AI 标识）。
+
+    PRD §4.2 N1「同意节点不可跳过」的服务端强制点：问答与测评等核心功能
+    入口统一调用本函数，未同意直接 1301，避免「不落库、不进入」被绕过。
+
+    Args:
+        db: 数据库会话。
+        user_id: 用户主键。
+
+    Returns:
+        None。
+
+    Raises:
+        ApiError: 1301 请先同意用户协议与免责声明（HTTP 403）。
+    """
+    if not has_active_consent(db, user_id, BASE_CONSENT_TYPE):
+        raise_err(ERR_BASE_CONSENT)
 
 
 class AgreeBody(BaseModel):

@@ -53,6 +53,31 @@ EMBED_DIM = 512
 W_COSINE = 0.6
 W_KEYWORD = 0.4
 
+# 相关性下限（缺陷 D7）：混合分低于该阈值视为「未命中」。
+# 背景：原实现只过滤 score == 0，任何存在极少 3-gram/关键词重叠的条目都会
+# 被当作命中返回（mock 向量下「误食布洛芬」也曾召回「幼儿睡眠引导」等
+# 语义无关条目），并使 kb_hit=True、「专业咨询提示」永不触发。
+# 默认 0.10：实测正常命中约 0.12-0.35，噪声召回约 0-0.03；生产真实 embedding
+# 下可通过配置 RETRIEVAL_MIN_RELEVANCE 直接调参（无需改代码/重构建）。
+DEFAULT_MIN_RELEVANCE = 0.10
+
+
+def min_relevance() -> float:
+    """读取相关性下限（配置优先，异常回退默认值）。
+
+    Returns:
+        0-1 之间的阈值；配置非法时返回 DEFAULT_MIN_RELEVANCE。
+    """
+    try:
+        from ..core.config import get_settings
+
+        value = float(get_settings().retrieval_min_relevance)
+    except Exception:  # noqa: BLE001 — 配置缺失/非法回退默认
+        return DEFAULT_MIN_RELEVANCE
+    if value < 0.0:
+        return DEFAULT_MIN_RELEVANCE
+    return value
+
 
 def tokenize(text: str) -> set:
     """问题分词：提取英文/数字单词与中文连续片段的 2-gram。
@@ -319,9 +344,10 @@ class Retriever:
             cos = cos_map.get(entry.kb_id, 0.0)
             score = W_COSINE * cos + W_KEYWORD * _keyword_score(entry, tokens)
             scored.append((score, entry))
-        # 与降级路径同语义：有 token 时过滤零分条目
+        # 与降级路径同语义：有 token 时按相关性下限过滤（D7）
         if tokens:
-            scored = [s for s in scored if s[0] > 0]
+            threshold = min_relevance()
+            scored = [s for s in scored if s[0] >= threshold]
         scored.sort(key=lambda s: (-s[0], s[1].id))
         return [_entry_doc(entry) for _, entry in scored[:TOP_K]]
 
@@ -365,9 +391,11 @@ class Retriever:
             if species and entry.species and entry.species != species:
                 continue
             scored.append((_score_entry(entry, tokens, question_vec), entry))
-        # 有 token 时过滤零分条目；无 token 时全部候选按余弦通道参与排序
+        # 有 token 时按相关性下限过滤（D7：拦掉「几乎无重叠」的噪声召回）；
+        # 无 token 时全部候选按余弦通道参与排序
         if tokens:
-            scored = [s for s in scored if s[0] > 0]
+            threshold = min_relevance()
+            scored = [s for s in scored if s[0] >= threshold]
         # 粗筛 top8（分数降序，同分按主键稳定排序）
         scored.sort(key=lambda s: (-s[0], s[1].id))
         candidates = scored[:CANDIDATE_SIZE]

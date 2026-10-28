@@ -92,7 +92,14 @@ os.environ["WX_SECRET"] = ""
 # 测试进程隔离档案媒体目录：显式置位 UPLOAD_DIR 指向临时目录（环境变量
 # 优先级高于 .env 文件），保证媒体用例的上传/删除文件不落开发目录
 # backend/data/uploads；app.main 在导入期即挂载 /media 静态目录，故此处置位。
-os.environ["UPLOAD_DIR"] = tempfile.mkdtemp(prefix="jiaban-uploads-")
+# 沙箱/CI 适配：若外部已显式传入 JIABAN_TEST_UPLOAD_DIR（例如受限环境下
+# mkdtemp 生成的目录不可写），优先使用该目录，避免用例因环境级权限失败。
+_explicit_upload_dir = os.environ.get("JIABAN_TEST_UPLOAD_DIR", "").strip()
+if _explicit_upload_dir:
+    Path(_explicit_upload_dir).mkdir(parents=True, exist_ok=True)
+    os.environ["UPLOAD_DIR"] = _explicit_upload_dir
+else:
+    os.environ["UPLOAD_DIR"] = tempfile.mkdtemp(prefix="jiaban-uploads-")
 
 import pytest  # noqa: E402
 from sqlalchemy import create_engine, text  # noqa: E402
@@ -390,27 +397,32 @@ def client(test_database):
 def user_token(client):
     """C 端用户登录夹具工厂：dev-login 后返回 (headers, user_uid)。
 
+    默认同时完成「基础同意」（D2 修复：问答/测评入口已强制 1301 门禁，
+    绝大多数用例需要已同意的基础态）；断言未同意行为的用例传
+    agree=False 获取未同意用户。
+
     Args:
         client: TestClient 夹具。
 
     Returns:
-        工厂函数 _login(device_id)；返回 (鉴权 headers dict, user_uid str)。
+        工厂函数 _login(device_id, agree=True)；返回 (鉴权 headers dict, user_uid str)。
 
     Raises:
-        AssertionError: 登录响应非 200 或 code 非 0。
+        AssertionError: 登录/同意响应非 200 或 code 非 0。
     """
 
-    def _login(device_id: str = "dev-itest-1"):
-        """执行 dev-login。
+    def _login(device_id: str = "dev-itest-1", agree: bool = True):
+        """执行 dev-login（可选签署基础同意）。
 
         Args:
             device_id: 设备唯一标识。
+            agree: 是否顺带签署基础同意（base）。
 
         Returns:
             (headers, user_uid) 二元组。
 
         Raises:
-            AssertionError: 登录失败。
+            AssertionError: 登录或同意失败。
         """
         resp = client.post("/api/v1/auth/dev-login", json={"device_id": device_id})
         assert resp.status_code == 200, resp.text
@@ -418,6 +430,14 @@ def user_token(client):
         assert body["code"] == 0, body
         data = body["data"]
         headers = {"Authorization": f"Bearer {data['access_token']}"}
+        if agree:
+            consent = client.post(
+                "/api/v1/consent/agree",
+                json={"consent_type": "base"},
+                headers=headers,
+            )
+            assert consent.status_code == 200, consent.text
+            assert consent.json()["code"] == 0, consent.text
         return headers, data["user_uid"]
 
     return _login
@@ -539,4 +559,5 @@ def db_query_user_id(user_uid: str):
 
 
 # 保证导入面完整（供 pytest fixture 发现；ALL_MODELS 用于断言表数量）
-assert len(ALL_MODELS) == 37
+# 37 张 V3.0 基线表 + 11 张 V3.1 增量表（PRD V3.1 §6.1）= 48
+assert len(ALL_MODELS) == 48

@@ -107,7 +107,7 @@ class CacheStore:
         """以整数读取计数键。
 
         Args:
-            key: 计数键。
+            key: 缓存键。
 
         Returns:
             整数值；键不存在或非数字返回 0。
@@ -117,6 +117,26 @@ class CacheStore:
             return int(val) if val is not None else 0
         except ValueError:
             return 0
+
+    def set_nx(self, key: str, value: str, ttl_seconds: Optional[int] = None) -> bool:
+        """仅当键不存在时写入（原子占位，用于并发互斥）。
+
+        Args:
+            key: 缓存键。
+            value: 字符串值。
+            ttl_seconds: 过期秒数；None 表示永不过期。
+
+        Returns:
+            True 表示写入成功（取得占位）；False 表示键已存在。
+        """
+        with self._lock:
+            if self._alive(key):
+                return False
+            self._data[key] = value
+            self._expire_at[key] = (
+                time.time() + ttl_seconds if ttl_seconds else None
+            )
+            return True
 
 
 class RedisCacheStore(CacheStore):
@@ -191,7 +211,7 @@ class RedisCacheStore(CacheStore):
         """以整数读取计数键。
 
         Args:
-            key: 计数键。
+            key: 缓存键。
 
         Returns:
             整数值；键不存在返回 0。
@@ -201,6 +221,19 @@ class RedisCacheStore(CacheStore):
             return int(val) if val is not None else 0
         except (ValueError, TypeError):
             return 0
+
+    def set_nx(self, key: str, value: str, ttl_seconds: Optional[int] = None) -> bool:
+        """Redis SET NX 原子占位（并发互斥）。
+
+        Args:
+            key: 缓存键。
+            value: 字符串值。
+            ttl_seconds: 过期秒数；None 表示永不过期。
+
+        Returns:
+            True 表示写入成功（取得占位）；False 表示键已存在。
+        """
+        return bool(self._client.set(key, value, ex=ttl_seconds, nx=True))
 
 
 # Redis 回退原因（进程级记录：避免每次请求重试连接）

@@ -108,6 +108,52 @@ class TestConcurrentActiveStream:
         finally:
             cache.delete(active_key)
 
+    def test_second_stream_rejected_while_active(self, client, user_token):
+        """同一会话的活跃流进行中再 POST /stream → 409/1203（D-15）。
+
+        实现口径：先创建会话（此时活跃键为空），再直接占用 ``qa:active:{user_id}``
+        模拟首流尚未结束，随后调用流式端点。若门禁失效，端点会返回 200 并
+        重复执行编排；断言必须为 409/1203。
+
+        Args:
+            client: TestClient 夹具。
+            user_token: 登录夹具。
+
+        Raises:
+            AssertionError: 流式入口未拦截并发请求。
+        """
+        headers, user_uid = user_token()
+        client.post(f"{API}/consent/agree", json={"consent_type": "base"}, headers=headers)
+        created = client.post(
+            f"{API}/qa/sessions",
+            json={
+                "entry": "child",
+                "question": SAFE_QUESTION,
+                "client_request_id": "conc-stream-gate-1",
+            },
+            headers=headers,
+        )
+        assert created.status_code == 200, created.text
+        session_uid = created.json()["data"]["session_uid"]
+
+        user_id = sys.modules["conftest"].db_query_user_id(user_uid)
+        active_key = f"qa:active:{user_id}"
+        cache.set(
+            active_key,
+            json.dumps({"session_uid": session_uid, "cancel_token": "tok"}),
+            ttl_seconds=60,
+        )
+        try:
+            resp = client.post(
+                f"{API}/qa/sessions/{session_uid}/stream", headers=headers
+            )
+            assert resp.status_code == 409, resp.text
+            body = resp.json()
+            assert body["code"] == 1203
+            assert body.get("error", {}).get("retryable") is True
+        finally:
+            cache.delete(active_key)
+
 
 # ---------------------------------------------------------------------------
 # 并发乐观锁：同 version 双写 → 恰一个成功

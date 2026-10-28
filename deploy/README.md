@@ -1,9 +1,9 @@
-# 小光景 Docker 部署指南
+# Babe宝伴 Docker 部署指南
 
 本目录包含一套开箱即用的容器化部署交付物：PostgreSQL 16 + FastAPI 后端 + nginx 前端，
 一条 `docker compose up -d` 即可拉起全栈。
 
-> **说明（2026-10-13）**：品牌名由「家伴」变更为「**小光景**」。数据库名、容器名、JWT 签发者、备份文件名等**内部标识沿用历史代号 `jiaban`**（既有数据卷与凭据依赖，不改动）；仅对外的界面与文档文案使用「小光景」。
+> **说明**：对外界面与文档文案统一使用「**Babe宝伴**」。数据库名、容器名、JWT 签发者、备份文件名等**内部标识沿用 `jiaban`**（既有数据卷与凭据依赖，不改动）。
 
 ## 文件清单
 
@@ -306,9 +306,11 @@ compose 部署时 backend 已自动注入 `REDIS_URL` 指向内置 redis 服务�
 ## 与本地启停脚本（scripts/start.ps1）的关系
 
 - `scripts/start.ps1 / stop.ps1 / status.ps1`：**本地开发**用，直接在本机跑
-  PostgreSQL + uvicorn + vite dev server，支持热重载，读 backend/.env。
+  PostgreSQL + uvicorn + 两端 vite dev server，支持热重载，读 backend/.env。
+  端口：后端 8000、用户端 H5 **5174**（`/app/`）、后台管理端 **5175**（`/admin/`）；
+  可用 `-SkipClient` / `-SkipAdmin` 只起其中一端。
 - `deploy/docker-compose.yml`：**部署交付**用，容器化运行，读 deploy/.env。
-- 两者独立、可并存；默认均占用 8000/5173 或 80 端口，请勿同时启动同一端口。
+- 两者独立、可并存；默认分别占用 8000/5174/5175 或 80 端口，请勿同时启动同一端口。
 
 ## 本地验证容器（生产形态终验，2026-10-12）
 

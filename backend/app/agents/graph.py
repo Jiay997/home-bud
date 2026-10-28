@@ -2,8 +2,11 @@
 """LangGraph 多智能体编排图定义。
 
 图结构（StateGraph + TypedDict QAState）：
+
     START → risk_scan ──blocked──→ END
                 │ok
+                ▼
+             triage（RQ-06 分级决策：红/黄/绿定档，不改写正文）
                 ▼
           intent_route → retrieve ──fan-out──→ {child_agent, pet_agent,
                                                 safety_agent}（并行）
@@ -13,6 +16,8 @@
 
 - agent_outputs / node_meta 用 Annotated reducer 合并，保证并行节点
   写入不互相覆盖；
+- triage 节点位于「风险放行后、正文生成前」（PRD V3.1 §5.1 三态路由），
+  🔴 档仍产出科普正文（观察项 + 就医建议），F8 硬类别则一个字不生成；
 - 提供模块级编译缓存与 run_qa_graph 同步 invoke 入口。
 """
 from typing import Annotated, Any, Dict, List, Optional
@@ -31,6 +36,7 @@ from .nodes import (
     risk_scan_node,
     route_after_risk,
     safety_agent_node,
+    triage_node,
 )
 
 
@@ -68,6 +74,10 @@ class QAState(TypedDict, total=False):
         member_status: 会员状态（门控）。
         db: 数据库会话（运行上下文，非序列化）。
         session: QaSession ORM 实例（运行上下文）。
+        triage: 分级决策结果（RQ-06；None 表示未命中分级规则）。
+        triage_pre_decided: SSE 生成器已预判档位（缓存路径避免重复判定）。
+        child_profile / pet_profile: 会话绑定档案（分级判定取月龄 / 物种）。
+        input_mode: 输入形态 text / voice / photo（RQ-05 预留）。
     """
 
     request_id: str
@@ -103,6 +113,13 @@ class QAState(TypedDict, total=False):
     member_status: str
     db: Any
     session: Any
+    triage: Optional[dict]
+    triage_pre_decided: bool
+    child_profile: Any
+    pet_profile: Any
+    input_mode: str
+    agent_weights: Dict[str, float]
+    weight_version: int
 
 
 def build_graph():
@@ -113,6 +130,7 @@ def build_graph():
     """
     g = StateGraph(QAState)
     g.add_node("risk_scan", risk_scan_node)
+    g.add_node("triage", triage_node)
     g.add_node("intent_route", intent_route_node)
     g.add_node("retrieve", retrieve_node)
     g.add_node("child_agent", child_agent_node)
@@ -122,10 +140,11 @@ def build_graph():
     g.add_node("output_filter", output_filter_node)
 
     g.add_edge(START, "risk_scan")
-    # 风险命中：条件边直达 END（不出任何正文）
+    # 风险命中：条件边直达 END（不出任何正文）；放行后先定档再生成
     g.add_conditional_edges(
-        "risk_scan", route_after_risk, {"blocked": END, "ok": "intent_route"}
+        "risk_scan", route_after_risk, {"blocked": END, "ok": "triage"}
     )
+    g.add_edge("triage", "intent_route")
     g.add_edge("intent_route", "retrieve")
     # fan-out：三 Agent 并行——从 retrieve 分别引出三条边，
     # LangGraph 将同一步内的多分支自动并行执行

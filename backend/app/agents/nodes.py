@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """LangGraph 节点实现模块。
 
-节点链：risk_scan → intent_route → retrieve → {child_agent, pet_agent,
-safety_agent 并行} → aggregate → output_filter。
+节点链：risk_scan → triage → intent_route → retrieve → {child_agent,
+pet_agent, safety_agent 并行} → aggregate → output_filter。
+- triage 节点为 V3.1 新增（RQ-06 分级决策：风险放行后、正文生成前定档）；
 - 所有节点均为同步函数，输入/输出为 state 增量 dict；
 - agent_outputs / node_meta 通过 graph.py 中 QAState 的 Annotated reducer
   做字典合并，保证并行 fan-out 写入不互相覆盖；
@@ -17,6 +18,7 @@ from ..core.config import get_settings
 from ..llm.gateway import estimate_mock_tokens, extract_json, get_gateway, mock_latency_ms
 from ..risk.service import RiskService
 from ..services.retriever import Retriever
+from ..triage import engine as triage_engine
 from .prompts import build_agent_messages, build_intent_messages
 
 # 全局检索器（无状态可共享）
@@ -41,6 +43,17 @@ SAFETY_FALLBACK_TEXT = (
 
 # 冲突提示文案
 CONFLICT_NOTE = "育儿与宠物侧建议存在差异，请结合实际谨慎采纳"
+
+# 宠物急症关键词：命中即在宠物分节前置就医提示（不依赖分级规则签署状态）
+PET_EMERGENCY_KEYWORDS = (
+    "巧克力", "葡萄", "洋葱", "木糖醇", "百合", "杀虫剂", "老鼠药",
+    "抽搐", "呼吸困难", "大量出血", "尿闭", "误食", "中毒",
+)
+# 宠物回答强制免责声明（AC-F5-01-2）
+PET_DISCLAIMER = (
+    "本内容为养育科普参考，不构成诊断，不替代执业兽医；"
+    "如症状持续或加重，请尽快线下就医。"
+)
 
 
 def _mock_markdown_advice(text: str) -> str:
@@ -197,7 +210,7 @@ def risk_scan_node(state: dict) -> dict:
 
 
 def route_after_risk(state: dict) -> str:
-    """risk_scan 条件边路由：blocked 直达 END，否则进入意图路由。
+    """risk_scan 条件边路由：blocked 直达 END，否则进入分级决策。
 
     Args:
         state: 当前图状态。
@@ -206,6 +219,66 @@ def route_after_risk(state: dict) -> str:
         "blocked" 或 "ok"。
     """
     return "blocked" if state.get("status") == "blocked" else "ok"
+
+
+# ----------------------------------------------------------------------
+# 节点：分级决策（RQ-06「先拦、再分档、后回答」的分档层）
+# ----------------------------------------------------------------------
+def triage_node(state: dict) -> dict:
+    """triage 节点：风险放行后由规则引擎定档（红 / 黄 / 绿）。
+
+    位置约束（PRD V3.1 §5.1）：风险拦截优先级最高，命中即终态；
+    分级判定在风险放行后、正文生成前执行。🔴 档**不等于** F8 拦截——
+    🔴 档仍有科普正文（观察项与就医建议），F8 硬类别则一个字不生成。
+
+    判定由 `triage.engine`（毫秒级规则引擎）完成，模型不得改写档位。
+    规则引擎异常时输出「分级服务暂不可用」态，**不得静默降级为纯模型回答**。
+
+    Args:
+        state: 当前图状态（含 question/db/session/triage_pre_decided）。
+
+    Returns:
+        {"triage": 档位对象或 None, "node_meta": {"triage": {...}}}。
+    """
+    started = time.monotonic()
+    # SSE 生成器可能已预判（缓存命中路径同样需要档位）：直接沿用，避免重复判定
+    if state.get("triage_pre_decided"):
+        triage = state.get("triage")
+        return {
+            "triage": triage,
+            "node_meta": {
+                "triage": {
+                    "status": "ok",
+                    "latency_ms": int((time.monotonic() - started) * 1000),
+                    "level": (triage or {}).get("level"),
+                    "scene": (triage or {}).get("scene"),
+                    "source": "pre_decided",
+                }
+            },
+        }
+    triage = triage_engine.decide_for_session(
+        state["db"],
+        state["question"],
+        state.get("session"),
+        child=state.get("child_profile"),
+        pet=state.get("pet_profile"),
+    )
+    status = "ok"
+    if triage and triage.get("unavailable"):
+        status = "unavailable"
+    return {
+        "triage": triage,
+        "node_meta": {
+            "triage": {
+                "status": status,
+                "latency_ms": int((time.monotonic() - started) * 1000),
+                "level": (triage or {}).get("level"),
+                "scene": (triage or {}).get("scene"),
+                "rule_version": (triage or {}).get("rule_version"),
+                "source": (triage or {}).get("snapshot_source"),
+            }
+        },
+    }
 
 
 # ----------------------------------------------------------------------
@@ -448,6 +521,59 @@ def _mock_agent_output(agent_id: str, state: dict, docs: List[dict]) -> dict:
     }
 
 
+def _apply_pet_safety_guard(output: dict, state: dict) -> dict:
+    """宠物输出安全兜底：急症就医提示 + 兽医免责声明。
+
+    Args:
+        output: Agent 规整后的输出（含 blocks）。
+        state: 当前图状态（读取 question 判断急症关键词）。
+
+    Returns:
+        补充安全块后的输出；无 blocks 时原样返回。
+    """
+    if not output or not output.get("blocks"):
+        return output
+    blocks = list(output["blocks"])
+    question = str(state.get("question") or "")
+    is_emergency = any(keyword in question for keyword in PET_EMERGENCY_KEYWORDS)
+    if is_emergency:
+        output["professional_referral"] = True
+        has_emergency_tip = any(
+            "尽快前往宠物医院" in str(block.get("content") or "")
+            for block in blocks
+            if isinstance(block, dict)
+        )
+        if not has_emergency_tip:
+            blocks.insert(
+                0,
+                {
+                    "block_key": "pet_emergency_notice",
+                    "title": "优先就医提示",
+                    "content": (
+                        "**建议尽快前往宠物医院**。误食、中毒等急症不建议在家自行催吐或喂药；"
+                        "请携带包装或拍下成分表，先电话确认接诊再尽快就医。"
+                    ),
+                    "access_tier": "free",
+                },
+            )
+    has_disclaimer = any(
+        "执业兽医" in str(block.get("content") or "")
+        for block in blocks
+        if isinstance(block, dict)
+    )
+    if not has_disclaimer:
+        blocks.append(
+            {
+                "block_key": "pet_disclaimer",
+                "title": "风险提示",
+                "content": PET_DISCLAIMER,
+                "access_tier": "free",
+            }
+        )
+    output["blocks"] = blocks
+    return output
+
+
 def _run_agent_node(state: dict, agent_id: str, domain: Optional[str]) -> dict:
     """领域 Agent 通用实现：调 DeepSeek 生成结构化输出（12s 超时）。
 
@@ -511,6 +637,9 @@ def _run_agent_node(state: dict, agent_id: str, domain: Optional[str]) -> dict:
         except Exception:  # noqa: BLE001 — 单 Agent 失败按域降级，不拖垮整图
             output = {}
             status = "fail"
+    # 宠物分节安全兜底：急症提示与兽医免责声明不依赖模型是否遵守提示词
+    if status == "ok" and agent_id == "pet_agent":
+        output = _apply_pet_safety_guard(output, state)
     latency = int((time.monotonic() - start) * 1000)
     if settings.llm_mock:
         # mock 口径补齐：耗时按节点伪随机但可复现（真实路径保留实测耗时）
@@ -599,6 +728,65 @@ def _degraded_section(section_key: str) -> dict:
     }
 
 
+def build_triage_blocks(state: dict) -> List[dict]:
+    """构造分级决策相关的前置块（档位卡 + 升级红旗 / 禁忌）。
+
+    PRD V3.1 §5.3：信任条之后、正文之前，禁忌 / 升级红旗区置顶；样式权重
+    不低于正文（AC-RQ07-2），因此作为 pinned block 插在首个分节最前。
+
+    Args:
+        state: 当前图状态（含 triage）。
+
+    Returns:
+        block 列表（无分级结果时为空）。
+    """
+    triage = state.get("triage")
+    if not triage or not triage.get("level"):
+        return []
+    blocks: List[dict] = []
+    observations = [str(x) for x in (triage.get("observations") or [])]
+    lines = [f"**{triage.get('icon') or ''} {triage.get('level_label') or ''}**"]
+    if triage.get("basis"):
+        lines.append(f"判定依据：{triage['basis']}")
+    if triage.get("action_hint"):
+        lines.append(str(triage["action_hint"]))
+    if observations:
+        lines.append("")
+        lines.append("**观察项（可逐项勾选）**")
+        lines.extend(f"- [ ] {item}" for item in observations)
+    if triage.get("night_notice"):
+        lines.append("")
+        lines.append(str(triage["night_notice"]))
+    blocks.append(
+        {
+            "block_key": "triage_card",
+            "title": "分级判断",
+            "content": "\n".join(lines),
+            "access_tier": "free",
+            "immutable": False,
+            "pinned": True,
+            "source": "triage_engine",
+        }
+    )
+    redflags = triage_engine.build_contraindication_block(triage)
+    if redflags:
+        blocks.append(redflags)
+    disclaimers = [str(x) for x in (triage.get("disclaimers") or [])]
+    if disclaimers:
+        blocks.append(
+            {
+                "block_key": "triage_disclaimer",
+                "title": "免责与边界",
+                "content": "\n".join(f"- {line}" for line in disclaimers),
+                "access_tier": "free",
+                "immutable": True,
+                "pinned": False,
+                "source": "triage_engine",
+            }
+        )
+    return blocks
+
+
 def aggregate_node(state: dict) -> dict:
     """aggregate 节点：fan-in 聚合，实现降级矩阵与冲突比对（纯模板）。
 
@@ -642,17 +830,19 @@ def aggregate_node(state: dict) -> dict:
 
     # safety 失败：只出静态安全卡（immutable），隐藏 child/pet 全部正文
     if safety.get("status") == "fail":
+        static_blocks = list(build_triage_blocks(state))
+        static_blocks.append(
+            {
+                "block_key": "static_safety",
+                "title": SECTION_TITLES["safety"],
+                "content": SAFETY_FALLBACK_TEXT,
+                "access_tier": "free",
+            }
+        )
         static_card = {
             "section_key": "safety",
             "title": SECTION_TITLES["safety"],
-            "blocks": [
-                {
-                    "block_key": "static_safety",
-                    "title": SECTION_TITLES["safety"],
-                    "content": SAFETY_FALLBACK_TEXT,
-                    "access_tier": "free",
-                }
-            ],
+            "blocks": static_blocks,
             "pinned": True,
             "immutable": True,
             "status": "ok",
@@ -672,17 +862,23 @@ def aggregate_node(state: dict) -> dict:
     safety_section = {
         "section_key": "safety",
         "title": safety.get("title") or SECTION_TITLES["safety"],
-        "blocks": safety.get("blocks", []),
+        # 分级决策（档位卡 + 升级红旗 / 禁忌）作为安全前置块置顶
+        "blocks": build_triage_blocks(state) + list(safety.get("blocks", [])),
         "pinned": True,
         "immutable": False,
         "status": "ok",
     }
     sections["safety"] = safety_section
     render_order.append("safety")
-    for key, output, involved in (
+    # F12.7：非安全分节按配置权重降序展示（安全 pinned 置顶、不参与排序）；
+    # 权重相同或未配置时保持 child → pet 的稳定顺序。
+    weights = state.get("agent_weights") or {}
+    domain_items = [
         ("child", child, child_involved),
         ("pet", pet, pet_involved),
-    ):
+    ]
+    domain_items.sort(key=lambda item: float(weights.get(item[0], 0.5)), reverse=True)
+    for key, output, involved in domain_items:
         if not involved:
             continue
         if output.get("status") == "fail":

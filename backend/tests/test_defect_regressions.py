@@ -36,7 +36,7 @@ SAFE_QUESTION = "两岁孩子晚上睡觉不踏实总翻来覆去怎么办"
 
 # 后台管理页源文件目录（DEF-16 静态守护）
 ADMIN_VIEWS_DIR = (
-    Path(__file__).resolve().parents[2] / "frontend" / "src" / "views" / "admin"
+    Path(__file__).resolve().parents[2] / "admin-web" / "src" / "views" / "admin"
 )
 
 
@@ -803,3 +803,305 @@ class TestQaResumeAndOrchestrationEdges:
             headers=headers,
         )
         assert mismatch.status_code == 422 and mismatch.json()["code"] == 1001
+
+
+# ---------------------------------------------------------------------------
+# D1（2026-10-19 全功能模拟测试报告·致命）：风险控制服务覆盖率与失效兜底
+# ---------------------------------------------------------------------------
+# 报告复现句：药名+剂量（已被 medicine_dosage 正则覆盖）/ 急症口语短句 /
+# 词库 block 词。急症短句原先一二级都不命中（词库只有「高烧惊厥」等复合短语，
+# mock 语义恒 0.1），故以「宝宝突然抽搐了怎么办」作为本组回归句。
+ACUTE_QUESTION = "宝宝突然抽搐了怎么办"
+MEDICINE_QUESTION = "孩子误食了布洛芬，该给他吃多少剂量"
+ABUSE_QUESTION = "孩子被虐待儿童怎么办"
+
+
+def _risk_event_category(event_no: str):
+    """按事件号查询 risk_event 的风险类别码。
+
+    Args:
+        event_no: 风险事件号（blocked 帧下发）。
+
+    Returns:
+        category_code 字符串（库内不存在时返回 None）。
+    """
+    from app.db import get_session_factory
+    from app.models import RiskEvent
+
+    db = get_session_factory()()
+    try:
+        row = (
+            db.query(RiskEvent).filter(RiskEvent.event_no == event_no).first()
+        )
+        return row.category_code if row is not None else None
+    finally:
+        db.close()
+
+
+class TestD1RiskCoverage:
+    """高风险输入必须阻断：急症口语短句 / 药名剂量 / 词库 block 词。"""
+
+    @pytest.mark.parametrize(
+        "question,allowed_categories",
+        [
+            (ACUTE_QUESTION, {"high_fever"}),
+            # 药名+剂量：DB 配置为 {pattern, action} 时类别取 action（历史存法），
+            # 新播种库取 category_code=medicine_dosage，两种存法都必须阻断
+            (MEDICINE_QUESTION, {"medicine_dosage", "block_or_rewrite"}),
+            (ABUSE_QUESTION, {"child_abuse"}),
+        ],
+    )
+    def test_high_risk_questions_blocked_without_body(
+        self, client, user_token, question, allowed_categories
+    ):
+        """命中即阻断：无 section/completed 帧、正文为空、不计提问次数。"""
+        tag = sorted(allowed_categories)[0]
+        headers, _ = user_token(f"reg-risk-{tag}")
+        data = _create_qa_session(
+            client, headers, question, f"reg-risk-{tag}-1"
+        )
+        frames = _run_stream(client, headers, data["session_uid"])
+        events = [e for e, _ in frames]
+
+        assert events[0] == "started", events
+        assert "blocked" in events, events
+        # 阻断即返：不产出任何正文/完成帧（G-4「命中后正文为空率 100%」）
+        assert "section_delta" not in events, events
+        assert "section_done" not in events, events
+        assert "completed" not in events, events
+
+        blocked = frames[events.index("blocked")][1]
+        assert blocked["risk_event_no"], blocked
+        assert blocked["reason"], blocked
+        assert isinstance(blocked["channels"], list)
+
+        # 命中类别落库可查（后台高危事件按类别分派处置）
+        event_category = _risk_event_category(blocked["risk_event_no"])
+        assert event_category in allowed_categories, (event_category, allowed_categories)
+
+        # 不计次：额度用量保持 0
+        quota = client.get(f"{API}/billing/quota", headers=headers)
+        assert quota.status_code == 200, quota.text
+        assert quota.json()["data"]["used"] == 0, quota.text
+
+        # 会话落库为 blocked（后台高危事件可追溯）
+        detail = client.get(f"{API}/qa/sessions/{data['session_uid']}", headers=headers)
+        assert detail.status_code == 200, detail.text
+        assert detail.json()["data"]["status"] == "blocked"
+        assert detail.json()["data"]["sections"] == []
+
+
+class TestD1RiskFailClosed:
+    """风险链路失效时按命中保守处理（PRD：服务不可用按命中处理）。"""
+
+    def test_snapshot_degraded_treated_as_blocked(self, client, user_token, monkeypatch):
+        """词库快照不可信（词条整体解密失败）→ 保守拦截，不放行正文。"""
+        from app.risk import service as risk_service
+        from app.risk.engine import LexiconSnapshot
+
+        degraded = LexiconSnapshot(
+            terms=[],
+            patterns={},
+            term_rows=20,
+            term_decrypt_failed=20,
+            degraded_reason="词库快照不可用：20 条有效词条全部解密失败",
+        )
+        monkeypatch.setattr(
+            risk_service.RiskService, "load_snapshot", staticmethod(lambda *a, **k: degraded)
+        )
+
+        headers, _ = user_token("reg-risk-degraded")
+        data = _create_qa_session(
+            client, headers, SAFE_QUESTION, "reg-risk-degraded-1"
+        )
+        frames = _run_stream(client, headers, data["session_uid"])
+        events = [e for e, _ in frames]
+
+        assert "blocked" in events, events
+        assert "section_done" not in events, events
+        assert "completed" not in events, events
+        blocked = frames[events.index("blocked")][1]
+        assert "不可用" in blocked["reason"], blocked
+        # 渠道卡不得为空：拦截必须伴随可执行的求助入口
+        assert blocked["channels"], blocked
+
+    def test_snapshot_load_error_treated_as_blocked(self, client, user_token, monkeypatch):
+        """词库快照装配异常 → 保守拦截（不因异常放行正文）。"""
+        from app.risk import service as risk_service
+
+        def _boom(*args, **kwargs):
+            raise RuntimeError("db down")
+
+        monkeypatch.setattr(
+            risk_service.RiskService, "load_snapshot", staticmethod(_boom)
+        )
+
+        headers, _ = user_token("reg-risk-boom")
+        data = _create_qa_session(client, headers, SAFE_QUESTION, "reg-risk-boom-1")
+        frames = _run_stream(client, headers, data["session_uid"])
+        events = [e for e, _ in frames]
+
+        assert "blocked" in events, events
+        assert "completed" not in events, events
+
+    def test_scan_returns_unavailable_result(self, monkeypatch):
+        """单元级：scan 捕获快照异常后返回 blocked/risk_unavailable。"""
+        from app.risk.engine import LexiconSnapshot
+        from app.risk.service import RiskService
+
+        monkeypatch.setattr(
+            RiskService,
+            "load_snapshot",
+            staticmethod(lambda *a, **k: LexiconSnapshot(degraded_reason="x")),
+        )
+        scanned = RiskService.scan(None, SAFE_QUESTION, 1)  # db 不被使用
+        result = scanned["risk_result"]
+        assert result["blocked"] is True
+        assert result["category_code"] == "risk_unavailable"
+        assert result["hard"] is True
+
+
+class TestD1ContextDisambiguation:
+    """语境消歧：宠物急症/误食不被误判为儿童急症（exclude_if 规则）。"""
+
+    def test_pet_context_skips_child_emergency_pattern(self):
+        """宠物语境下急症/误食正则跳过，宠物问题仍走语义链路。"""
+        from app.risk import engine
+
+        pet_snap = engine.LexiconSnapshot(patterns=dict(engine.DEFAULT_PATTERNS))
+        assert engine.match_regex_rules("猫抽搐了怎么办", pet_snap.patterns) is None
+        assert engine.match_regex_rules("小狗误食了老鼠药怎么办", pet_snap.patterns) is None
+
+    def test_child_context_hits_child_emergency_pattern(self):
+        """儿童语境下急症/误食正则命中。"""
+        from app.risk import engine
+
+        snap = engine.LexiconSnapshot(patterns=dict(engine.DEFAULT_PATTERNS))
+        hit = engine.match_regex_rules(ACUTE_QUESTION, snap.patterns)
+        assert hit is not None and hit["category_code"] == "high_fever"
+        hit2 = engine.match_regex_rules("孩子把大人的药片误食了怎么办", snap.patterns)
+        assert hit2 is not None and hit2["category_code"] == "medicine_dosage"
+
+
+# ---------------------------------------------------------------------------
+# D2（2026-10-19 全功能模拟测试报告·致命）：同意节点 N1 服务端强制
+# ---------------------------------------------------------------------------
+class TestD2ConsentGate:
+    """未完成基础同意不得创建会话 / 拉流（1301），且不落库、不计次。"""
+
+    def test_create_session_without_base_consent_1301(self, client, user_token):
+        """未同意基础协议 → POST /qa/sessions 403/1301，且不产生会话。"""
+        headers, _ = user_token("reg-consent-none", agree=False)
+
+        status = client.get(f"{API}/consent/status", headers=headers)
+        assert status.status_code == 200, status.text
+        assert status.json()["data"]["base"]["agreed"] is False
+
+        resp = client.post(
+            f"{API}/qa/sessions",
+            json={
+                "entry": "child",
+                "question": SAFE_QUESTION,
+                "client_request_id": "reg-consent-1",
+            },
+            headers=headers,
+        )
+        assert resp.status_code == 403, resp.text
+        assert resp.json()["code"] == 1301, resp.text
+        assert "同意" in resp.json()["message"]
+
+        # 不落库：历史记录条数为 0
+        history = client.get(f"{API}/history", headers=headers)
+        assert history.status_code == 200, history.text
+        assert history.json()["data"]["total"] == 0, history.text
+
+    def test_stream_withdrawn_consent_1301(self, client, user_token):
+        """创建后撤回基础同意 → 拉流 403/1301（先建后撤不可绕过）。"""
+        headers, _ = user_token("reg-consent-withdraw")
+        data = _create_qa_session(
+            client, headers, SAFE_QUESTION, "reg-consent-withdraw-1"
+        )
+
+        withdraw = client.post(
+            f"{API}/consent/withdraw",
+            json={"consent_type": "base"},
+            headers=headers,
+        )
+        assert withdraw.status_code == 200, withdraw.text
+        assert withdraw.json()["data"]["withdrawn"] is True
+
+        stream = client.post(
+            f"{API}/qa/sessions/{data['session_uid']}/stream", headers=headers
+        )
+        assert stream.status_code == 403, stream.text
+        assert stream.json()["code"] == 1301, stream.text
+
+    def test_agree_then_create_succeeds(self, client, user_token):
+        """同意后同链路放行（门禁不误伤正常用户）。"""
+        headers, _ = user_token("reg-consent-ok", agree=False)
+        agree = client.post(
+            f"{API}/consent/agree", json={"consent_type": "base"}, headers=headers
+        )
+        assert agree.status_code == 200, agree.text
+        data = _create_qa_session(client, headers, SAFE_QUESTION, "reg-consent-ok-1")
+        assert data["status"] == "pending", data
+
+
+# ---------------------------------------------------------------------------
+# D7（2026-10-19 全功能模拟测试报告·轻微）：检索低相关召回抑制
+# ---------------------------------------------------------------------------
+class TestD7RetrievalRelevance:
+    """混合分低于相关性下限的条目不得作为命中返回。"""
+
+    def _retrieve(self, question, domain, age_band=None, species=None):
+        """直接调用检索器（不经过 SSE），返回 retrieve 结果。
+
+        Args:
+            question: 问题原文。
+            domain: 领域（child/pet）。
+            age_band: 年龄段过滤。
+            species: 宠物物种过滤。
+
+        Returns:
+            {"hit": bool, "docs": [...]}。
+        """
+        from app.db import get_session_factory
+        from app.services.retriever import Retriever
+
+        db = get_session_factory()()
+        try:
+            return Retriever().retrieve(
+                db, question, domain, age_band=age_band, species=species
+            )
+        finally:
+            db.close()
+
+    def test_threshold_configured_positive(self):
+        """相关性下限为正值（0 等于不过滤）。"""
+        from app.services.retriever import min_relevance
+
+        assert 0 < min_relevance() <= 0.5
+
+    def test_irrelevant_question_returns_no_docs(self):
+        """语义无关问题：不返回知识条目（hit=False → 输出专业咨询提示）。"""
+        result = self._retrieve("今天股票大盘走势如何", "child")
+        assert result["hit"] is False
+        assert result["docs"] == []
+
+    def test_relevant_question_still_hits(self):
+        """相关度正常的问题仍命中（阈值不误伤真实召回）。"""
+        result = self._retrieve("6个月宝宝辅食添加顺序", "child", age_band="6-12m")
+        assert result["hit"] is True
+        assert result["docs"][0]["kb_id"] == "kb_child_feed_01"
+
+    def test_pet_behavior_question_hits_pet_entry(self):
+        """宠物行为问题命中对应条目，且不返回低分噪声条目。
+
+        科普全书的猫行为条目（kb_science_pet_03）与既有条目高度相关，
+        允许作为第二条命中；其余无关条目仍不得进入结果。
+        """
+        result = self._retrieve("猫哈气是什么意思", "pet", species="cat")
+        assert result["hit"] is True
+        ids = [doc["kb_id"] for doc in result["docs"]]
+        assert ids[0] == "kb_pet_cat_behavior_01"
+        assert set(ids) <= {"kb_pet_cat_behavior_01", "kb_science_pet_03"}, ids

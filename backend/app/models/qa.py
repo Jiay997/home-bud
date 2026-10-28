@@ -45,6 +45,19 @@ class QaSession(Base, OrgIdMixin):
     first_packet_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
     total_latency_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
     is_draft: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # --- V3.1 增量列（PRD §5.3.3 / §6.1）---
+    # 输入形态预留（RQ-05 AC-RQ05-7）：text / voice / photo
+    input_mode: Mapped[str] = mapped_column(
+        String(8), nullable=False, default="text", server_default="text"
+    )
+    # 图片元数据摘要（张数 / 场景枚举 / 送检结果 / 删除时间；无 URL、无原图）
+    photo_meta: Mapped[object | None] = mapped_column(JSONB, nullable=True)
+    # 分级决策结果快照（RQ-06 §6.3 契约扩展；不参与权重排序）
+    triage: Mapped[object | None] = mapped_column(JSONB, nullable=True)
+    # 档位扁平列（历史/后台筛选用；None 表示未命中分级规则）
+    triage_level: Mapped[str | None] = mapped_column(String(8), nullable=True)
+    # 触达归因（RQ-08 AC-RQ08-8）：提醒打开 → 提问的 trace 透传
+    reminder_trace_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     created_at: Mapped[object] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
@@ -117,7 +130,13 @@ class AgentCallLog(Base):
 
 
 class CrisisChannel(Base):
-    """危机干预渠道清单表（表 10）：号码未确认前必须留空，不得编造。"""
+    """危机干预渠道清单表（表 10）：号码未确认前必须留空，不得编造。
+
+    V3.1 RQ-03 字段扩展（PRD §3.3.3 数据结构）：号码持久化点唯一（DR-26），
+    超期未复核条目自动降为 `pending_review` 且前端不再展示号码
+    （AC-RQ03-4）。`category_scope` 保留为「适用高危类别映射」
+    （= PRD `applicable_categories[]`）。
+    """
 
     __tablename__ = "crisis_channel"
 
@@ -131,6 +150,21 @@ class CrisisChannel(Base):
     next_review_due_at: Mapped[object | None] = mapped_column(DateTime(timezone=True), nullable=True)
     status: Mapped[str] = mapped_column(
         String(16), nullable=False, default="placeholder", server_default="placeholder"
+    )
+    # --- V3.1 增量列（RQ-03 §3.3.3）---
+    # 渠道类目：psychological / pediatric_emergency / pet_emergency /
+    # police / minor_protection
+    category: Mapped[str] = mapped_column(
+        String(32), nullable=False, default="psychological", server_default="psychological"
+    )
+    region: Mapped[str] = mapped_column(String(32), nullable=False, default="全国", server_default="全国")
+    service_hours: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    verified_by: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    sort_weight: Mapped[int] = mapped_column(Integer, nullable=False, default=100, server_default="100")
+
+    __table_args__ = (
+        Index("idx_channel_category_status", "category", "status"),
+        {"comment": "危机渠道清单：号码唯一存放点（DR-26），含历史版本"},
     )
 
 

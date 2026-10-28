@@ -22,8 +22,22 @@ from .compliance import (
     Feedback,
 )
 from .admin import ConfigVersion, IdempotencyKey, AdminUser, AdminAuditLog, JobRunLog
+from .v31 import (
+    ChannelReviewRecord,
+    Collaborator,
+    NotificationPref,
+    PhotoAsset,
+    ReferralLog,
+    ReminderTask,
+    RenderRecord,
+    ToolItem,
+    ToolRunRecord,
+    TopicPack,
+    TriageRule,
+)
 
-# 全部 37 张表模型清单（供 init_db 校验数量）
+# 全部 48 张表模型清单（供 init_db 校验数量）
+# 37 张 V3.0 基线表 + 11 张 V3.1 增量表（PRD V3.1 §6.1）
 ALL_MODELS = [
     AppUser, ConsentRecord, TextVersion, CurrentContext,
     ChildProfile, PetProfile, ProfilePhoto,
@@ -36,6 +50,10 @@ ALL_MODELS = [
     RiskEvent, RightsRequest, ContentReport, ContentTraceTask,
     SamplingCheck, ContentAuditRecord, Feedback,
     ConfigVersion, IdempotencyKey, AdminUser, AdminAuditLog, JobRunLog,
+    # V3.1 增量（RQ-03/RQ-05/RQ-06/RQ-08/RQ-09/RQ-10/RQ-12/RQ-13/RQ-14）
+    ChannelReviewRecord, ReminderTask, NotificationPref, Collaborator,
+    RenderRecord, ReferralLog, TriageRule, TopicPack, ToolItem, ToolRunRecord,
+    PhotoAsset,
 ]
 
 __all__ = [
@@ -51,5 +69,8 @@ __all__ = [
     "RiskEvent", "RightsRequest", "ContentReport", "ContentTraceTask",
     "SamplingCheck", "ContentAuditRecord", "Feedback",
     "ConfigVersion", "IdempotencyKey", "AdminUser", "AdminAuditLog", "JobRunLog",
+    "ChannelReviewRecord", "ReminderTask", "NotificationPref", "Collaborator",
+    "RenderRecord", "ReferralLog", "TriageRule", "TopicPack", "ToolItem",
+    "ToolRunRecord", "PhotoAsset",
     "ALL_MODELS",
 ]

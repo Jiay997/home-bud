@@ -174,7 +174,9 @@ class TestChildProfile:
 
     def test_base_consent_agree_idempotent(self, client, user_token):
         """重复同意同版本 base 协议幂等返回（不重复落库）。"""
-        headers, _ = user_token()
+        # 用未同意用户：user_token 默认已签署 base（问答 1301 门禁所需），
+        # 本用例要断言「首次同意 idempotent=False」，故显式取未同意态
+        headers, _ = user_token("dev-itest-consent-idem", agree=False)
         r1 = client.post(
             f"{API}/consent/agree", json={"consent_type": "base"}, headers=headers
         ).json()

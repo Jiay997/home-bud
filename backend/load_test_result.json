@@ -1,13 +1,13 @@
 {
-  "workers": 50,
-  "requests_per_worker": 4,
-  "total": 200,
-  "success": 200,
+  "workers": 4,
+  "requests_per_worker": 3,
+  "total": 12,
+  "success": 12,
   "error_rate": 0.0,
-  "latency_p50_ms": 828,
-  "latency_p95_ms": 1207,
-  "first_packet_p50_ms": 667,
-  "first_packet_p95_ms": 1032,
-  "throughput_rps": 19.8,
-  "wall_seconds": 10.1
+  "latency_p50_ms": 668,
+  "latency_p95_ms": 817,
+  "first_packet_p50_ms": 326,
+  "first_packet_p95_ms": 369,
+  "throughput_rps": 3.4,
+  "wall_seconds": 3.5
 }

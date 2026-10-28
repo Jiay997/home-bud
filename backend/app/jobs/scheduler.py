@@ -19,6 +19,14 @@
   唯一约束），新告警留痕成功且配置了 alert_webhook_url 时推送 webhook 通知。
 
 任务内部自建数据库会话；任何异常仅记录日志，不中断调度循环。
+
+V3.1 追加任务：
+- channel_review_sweep：每 24 小时，复核到期未复核的渠道降级为 pending_review
+  （RQ-03 AC-RQ03-4，前端自此不再展示号码）；
+- photo_purge：每 30 分钟，删除 24h 到期的图片原图并写删除日志
+  （RQ-05 DR-27 / AC-RQ05-3）；
+- reminder_sweep：每 1 小时，生成里程碑 / 周报 / 每周一问任务并按频控发送
+  （RQ-08 NFR-A6 / DR-30，超频顺延、失败转站内补达）。
 """
 import logging
 from datetime import datetime, timedelta, timezone
@@ -463,6 +471,85 @@ def _run_alert_watch() -> None:
         logger.exception("alert_watch job failed")
 
 
+# ==================== V3.1 增量任务（RQ-03 / RQ-05 / RQ-08） ====================
+
+
+def _run_channel_review_sweep() -> None:
+    """渠道复核到期降级（每 24 小时）：超期未复核条目转 pending_review。
+
+    AC-RQ03-4：到期未复核的条目前端不再展示号码，只展示名称与「信息更新中」。
+
+    Raises:
+        无（异常吞掉并记录堆栈，不中断调度）。
+    """
+    try:
+        from ..services import channel_service
+
+        session = get_session_factory()()
+        try:
+            downgraded = channel_service.sweep_expired(session)
+            if downgraded:
+                logger.warning("channel_review_sweep: %d channels downgraded", downgraded)
+        finally:
+            session.close()
+    except Exception:
+        logger.exception("channel_review_sweep job failed")
+
+
+def _run_photo_purge() -> None:
+    """图片原图到期删除（每 30 分钟）：删除 24h 到期原图并写删除日志。
+
+    DR-27 / AC-RQ05-3：删除动作必须可出具执行日志（时间、对象、结果）；
+    原图不进入备份与缓存。
+
+    Raises:
+        无（异常吞掉并记录堆栈，不中断调度）。
+    """
+    try:
+        from ..services import photo_service
+
+        session = get_session_factory()()
+        try:
+            removed = photo_service.purge_expired(session)
+            if removed:
+                logger.info("photo_purge: %d images deleted (24h TTL)", removed)
+        finally:
+            session.close()
+    except Exception:
+        logger.exception("photo_purge job failed")
+
+
+def _run_reminder_sweep() -> None:
+    """触达扫描（每 1 小时）：生成里程碑 / 周报 / 每周一问任务并发送。
+
+    NFR-A6：任务不丢——发送失败重试 1 次后转站内补达；超频任务顺延不丢弃。
+    频控与偏好闸门均由 `reminder_service` 统一裁决（DR-30）。
+
+    Raises:
+        无（异常吞掉并记录堆栈，不中断调度）。
+    """
+    try:
+        from ..services import reminder_service
+
+        session = get_session_factory()()
+        try:
+            created = reminder_service.generate_weekly_tasks(session)
+            stats = reminder_service.run_reminder_sweep(session)
+            if created or stats.get("sent"):
+                logger.info(
+                    "reminder_sweep: weekly_created=%d users=%d sent=%d deferred=%d failed=%d",
+                    created,
+                    stats.get("users", 0),
+                    stats.get("sent", 0),
+                    stats.get("deferred", 0),
+                    stats.get("failed", 0),
+                )
+        finally:
+            session.close()
+    except Exception:
+        logger.exception("reminder_sweep job failed")
+
+
 def start_scheduler() -> None:
     """启动全局调度器并注册周期任务（幂等：重复调用忽略）。
 
@@ -489,10 +576,17 @@ def start_scheduler() -> None:
     _scheduler.add_job(_run_orphan_sweep, "interval", minutes=5, id="orphan_sweep")
     # 告警闭环追加：指标告警值守（每 1 分钟，超阈值留痕 + webhook 通知）
     _scheduler.add_job(_run_alert_watch, "interval", minutes=1, id="alert_watch")
+    # V3.1 追加：渠道复核降级（24h）/ 图片原图删除（30m）/ 触达扫描（1h）
+    _scheduler.add_job(
+        _run_channel_review_sweep, "interval", hours=24, id="channel_review_sweep"
+    )
+    _scheduler.add_job(_run_photo_purge, "interval", minutes=30, id="photo_purge")
+    _scheduler.add_job(_run_reminder_sweep, "interval", hours=1, id="reminder_sweep")
     _scheduler.start()
     logger.info(
-        "scheduler started with 6 jobs: reconcile/6h, draft_cleanup/1h, "
-        "channel_remind/24h, report_render/30m, orphan_sweep/5m, alert_watch/1m"
+        "scheduler started with 9 jobs: reconcile/6h, draft_cleanup/1h, "
+        "channel_remind/24h, report_render/30m, orphan_sweep/5m, alert_watch/1m, "
+        "channel_review_sweep/24h, photo_purge/30m, reminder_sweep/1h"
     )
 
 

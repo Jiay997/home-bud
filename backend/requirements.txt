@@ -1,4 +1,4 @@
-# 小光景后端依赖清单
+# Babe宝伴后端依赖清单
 # Python 3.12+；安装：pip install -r requirements.txt
 
 # --- Web 框架 ---
@@ -24,6 +24,7 @@ langchain-core>=0.3.0
 langchain-openai>=0.2.0
 
 # --- 档案媒体（头像/相册：服务端图片规范化，甲方需求 2026-10-14） ---
+# 同时用于 RQ-01 长图渲染（services/report_image.py：显式标识 + PNG tEXt 隐式标识）
 Pillow>=10
 
 # --- 定时任务 ---

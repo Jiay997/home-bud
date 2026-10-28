@@ -1,5 +1,5 @@
 # =============================================================================
-# 小光景后端镜像 Dockerfile
+# Babe宝伴后端镜像 Dockerfile
 #
 # 构建方式（在仓库根目录执行，context 为仓库根）：
 #   docker build -f deploy/backend.Dockerfile -t jiaban-backend .

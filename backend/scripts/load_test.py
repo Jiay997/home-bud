@@ -126,7 +126,7 @@ def worker(wid: int, base: str, n_req: int, results: "queue.Queue") -> None:
 
 def main() -> None:
     """执行压测并输出统计报告。"""
-    parser = argparse.ArgumentParser(description="小光景 mock 模式压测")
+    parser = argparse.ArgumentParser(description="Babe宝伴 mock 模式压测")
     parser.add_argument("--workers", type=int, default=20)
     parser.add_argument("--requests", type=int, default=50, help="每 worker 问答次数")
     parser.add_argument("--base", type=str, default="http://localhost:8001")

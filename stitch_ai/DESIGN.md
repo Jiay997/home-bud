@@ -113,7 +113,7 @@ spacing:
   space-xxl: 48px
 ---
 
-name: 家伴 · 家庭养育多智能体助手
+name: Babe宝伴｜AI 多智能体，家庭养育科普参考工具
 description: 量具刻度系统。每一次判断都落在一条有刻度的带上，并标出它落在哪一档。
 colors:
   accent: "#0A6B60"

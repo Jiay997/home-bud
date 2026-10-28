@@ -520,6 +520,10 @@ def run_exceptions(client: httpx.Client, base: str, c_ctx: dict) -> None:
     dev = f"e2e-q-{uuid.uuid4().hex[:6]}"
     rq = client.post(f"{base}/api/v1/auth/dev-login", json={"device_id": dev}).json()
     qh = {"Authorization": f"Bearer {rq['data']['access_token']}"}
+    # D2 门禁（1301）：新用户必须先完成基础同意才能进入问答链路，
+    # 否则 6 轮全部返回 1301 而非考察额度耗尽——本用例需先同意。
+    client.post(f"{base}/api/v1/consent/agree",
+                json={"consent_type": "base"}, headers=qh)
     got_1202 = False
     detail = []
     for i in range(6):
@@ -617,8 +621,10 @@ def main() -> None:
     record("ENV01", "健康检查", "GET /api/v1/health", "code=0 且 DB 连通",
            f"db={r.get('data', {}).get('db_connected')}", env_ok)
     record("ENV02", "Swagger 文档", "GET /docs", "200 可渲染", f"docs_ok={docs_ok}", docs_ok)
-    record("ENV03", "OpenAPI 契约", "GET /openapi.json", "11 tags 且端点≥90",
-           f"tags={len(tags)}, endpoints={ep_count}", len(tags) == 11 and ep_count >= 90)
+    # V3.1：正式 tags 12 组、端点数增至 153；门禁口径改为「≥12 tags 且 ≥150 端点」
+    record("ENV03", "OpenAPI 契约", "GET /openapi.json", "≥12 tags 且端点≥150",
+           f"tags={len(tags)}, endpoints={ep_count}",
+           len(tags) >= 12 and ep_count >= 150)
 
     # ENV04：前端调用 × OpenAPI 契约快照校验（离线子进程，前端 ts 与后端路由漂移门禁）
     script_dir = Path(__file__).resolve().parent

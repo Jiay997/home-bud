@@ -219,3 +219,67 @@ def list_channels(
         raise ApiError(*ERR_PARAM)
     channels = RiskService.get_channels(db, category)
     return ok({"channels": channels})
+
+
+class ReferralBody(BaseModel):
+    """就近转介请求体（RQ-04）。
+
+    **精确坐标不落库、不进埋点**：`lat` / `lng` 仅用于本次距离档计算，
+    服务端不持久化、不写日志（DR-28）。
+    """
+
+    scene: str = Field("emergency_block", description="emergency_block / triage_red / pet_redflag")
+    region_city: Optional[str] = Field(None, max_length=32, description="城市（唯一可落库位置字段）")
+    region_district: Optional[str] = Field(None, max_length=32, description="区县")
+    lat: Optional[float] = Field(None, description="纬度（仅本次计算，不落库）")
+    lng: Optional[float] = Field(None, description="经度（仅本次计算，不落库）")
+    session_uid: Optional[str] = Field(None, max_length=64, description="关联会话（归因）")
+
+
+@router.post(
+    "/referral",
+    summary="就近就医转介",
+    description="按场景返回合规机构指引；POI 未接入时降级为城市级急诊指引，不排名不导流",
+)
+def nearby_referral(
+    body: ReferralBody,
+    user: AppUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """就近就医转介（RQ-04 预留实现 / AC-RQ04-2/3/4/5）。
+
+    Args:
+        body: 转介请求体。
+        user: 当前用户。
+        db: 数据库会话。
+
+    Returns:
+        ok({available, items[], notice, fallback_guide, region})。
+
+    Raises:
+        ApiError: 1001 场景参数非法。
+    """
+    from ...services import referral_service
+
+    if body.scene not in referral_service.SCENES:
+        raise ApiError(*ERR_PARAM)
+    session_id = None
+    if body.session_uid:
+        session = (
+            db.query(QaSession)
+            .filter(QaSession.session_uid == body.session_uid, QaSession.user_id == user.id)
+            .first()
+        )
+        session_id = session.id if session is not None else None
+    data = referral_service.nearby(
+        db,
+        scene=body.scene,
+        city=body.region_city,
+        district=body.region_district,
+        lat=body.lat,
+        lng=body.lng,
+        session_id=session_id,
+        user_id=user.id,
+    )
+    db.commit()
+    return ok(data)

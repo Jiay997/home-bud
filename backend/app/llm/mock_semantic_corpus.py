@@ -92,20 +92,10 @@ MOCK_SEMANTIC_CORPUS: List[Dict[str, object]] = [
         "note": "自伤行为（语义表述，词库外）",
     },
     # ---- 急症（high_fever，硬类别 → L1/high） ----
-    {
-        "text": "烧到四十一度全身抽搐",
-        "category": "high_fever",
-        "score": _SCORE_HIGH,
-        "band": "high",
-        "note": "高热急症",
-    },
-    {
-        "text": "突然翻白眼四肢抽动叫不醒",
-        "category": "high_fever",
-        "score": _SCORE_HIGH,
-        "band": "high",
-        "note": "惊厥样急症",
-    },
+    # 说明（D1 修复回归）：原表内「烧到四十一度全身抽搐」「突然翻白眼四肢抽动叫不醒」
+    # 两条已移除——其触发短语含「抽搐/翻白眼/叫不醒」，这些词已纳入一级词库与
+    # acute_emergency_pattern，由一级规则直接拦截（本表约束：语料不与一级词库重叠）。
+    # 急症语义类仍保留「背过气/嘴唇发紫」等一级规则覆盖不到的表述。
     {
         "text": "哭到背过气嘴唇发紫",
         "category": "high_fever",

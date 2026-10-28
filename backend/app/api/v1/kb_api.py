@@ -141,6 +141,7 @@ def _entry_dict(e: KbEntry) -> dict:
         "preconditions": e.preconditions,
         "source_type": e.source_type,
         "source_ref": e.source_ref,
+        "source_level": e.source_level,
         "status": e.status,
         "is_high_risk": e.is_high_risk,
         "version": e.version,
@@ -197,6 +198,9 @@ class KbCreateBody(BaseModel):
     preconditions: str = Field(..., min_length=1, description="适用前提（一票否决项，必填）")
     source_type: str = Field(..., description="来源类型")
     source_ref: str = Field(..., min_length=1, description="来源引用（必填，可溯源）")
+    source_level: Optional[str] = Field(
+        None, description="来源等级（DR-10）：guide / academic / institution / media；缺省按 source_type 推导"
+    )
     age_band: Optional[str] = Field(None, description="年龄段")
     pet_stage: Optional[str] = Field(None, description="宠物生命周期")
     species: Optional[str] = Field(None, description="物种（cat/dog）")
@@ -214,6 +218,7 @@ class KbUpdateBody(BaseModel):
     topic_category: Optional[str] = Field(None, description="主题类目")
     source_type: Optional[str] = Field(None, description="来源类型")
     source_ref: Optional[str] = Field(None, description="来源引用")
+    source_level: Optional[str] = Field(None, description="来源等级 guide/academic/institution/media")
     age_band: Optional[str] = Field(None, description="年龄段")
     pet_stage: Optional[str] = Field(None, description="宠物生命周期")
     species: Optional[str] = Field(None, description="物种")
@@ -354,6 +359,7 @@ def create_kb_entry(
         preconditions=body.preconditions,
         source_type=body.source_type,
         source_ref=body.source_ref,
+        source_level=body.source_level,
         age_band=body.age_band,
         pet_stage=body.pet_stage,
         species=body.species,
@@ -437,6 +443,8 @@ def update_kb_entry(
         entry.source_type = body.source_type
     if body.source_ref is not None:
         entry.source_ref = body.source_ref
+    if body.source_level is not None:
+        entry.source_level = body.source_level
     if body.age_band is not None:
         entry.age_band = body.age_band
     if body.pet_stage is not None:

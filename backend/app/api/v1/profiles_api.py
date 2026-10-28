@@ -264,6 +264,19 @@ def _shanghai_today() -> date:
     return datetime.now(TZ_SHANGHAI).date()
 
 
+def _ensure_birth_not_future(value: date) -> None:
+    """校验出生日期不得晚于今天（AC-F2-01-3）。
+
+    Args:
+        value: 待保存的出生日期。
+
+    Raises:
+        ApiError: 1001 出生日期晚于今天。
+    """
+    if value > _shanghai_today():
+        raise ApiError(code=1001, message="出生日期不能晚于今天", http_status=422)
+
+
 def _media_url(rel_path: Optional[str]) -> Optional[str]:
     """媒体相对路径转对外 URL（静态挂载 /media）。
 
@@ -614,6 +627,8 @@ def create_child(
     _require_child_consent(db, user.id)
     # 数量上限：免费 3 / 会员 10
     _check_profile_quota(db, user, ChildProfile, ChildProfile.deleted_at)
+    # 日期合法：禁止未来出生日期
+    _ensure_birth_not_future(body.birth_date)
 
     today = _shanghai_today()
     age_months = calc_age_months(body.birth_date, today)
@@ -668,6 +683,7 @@ def update_child(
     if body.nickname is not None:
         profile.nickname_enc = encrypt_field(body.nickname)
     if body.birth_date is not None:
+        _ensure_birth_not_future(body.birth_date)
         profile.birth_date_enc = encrypt_field(body.birth_date.isoformat())
     if body.gender is not None:
         profile.gender = body.gender

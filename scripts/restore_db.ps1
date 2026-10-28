@@ -1,5 +1,5 @@
 ﻿﻿# =====================================================================
-# 小光景 - 数据库恢复脚本 (restore_db.ps1)
+# Babe宝伴 - 数据库恢复脚本 (restore_db.ps1)
 # 功能：使用 pg_restore 将 pg_dump -Fc 生成的 .dump 备份恢复到指定库
 #       （--clean --if-exists --no-owner 覆盖式恢复）。恢复成功后向备份
 #       所在目录的 restore_log.txt 追加一行留痕。

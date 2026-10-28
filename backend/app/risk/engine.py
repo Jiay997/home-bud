@@ -30,7 +30,7 @@ SEMANTIC_RISK_PROMPT = (
     "你是家庭养育内容的安全风险分类器。判断用户输入是否涉及以下风险类别，"
     "只输出一个 JSON 对象，不要输出任何其他文字：\n"
     '{"score": <0到1之间的风险分>, "category": <类别代码或null>}\n'
-    "类别代码：child_abuse(虐待儿童)、child_selfharm(儿童自伤)、high_fever(高热惊厥等急症)、"
+    "类别代码：child_abuse(虐待儿童)、child_selfharm(儿童自伤)、high_fever(高热惊厥、窒息、误食、溺水、烫伤等急症)、"
     "animal_bite(动物咬伤抓伤)、depression(产后/儿童抑郁)、pet_poison(宠物中毒)、"
     "pet_bleeding(宠物大出血)。无风险或无法判断时 category 为 null、score 接近 0。"
 )
@@ -49,6 +49,35 @@ DEFAULT_PATTERNS: Dict[str, dict] = {
         "regex": r"(保证|包治|根治|药到病除|百分百有效)",
         "category_code": "efficacy",
     },
+    # 缺陷 D1（2026-10-19 全功能模拟测试报告）：一级词库原先只收「高烧惊厥」
+    # 「热性惊厥」等复合短语，缺「抽搐/窒息/烫伤」等独立急症表述，口语化短句
+    # （如「宝宝突然抽搐了怎么办」）一级不命中；LLM_MOCK=true 时二级语义恒返回
+    # 低分，整条风险链静默放行。此处补齐急症模式兜底，空库/未重新播种的环境
+    # 同样生效（DB 配置存在时按 config_key 覆盖）。
+    # 类别归入 high_fever：PRD/后台口径中 high_fever 即「儿童急症类」，其危机
+    # 渠道卡为「儿科急症就诊」；exclude_if 排除宠物语境，避免把宠物急症误判为
+    # 儿童急症（宠物中毒/出血走 pet_poison / pet_bleeding 语义与词库链路）。
+    "acute_emergency_pattern": {
+        "regex": (
+            r"(抽搐|惊厥|窒息|噎住|噎到|呛奶|呛到|溺水|"
+            r"烫伤|烧伤|呼吸困难|喘不上气|叫不醒|翻白眼|失去意识)"
+        ),
+        "category_code": "high_fever",
+        "exclude_if": r"(狗|犬|猫|宠物|汪|喵)",
+    },
+    # 药物/化学品摄入模式：补齐「药名 + 剂量」正则覆盖不到的摄入表述
+    # （「药片误食」这类无剂量词的问法）。两个方向都要覆盖——「误食…药片」
+    # 与「药片…误食」；宠物语境同样排除，宠物误食由 pet_poison 链路处理。
+    "medicine_ingestion_pattern": {
+        "regex": (
+            r"(误食|误服|吞下|咽下|当糖吃)[^。]{0,12}"
+            r"(药|药片|胶囊|药水|退烧药|布洛芬|对乙酰氨基酚|消毒液|清洁剂|农药)"
+            r"|(药片|胶囊|药水|退烧药|布洛芬|对乙酰氨基酚|消毒液|清洁剂|农药|纽扣电池)"
+            r"[^。]{0,12}(误食|误服|吞下|咽下|吃下去|吃了)"
+        ),
+        "category_code": "medicine_dosage",
+        "exclude_if": r"(狗|犬|猫|宠物|汪|喵)",
+    },
 }
 
 
@@ -63,11 +92,26 @@ class LexiconSnapshot:
         terms: 词条列表 [{"term": 明文, "category_code": 类别, "strategy": 策略}]。
         patterns: 正则配置 {规则键: {"regex": 表达式, "category_code": 类别}}。
         loaded_at: 加载时间戳（单调语义仅作观测）。
+        term_rows: 库内 effective 词条行数（解密前，用于识别「词库整体不可用」）。
+        term_decrypt_failed: 解密失败被跳过的词条数。
+        degraded_reason: 非 None 表示快照不可信（安全依赖失效），
+            风险入口据此按「命中」保守处理（PRD：服务不可用按命中处理）。
     """
 
     terms: List[dict] = field(default_factory=list)
     patterns: Dict[str, dict] = field(default_factory=dict)
     loaded_at: float = 0.0
+    term_rows: int = 0
+    term_decrypt_failed: int = 0
+    degraded_reason: Optional[str] = None
+
+    def usable(self) -> bool:
+        """判断快照是否可用于安全判定。
+
+        Returns:
+            True 表示快照可信；False 表示安全依赖失效，调用方须按命中处理。
+        """
+        return not self.degraded_reason
 
 
 def is_hard_category(category_code: Optional[str]) -> bool:
@@ -111,10 +155,14 @@ def match_lexicon(text: str, terms: List[dict]) -> Optional[dict]:
 def match_regex_rules(text: str, patterns: Dict[str, dict]) -> Optional[dict]:
     """一级规则引擎：RiskRuleConfig 正则匹配。
 
+    规则可选带 `exclude_if`（排除正则）：命中正文但文本同时命中排除正则
+    时跳过该条规则——用于按语境消歧（如「急症」规则排除宠物语境，
+    避免把宠物急症误判为儿童急症）。
+
     Args:
         text: 待检文本。
-        patterns: 正则配置 {规则键: {"regex": ..., "category_code": ...}}，
-            非法正则按未命中跳过（不阻断主流程）。
+        patterns: 正则配置 {规则键: {"regex": ..., "category_code": ...,
+            "exclude_if": ...(可选)}}，非法正则按未命中跳过（不阻断主流程）。
 
     Returns:
         命中返回 {"term": 规则键, "category_code", "level": "L1",
@@ -127,13 +175,18 @@ def match_regex_rules(text: str, patterns: Dict[str, dict]) -> Optional[dict]:
         if not regex:
             continue
         try:
-            if re.search(regex, text):
-                return {
-                    "term": key,
-                    "category_code": (cfg or {}).get("category_code"),
-                    "level": "L1",
-                    "source": "regex",
-                }
+            if not re.search(regex, text):
+                continue
+            exclude = (cfg or {}).get("exclude_if")
+            if exclude and re.search(exclude, text):
+                # 语境不匹配（如宠物语境下的急症规则）：跳过本规则
+                continue
+            return {
+                "term": key,
+                "category_code": (cfg or {}).get("category_code"),
+                "level": "L1",
+                "source": "regex",
+            }
         except re.error:
             # 配置了非法正则：跳过该条规则，不影响其他规则
             continue

@@ -1,5 +1,5 @@
 # =============================================================================
-# 小光景 Docker Compose 编排文件
+# Babe宝伴 Docker Compose 编排文件
 #
 # 拓扑：
 #   frontend(nginx:80) ──/api/ 反代──> backend(uvicorn:8000) ──> postgres(pgvector:pg16)

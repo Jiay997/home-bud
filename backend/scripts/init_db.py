@@ -67,6 +67,26 @@ def ensure_profile_media_columns() -> None:
                 print(f"[init_db] {table}.avatar_path already exists, skip")
 
 
+def ensure_user_profile_columns() -> None:
+    """幂等迁移：为 app_user 补账号资料列（昵称密文 / 头像相对路径）。
+
+    create_all 不会 ALTER 已有表，历史库在此补齐；列已存在则跳过。
+
+    Raises:
+        Exception: DDL 执行失败时抛出。
+    """
+    engine = get_engine()
+    targets = {"nickname_enc": "TEXT NULL", "avatar_path": "VARCHAR(255) NULL"}
+    with engine.begin() as conn:
+        cols = {c["name"] for c in inspect(engine).get_columns("app_user")}
+        for column, ddl in targets.items():
+            if column in cols:
+                print(f"[init_db] app_user.{column} already exists, skip")
+                continue
+            conn.execute(text(f'ALTER TABLE "app_user" ADD COLUMN {column} {ddl}'))
+            print(f"[init_db] ALTER app_user ADD {column}")
+
+
 def init_tables() -> None:
     """创建全部业务表（checkfirst 幂等）并执行补列迁移。
 
@@ -74,11 +94,13 @@ def init_tables() -> None:
         Exception: 建表失败（如数据库不可达、约束冲突）时抛出。
     """
     engine = get_engine()
-    # 校验模型数量与文档一致（数据模型文档定义 37 张表：35 + health_record + note）
-    assert len(ALL_MODELS) == 37, f"expect 37 tables, got {len(ALL_MODELS)}"
+    # 防漏注册守卫：基线至少 37 张表（35 + health_record + note），
+    # V3.1 新增表后允许大于该值，避免每次扩表都要改硬编码断言。
+    assert len(ALL_MODELS) >= 37, f"expect at least 37 tables, got {len(ALL_MODELS)}"
     Base.metadata.create_all(engine, checkfirst=True)
     ensure_org_id_columns()
     ensure_profile_media_columns()
+    ensure_user_profile_columns()
     tables = sorted(Base.metadata.tables.keys())
     print(f"[init_db] {len(tables)} tables ensured:")
     for t in tables:

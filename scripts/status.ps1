@@ -1,5 +1,5 @@
-﻿﻿# =====================================================================
-# 小光景 - 服务状态检查脚本 (status.ps1)
+# =====================================================================
+# Babe宝伴 - 服务状态检查脚本 (status.ps1)
 # 功能：显示后端/前端运行状态、端口占用、数据库连通与健康检查详情。
 # 用法：powershell -ExecutionPolicy Bypass -File scripts\status.ps1
 # =====================================================================
@@ -9,7 +9,7 @@ function Format-Status($ok) {
     if ($ok) { return "运行中" } else { return "已停止" }
 }
 
-Write-Host "========== 小光景服务状态 ==========" 
+Write-Host "========== Babe宝伴服务状态 ==========" 
 
 # --- 数据库 ---
 $dbOk = $false
@@ -43,12 +43,20 @@ if ($beListen) {
     }
 }
 
-# --- 前端 5173 ---
-$feListen = Get-NetTCPConnection -LocalPort 5173 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
-Write-Host ("前端 Vite       : {0} (端口 5173)" -f (Format-Status ([bool]$feListen)))
-if ($feListen) {
-    Write-Host "  用户端    : http://localhost:5173/app/home"
-    Write-Host "  后台管理端: http://localhost:5173/admin/login"
+# --- 前端：用户端 H5（5174）与后台管理端（5175）---
+# V3.0 起前端拆分为 client/（5174，base=/app/）与 admin-web/（5175，base=/admin/）
+$clientListen = Get-NetTCPConnection -LocalPort 5174 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
+Write-Host ("用户端 H5       : {0} (端口 5174)" -f (Format-Status ([bool]$clientListen)))
+if ($clientListen) {
+    Write-Host "  访问: http://localhost:5174/app/"
+}
+
+# D-17：后台端口支持 ADMIN_PORT 覆盖，默认 5175
+$adminPort = if ($env:ADMIN_PORT) { [int]$env:ADMIN_PORT } else { 5175 }
+$adminListen = Get-NetTCPConnection -LocalPort $adminPort -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
+Write-Host ("后台管理端      : {0} (端口 {1})" -f (Format-Status ([bool]$adminListen)), $adminPort)
+if ($adminListen) {
+    Write-Host "  访问: http://localhost:$adminPort/admin/login"
 }
 
 Write-Host "=================================="

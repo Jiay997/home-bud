@@ -26,10 +26,12 @@ def _probe_redis_url():
     """探测可用 Redis 实例，返回连接串或 None。
 
     探测顺序：环境变量 REDIS_URL（含本机默认 redis://127.0.0.1:6379/0），
-    解析出 host/port 后做 TCP 连通性探测（0.5s 超时）。
+    解析出 host/port 后先做 TCP 连通性探测（0.5s 超时），再发一次 `PING`
+    确认对端确实是 Redis 服务（仅端口连通不足以判定：本机 6379 可能被其他
+    服务占用，旧版/非 Redis 服务会因 `HELLO` 等命令报 ResponseError）。
 
     Returns:
-        可达时返回 Redis 连接串；不可达或地址非法返回 None。
+        可达且 PING 通过时返回 Redis 连接串；否则返回 None。
     """
     url = os.environ.get("REDIS_URL", "").strip() or "redis://127.0.0.1:6379/0"
     parsed = urlparse(url)
@@ -39,8 +41,23 @@ def _probe_redis_url():
     port = parsed.port or 6379
     try:
         with socket.create_connection((host, port), timeout=0.5):
-            return url
+            pass
     except OSError:
+        return None
+    # 协议级探测：PING 必须返回 PONG，避免把非 Redis 服务误判为可用实例
+    try:
+        import redis
+
+        client = redis.Redis.from_url(url, socket_connect_timeout=0.5, socket_timeout=0.5)
+        try:
+            pong = client.ping()
+        finally:
+            try:
+                client.close()
+            except Exception:  # noqa: BLE001 — 关闭失败不影响探测结论
+                pass
+        return url if pong else None
+    except Exception:  # noqa: BLE001 — 任意协议/命令异常按不可用处理
         return None
 
 

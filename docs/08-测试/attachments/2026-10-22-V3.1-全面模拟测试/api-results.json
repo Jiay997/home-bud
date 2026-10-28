@@ -1,0 +1,596 @@
+{
+  "total": 84,
+  "passed": 78,
+  "failed": 4,
+  "blocked": 2,
+  "results": [
+    {
+      "id": "ENV-01",
+      "module": "环境",
+      "name": "后端健康检查",
+      "status": "通过",
+      "detail": "http=200 code=0 data={'service': 'jiaban-backend', 'db_connected': True, 'model_whitelist': ['deepseek-flash', 'embedding-3'], 'llm_mock': True}"
+    },
+    {
+      "id": "ENV-02",
+      "module": "环境",
+      "name": "文案下发接口",
+      "status": "通过",
+      "detail": "http=200 keys=['DISCLAIMER_V1', 'AI_GEN_LABEL_V1']"
+    },
+    {
+      "id": "F1-01",
+      "module": "准入",
+      "name": "开发态新用户登录",
+      "status": "通过",
+      "detail": "http=200 code=0 uid=e5a9cc2d-9ffb-46c0-9965-8044a8027fed"
+    },
+    {
+      "id": "F1-02",
+      "module": "准入",
+      "name": "新用户基础同意为空",
+      "status": "通过",
+      "detail": "base={'agreed': False, 'version': None, 'agreed_at': None, 'withdraw_at': None}"
+    },
+    {
+      "id": "F1-03",
+      "module": "准入",
+      "name": "未同意儿童信息即建档被拒",
+      "status": "通过",
+      "detail": "http=403 code=1302 msg=需先完成儿童信息单独同意"
+    },
+    {
+      "id": "F1-04",
+      "module": "准入",
+      "name": "基础同意写入",
+      "status": "通过",
+      "detail": "http=200 data={'consent_type': 'base', 'consent_version': '1.0.0', 'agreed_at': '2026-10-22T12:38:10.852783+00:00', 'idempotent': False}"
+    },
+    {
+      "id": "F1-05",
+      "module": "准入",
+      "name": "儿童信息单独同意",
+      "status": "通过",
+      "detail": "http=200 data={'consent_type': 'child_personal_info', 'consent_version': '1.0.0', 'agreed_at': '2026-10-22T12:38:11.248397+00:00', 'idempotent': False}"
+    },
+    {
+      "id": "F2-01",
+      "module": "档案",
+      "name": "创建儿童档案并计算月龄",
+      "status": "通过",
+      "detail": "http=200 uid=a416d5be-f041-4029-aa4c-52ec85b78a1e age_months=28 band=1-3y"
+    },
+    {
+      "id": "F2-02",
+      "module": "档案",
+      "name": "未来出生日期被拒",
+      "status": "失败",
+      "detail": "http=200 code=0 msg=ok"
+    },
+    {
+      "id": "F2-03",
+      "module": "档案",
+      "name": "创建宠物档案",
+      "status": "通过",
+      "detail": "http=200 uid=ad2419d9-8aae-497b-9202-eebed7940fe6 data={'pet_uid': 'ad2419d9-8aae-497b-9202-eebed7940fe6', 'pet_type': 'cat', 'breed': '中华田园猫', 'age_band': 'adult', 'neutered_flag': None, 'weight_kg': None, 'main_food': None, 'version': 1, 'created_at': '2026-10-22T12:38:12.440893+00:00', 'avatar_url': None}"
+    },
+    {
+      "id": "F2-04",
+      "module": "档案",
+      "name": "免费档案 3 个上限",
+      "status": "通过",
+      "detail": "c2=0 c3=1006 c4=1006 http=409"
+    },
+    {
+      "id": "F2-05",
+      "module": "档案",
+      "name": "乐观锁冲突返回 1003",
+      "status": "通过",
+      "detail": "http=409 code=1003"
+    },
+    {
+      "id": "F6-01",
+      "module": "多智能体",
+      "name": "育儿单域问答 SSE 帧序完整",
+      "status": "通过",
+      "detail": "http=200 events=['started', 'section_done', 'section_done', 'completed'] done=2"
+    },
+    {
+      "id": "F6-02",
+      "module": "多智能体",
+      "name": "育儿单域不引入宠物 Agent",
+      "status": "通过",
+      "detail": "agents=['child', 'safety'] render_order=['safety', 'child']"
+    },
+    {
+      "id": "RQ06-01",
+      "module": "分级决策",
+      "name": "2岁低热精神好输出绿档",
+      "status": "阻塞",
+      "detail": "triage={\"icon\": \"⚪\", \"basis\": \"\", \"level\": null, \"scene\": \"fever\", \"domain\": \"child\", \"reason\": \"分级规则尚未完成专家签署，暂不对外发布档位结论；如对情况判断不确定，请及时就医。\", \"signals\": {\"temperature\": 37.8, \"mental_state\": \"normal\", \"duration_hours\": null}, \"rule_hits\": [], \"age_source\": \"profile\", \"decided_at\": \"2026-10-22T20:38:14.920036+08:00\", \"night_mode\": false, \"rule_total\": 23, \"disclaimers\": [\"本工具仅提供养育科普参考，不构成诊断或治疗建议。\", \"本工具不能替代面诊；如对状况判断不确定，请及时就医。\"], \"level_color\": \"neutral\", \"level_label\": \"分级结论暂缓发布\", \"insufficient\": true, \"missing_info\": [\"体温读数（如 38.2℃）与测量方式\", \"症状开始时间与持续时长\", \"精神状态（能否正常互动、是否嗜睡或叫不醒）\", \"是否伴随其他症状（呕吐、皮疹、呼吸急促、拒食等）\"], \"night_notice\": null, \"observations\": [], \"rule_version\": 1, \"age_band_used\": \"1-3y\", \"publish"
+    },
+    {
+      "id": "RQ07-01",
+      "module": "信任叙事",
+      "name": "回答含信任条要素",
+      "status": "通过",
+      "detail": "trust_keys=['ai_label', 'age_adaptation', 'source_levels', 'triage_badge', 'elements', 'missing', 'complete', 'checklist', 'checklist_total', 'checklist_passed'] ai_label={'visible': True, 'text_id': 'AI_GEN_LABEL_V1', 'position': 'page_top', 'fallback_text': '内容由 AI 生成，仅供参考，不构成诊疗建议', 'filing_no': None}"
+    },
+    {
+      "id": "F6-03",
+      "module": "多智能体",
+      "name": "家庭入口三 Agent 全调度",
+      "status": "通过",
+      "detail": "agents=['child', 'pet', 'safety'] sections=['safety', 'child', 'pet']"
+    },
+    {
+      "id": "F6-04",
+      "module": "多智能体",
+      "name": "安全分节置顶且 pinned",
+      "status": "通过",
+      "detail": "render_order=['safety', 'child', 'pet'] pinned={'safety': True, 'child': False, 'pet': False}"
+    },
+    {
+      "id": "F6-05",
+      "module": "多智能体",
+      "name": "三节内容均下发（LLM_MOCK 模板）",
+      "status": "通过",
+      "detail": "blocks={'safety': 1, 'child': 1, 'pet': 1}"
+    },
+    {
+      "id": "E2E-04",
+      "module": "关键流程",
+      "name": "复合场景调度端到端",
+      "status": "通过",
+      "detail": "http=200 帧=5 首帧耗时见 SSE 日志"
+    },
+    {
+      "id": "F5-01",
+      "module": "宠物",
+      "name": "宠物急症红旗/就医提示",
+      "status": "阻塞",
+      "detail": "sections=['safety', 'pet'] triage=None 内容片段=[{\"section_key\": \"safety\", \"section_version\": 1, \"title\": \"安全提示\", \"blocks\": [{\"title\": \"安全提示\", \"content\": \"**保持看护人在场**，危险物品妥善收纳，异常情况及时联系专业人士。\", \"block_key\": \"safety_tip\", \"access_tier\": \"free\"}], \"pinned\": true, \"immutable\": false, \"status\": \"ok\"}, {\"section_key\": \"pet\", \"section_version\": 1, \"title\": \"宠物养护建议\", \"blocks\": [{\"title\": \"专业咨询提示\", \"content\": \"当前未匹配到知识库条目，以下建议仅供参考，请结合实际情况并咨询专业人士。\", \"block_key\": \"referral_notice\", \"access_tier\": \"free\"}], \"pinned\": false, \"immutable\": false, \"status\": \"ok\"}]"
+    },
+    {
+      "id": "F5-02",
+      "module": "宠物",
+      "name": "宠物回答含免责声明",
+      "status": "失败",
+      "detail": "含兽医人员声明=False 片段=[{\"section_key\": \"safety\", \"section_version\": 1, \"title\": \"安全提示\", \"blocks\": [{\"title\": \"安全提示\", \"content\": \"**保持看护人在场**，危险物品妥善收纳，异常情况及时联系专业人士。\", \"block_key\": \"safety_tip\", \"access_tier\": \"free\"}], \"pinned\": true, \"immutable\": false, \"status\": \"ok\"}, {\"section_key\": \"pet\", \"section_version\": 1, \"title\": \"宠物养护建议\", \"blocks\": [{\"title\": \"专业咨询提示\", \"content\": \"当前未匹配到知识库条目，以下建议仅供参考，请结合实际情况并咨询专业人士。\", \"block_key\": \"referral_notice\", \"access_tier\": \"free\"}], \"pinned\": false, \"immutable\": false, \"status\": \"ok\"}]"
+    },
+    {
+      "id": "F8-01",
+      "module": "风险",
+      "name": "自伤高危输入被拦截",
+      "status": "通过",
+      "detail": "events=['started', 'blocked'] status=blocked body=event: started\ndata: {\"sequence\": 1, \"session_uid\": \"262c123f-0414-4152-a578-b08cf9a45048\", \"request_id\": \"eefa5efd-345b-4960-b3d9-3368d760b4d9\", \"cancel_token\": \"a86be9e2-1746-4ccb-bb74-e190e179cc53\", \"render_order\": [\"safety\", \"child\"], \"first_packet_ms\": 8}\n\nevent: blocked\ndata: {\"sequence\": 2, \"reason\": \"命中一级规则：自杀\", \"risk_event_no\": \"RISK202610222038195347\", \"channels\": [{\"channel_code\": \"poli"
+    },
+    {
+      "id": "F8-02",
+      "module": "风险",
+      "name": "拦截返回求助渠道卡片",
+      "status": "通过",
+      "detail": "channels=1 sample=[{\"channel_code\": \"placeholder_self_harm\", \"channel_name\": \"儿科急诊\", \"category\": \"pediatric_emergency\", \"category_label\": \"求助渠道\", \"phone_number\": null, \"phone_masked\": false, \"script\": \"渠道信息维护中，请以官方渠道为准\", \"region\": \"全国\", \"service_hours\": null, \"applicable_categories\": [\"self_harm\"], \"status\": \"placeholder\", \"placeholder\": true, \"notice\": \"渠道信息维护中，请以官方渠道为准\", \"verified_at\": null, \"verified_by\": null, "
+    },
+    {
+      "id": "F8-03",
+      "module": "风险",
+      "name": "拦截不计免费额度",
+      "status": "通过",
+      "detail": "before=4 after=4"
+    },
+    {
+      "id": "B-01",
+      "module": "边界",
+      "name": "问题少于 5 字被拒",
+      "status": "失败",
+      "detail": "http=200 code=0 msg=ok"
+    },
+    {
+      "id": "B-02",
+      "module": "边界",
+      "name": "问题超过 2000 字被拒",
+      "status": "通过",
+      "detail": "http=422 code=1001"
+    },
+    {
+      "id": "E2E-05",
+      "module": "关键流程",
+      "name": "同一 client_request_id 重放 5 次仅 1 会话",
+      "status": "通过",
+      "detail": "http=[200, 409, 409, 409, 409] codes=[0, 1004, 1004, 1004, 1004] uids={'e92d2d69-e848-48f0-bb54-d888250baabf'}"
+    },
+    {
+      "id": "B-03",
+      "module": "边界",
+      "name": "并发同键请求收敛为 1 会话且不返回 500",
+      "status": "失败",
+      "detail": "http=[200, 500, 500, 500, 500] codes=[0, 1902, 1902, 1902, 1902] uids={'43573402-0386-4525-9238-07dab12dc4ce'}"
+    },
+    {
+      "id": "F3-01",
+      "module": "额度",
+      "name": "免费用户第 5 次提问被拒（1202）",
+      "status": "通过",
+      "detail": "codes=[0, 0, 0, 0, 1202] http=[200, 200, 200, 200, 429]"
+    },
+    {
+      "id": "E2E-09",
+      "module": "关键流程",
+      "name": "跨用户访问会话被拒",
+      "status": "通过",
+      "detail": "http=404 code=1002"
+    },
+    {
+      "id": "E2E-09b",
+      "module": "关键流程",
+      "name": "跨用户删除档案被拒",
+      "status": "通过",
+      "detail": "http=404 code=1002"
+    },
+    {
+      "id": "F11-01",
+      "module": "个人资料",
+      "name": "GET /me 返回昵称/头像字段",
+      "status": "通过",
+      "detail": "keys=['avatar_url', 'child_profile_count', 'member_expire_at', 'member_status', 'nickname', 'pet_profile_count', 'register_at', 'user_uid'] nickname="
+    },
+    {
+      "id": "F11-02",
+      "module": "个人资料",
+      "name": "昵称保存后生效",
+      "status": "通过",
+      "detail": "http=200 data={'nickname': '宝伴家长', 'avatar_url': None}"
+    },
+    {
+      "id": "F11-03",
+      "module": "个人资料",
+      "name": "纯空白昵称被拒",
+      "status": "通过",
+      "detail": "http=422 code=1001"
+    },
+    {
+      "id": "F11-04",
+      "module": "个人资料",
+      "name": "昵称超 20 字被拒",
+      "status": "通过",
+      "detail": "http=422 code=1001"
+    },
+    {
+      "id": "F11-05",
+      "module": "个人资料",
+      "name": "头像上传并返回 URL",
+      "status": "通过",
+      "detail": "http=200 data={'avatar_url': '/media/users/0ec2c08f23a24ac9b55dd722dc3dab06.jpg', 'width': 512, 'height': 384, 'size': 1439}"
+    },
+    {
+      "id": "F11-06",
+      "module": "个人资料",
+      "name": "非法图片上传返回 1001",
+      "status": "通过",
+      "detail": "http=422 code=1001"
+    },
+    {
+      "id": "F11-07",
+      "module": "个人资料",
+      "name": "头像移除幂等",
+      "status": "通过",
+      "detail": "first=200/0 second=200/0"
+    },
+    {
+      "id": "F7-01",
+      "module": "测评",
+      "name": "题库 16 题",
+      "status": "通过",
+      "detail": "count=16"
+    },
+    {
+      "id": "F7-02",
+      "module": "测评",
+      "name": "16 题完成并生成报告",
+      "status": "通过",
+      "detail": "submit=200 report=200 keys=['blocks', 'created_at', 'is_member', 'question_version', 'readonly', 'report_type', 'report_uid']"
+    },
+    {
+      "id": "RQ01-01",
+      "module": "合规模块",
+      "name": "报告长图 PNG + AI 标识",
+      "status": "通过",
+      "detail": "http=200 bytes=113476 label_count=3 ratio=0.1801 meta={'software': 'BabeJiabanAI', 'ai_generated': '1', 'content_type': 'assessment_report', 'generated_at': '2026-10-22T12:38:59Z', 'render_id': 'rnd_216cfcaa_1792672739', 'source_uid': '216cfcaa-3289-4603-b4ce-5719d6abbe50'}"
+    },
+    {
+      "id": "H-01",
+      "module": "健康",
+      "name": "新建健康记录并计算复查状态",
+      "status": "通过",
+      "detail": "http=200 data={\"record\": {\"record_uid\": \"53aded68-37df-4aa6-b230-b0934ebcc731\", \"subject_type\": \"child\", \"subject_uid\": \"a416d5be-f041-4029-aa4c-52ec85b78a1e\", \"record_date\": \"2026-10-22\", \"title\": \"年度体检\", \"next_checkup_date\": \"2026-10-25\", \"due_status\": \"soon\", \"has_file\": false, \"file_url\": null, \"updated_at\": \"2026-10-22T12:39:00.457865+00:00\", \"notes\": \"身高体重正常\", \"next_checkup_note\": \"复查视力\", \"file_name\": null, \"file_size\": null, \"created_at\": \"2026-10-22T12:39:00.444106+00:00\"}}"
+    },
+    {
+      "id": "H-02",
+      "module": "健康",
+      "name": "健康记录列表含 due_status",
+      "status": "通过",
+      "detail": "count=1 first=[{\"record_uid\": \"53aded68-37df-4aa6-b230-b0934ebcc731\", \"subject_type\": \"child\", \"subject_uid\": \"a416d5be-f041-4029-aa4c-52ec85b78a1e\", \"record_date\": \"2026-10-22\", \"title\": \"年度体检\", \"next_checkup_date\": \"2026-10-25\", \"due_status\": \"soon\", \"has_file\": false, \"file_url\": null, \"updated_at\": \"2026-10-22T12:39:00.457865+00:00\"}]"
+    },
+    {
+      "id": "N-01",
+      "module": "笔记",
+      "name": "Markdown 笔记创建",
+      "status": "通过",
+      "detail": "http=200 uid=bfc01d13-264b-4cf0-b004-02a3f9922cbc"
+    },
+    {
+      "id": "N-02",
+      "module": "笔记",
+      "name": "笔记详情解密正文",
+      "status": "通过",
+      "detail": "keys=['content', 'created_at', 'note_uid', 'title', 'updated_at', 'version']"
+    },
+    {
+      "id": "N-03",
+      "module": "笔记",
+      "name": "笔记乐观锁冲突 1003",
+      "status": "通过",
+      "detail": "http=409 code=1003"
+    },
+    {
+      "id": "RQ08-01",
+      "module": "触达",
+      "name": "提醒列表结构完整",
+      "status": "通过",
+      "detail": "keys=['due_count', 'items', 'prefs', 'weekly_cap'] items=1 prefs={\"items\": [{\"type\": \"vaccine\", \"enabled\": false, \"configured\": false, \"cap\": {\"weekly_max\": 2, \"daily_merge\": true, \"windows\": \"ISO 周（周一 00:00 起算，UTC+8）\"}, \"updated_at\": null}, {\"type\": \"checkup\", \"enabled\": false, \"configured\": false, \"cap\": {\"weekly_max\": 2, \"daily_merge\": true, \"windows\": \"ISO 周（"
+    },
+    {
+      "id": "RQ08-02",
+      "module": "触达",
+      "name": "单类型提醒开关可写",
+      "status": "通过",
+      "detail": "http=200"
+    },
+    {
+      "id": "RQ08-03",
+      "module": "触达",
+      "name": "一键关闭全部提醒",
+      "status": "通过",
+      "detail": "http=200 data={'disabled': True, 'canceled_tasks': 1, 'prefs': {'items': [{'type': 'vaccine', 'enabled': False, 'configured': True, 'cap': {'windows': 'ISO 周（周一 00:00 起算，UTC+8）', 'weekly_max': 2, 'daily_merge': True}, 'updated_at': '2026-10-22T12:39:03.243659+00:00'}, {'type': 'checkup', 'enabled': False, 'configured': False, 'cap': {'weekly_max': 2, 'daily_merge': True, 'windows': 'ISO 周（周一 00:00 起算，UTC+8）'}, 'updated_at': None}, {'type': 'deworm', 'enabled': False, 'configured': False, 'cap': {'weekly_max': 2, 'daily_merge': True, 'windows': 'ISO 周（周一 00:00 起算，UTC+8）'}, 'updated_at': None}, {'type': 'report', 'enabled': False, 'configured': False, 'cap': {'weekly_max': 2, 'daily_merge': True, 'windows': 'ISO 周（周一 00:00 起算，UTC+8）'}, 'updated_at': None}, {'type': 'weekly_q', 'enabled': False, 'configured': False, 'cap': {'weekly_max': 2, 'daily_merge': True, 'windows': 'ISO 周（周一 00:00 起算，UTC+8）'}, 'updated_at': None}, {'type': 'all', 'enabled': False, 'configured': True, 'cap': {'windows': 'ISO 周（周一 00:00 起算，UTC+8）', 'weekly_max': 2, 'daily_merge': True}, 'updated_at': '2026-10-22T12:39:03.232282+00:00'}], 'any_enabled': False, 'weekly_max': 2, 'template_reported': False}}"
+    },
+    {
+      "id": "RQ08-04",
+      "module": "触达",
+      "name": "每周一问话题卡",
+      "status": "通过",
+      "detail": "http=200 data={\"title\": \"1-3 岁幼儿睡眠引导要点\", \"question\": \"1-3 岁幼儿睡眠引导要点，我们这个月龄要注意什么？\", \"kb_id\": \"kb_child_sleep_01\", \"trace_id\": null, \"enabled\": false}"
+    },
+    {
+      "id": "RQ12-01",
+      "module": "轻工具",
+      "name": "首批工具 ≥3 且不耗额度",
+      "status": "通过",
+      "detail": "count=3 codes=['tool_fever_checklist', 'tool_pet_behavior_checklist', 'tool_pet_food_label']"
+    },
+    {
+      "id": "RQ12-02",
+      "module": "轻工具",
+      "name": "工具详情含内容与免责",
+      "status": "通过",
+      "detail": "http=200 keys=['ai_label', 'content', 'disclaimer', 'domain', 'kb_refs', 'quota_cost', 'source', 'summary', 'title', 'tool_code', 'tool_type']"
+    },
+    {
+      "id": "RQ12-03",
+      "module": "轻工具",
+      "name": "工具完成记录",
+      "status": "通过",
+      "detail": "http=200"
+    },
+    {
+      "id": "RQ13-01",
+      "module": "专题",
+      "name": "C 端仅返回已上架专题",
+      "status": "通过",
+      "detail": "http=200 count=0 items=[]"
+    },
+    {
+      "id": "F9-01",
+      "module": "会员",
+      "name": "商品可购信息",
+      "status": "通过",
+      "detail": "http=200 products=['member_monthly']"
+    },
+    {
+      "id": "F9-02",
+      "module": "会员",
+      "name": "iOS 不展示可购",
+      "status": "通过",
+      "detail": "http=200 data={'purchasable': False, 'reason_code': 'platform_not_supported'}"
+    },
+    {
+      "id": "F9-03",
+      "module": "会员",
+      "name": "创建会员订单",
+      "status": "通过",
+      "detail": "http=200 order=JB202610221239066649F8 status=pending"
+    },
+    {
+      "id": "F9-04",
+      "module": "会员",
+      "name": "模拟支付发放会员",
+      "status": "通过",
+      "detail": "http=200 data={'order_no': 'JB202610221239066649F8', 'status': 'paid', 'transaction_id': 'mock-9e3ef87a2df8', 'member_expire_at': '2026-11-21T12:39:06.874383+00:00', 'already_processed': False}"
+    },
+    {
+      "id": "F9-05",
+      "module": "会员",
+      "name": "支付回调幂等",
+      "status": "通过",
+      "detail": "http=200 data={'order_no': 'JB202610221239066649F8', 'status': 'paid', 'transaction_id': 'mock-9e3ef87a2df8', 'already_processed': True}"
+    },
+    {
+      "id": "RQ09-01",
+      "module": "分享",
+      "name": "问答长图 PNG + 双标识",
+      "status": "通过",
+      "detail": "http=200 bytes=22236 labels=3 ratio=0.3722 meta={'software': 'BabeJiabanAI', 'ai_generated': '1', 'content_type': 'qa_answer', 'generated_at': '2026-10-22T12:39:07Z', 'render_id': 'rnd_318276ef_1792672747', 'source_uid': '318276ef-9791-463a-925f-46ba5dad4142'}"
+    },
+    {
+      "id": "F1-08",
+      "module": "权利",
+      "name": "数据导出请求受理",
+      "status": "通过",
+      "detail": "http=200 data={'request_no': 'RT20261022123908FA9770', 'request_type': 'export', 'status': 'submitted', 'sla_due_at': '2026-11-06T12:39:08.271820+00:00'}"
+    },
+    {
+      "id": "A-01",
+      "module": "运营端",
+      "name": "错误密码登录被拒",
+      "status": "通过",
+      "detail": "http=401 code=1101"
+    },
+    {
+      "id": "A-02",
+      "module": "运营端",
+      "name": "账密通过后下发 MFA 票据",
+      "status": "通过",
+      "detail": "http=200 mfa_required=True"
+    },
+    {
+      "id": "A-03",
+      "module": "运营端",
+      "name": "错误 MFA 被拒",
+      "status": "通过",
+      "detail": "http=403 code=1104"
+    },
+    {
+      "id": "A-04",
+      "module": "运营端",
+      "name": "MFA 校验通过签发后台令牌",
+      "status": "通过",
+      "detail": "http=200 role=super_admin menus=['kb', 'lexicon', 'logs', 'feedback', 'risk', 'rights', 'config', 'channel', 'triage', 'content', 'weight', 'audit']"
+    },
+    {
+      "id": "A-05",
+      "module": "运营端",
+      "name": "后台账号信息与菜单",
+      "status": "通过",
+      "detail": "http=200 data={\"admin_uid\": \"a486aba4-2ab4-454e-9284-ebc5486fe12e\", \"username\": \"admin\", \"display_name\": \"系统超管\", \"role\": \"super_admin\", \"domain_scope\": null, \"phone_masked\": \"138****0000\", \"menus\": [\"kb\", \"lexicon\", \"logs\", \"feedback\", \"risk\", \"rights\", \"config\", \"channel\", \"triage\", \"content\", \"weight\", \"audit\"]}"
+    },
+    {
+      "id": "A-06",
+      "module": "运营端",
+      "name": "V3.1 发布门禁摘要",
+      "status": "通过",
+      "detail": "passed=False gates=[{\"id\": \"ai_label_three_links\", \"title\": \"AI 标识三链路抽检（E2E-20）\", \"passed\": true, \"detail\": {\"ratio\": 0.5713611111111111, \"count\": 3, \"metadata\": {\"software\": \"BabeJiabanAI\", \"ai_generated\": \"1\", \"content_type\": \"assessment_report\", \"generated_at\": \"2026-10-22T12:39:10Z\", \"render_id\": \"rnd_gate-che_1792672750\", \"source_uid\": \"gate-check\"}}}, {\"id\": \"copy_scan_zero_hit\", \"title\": \"拟人化禁用词全量扫描（E2E-21）\", \"passed\": true, \"detail\": {\"hit_count\": 0, \"scanned_files\": 0, \"errors\": []}}, {\"id\": \"channel_verified\", \"title\": \"渠道清单核验（E2E-22）\", \"passed\": false, \"detail\": {\"total\": 7, \"active\": 1, \"placeholder\": 5, \"pending_review\": 0, \"retired\": 1, \"verified\": 1, \"by_category\": {\"psychological\": {\"total\": 6, \"verified\": 1}, \"high_fever\": {\"total\": 1, \"verified\": 0}}, \"missing_required\": {\"child_abuse\": [\"police\", \"minor_protection\"], \"child_selfharm\": [\"police\"], \"harmful_to_minor\": [\"minor_protection\"], \"high_fever\": [\"pediatric_emergency\"], \"animal_bite\": [\"pediatric_emergency\"], \"pet_poison\": [\"pet_emergency\"], \"pet_bleeding\": [\"pet_emergency\"], \"depression\": [\"psychological\"], \"medicine_dosage\": [\"pediatric_emergency\"], \"risk_unavailable\": [\"pediatric_emergency\"]}}}, {\"id\": \"triage_rules_signed"
+    },
+    {
+      "id": "A-07",
+      "module": "运营端",
+      "name": "知识库列表",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [{\"id\": 31, \"kb_id\": \"KB47C96B0E5AB2\", \"kb_kind\": \"child\", \"domain\": \"child\", \"topic_key\": \"diag_probe_topic\", \"topic_category\": \"常见照护\", \"age_band\": \"1-3y\", \"pet_stage\": null, \"species\": null, \"title\": \"探针条目-宝宝口水疹日常护理边界\", \"content\": \"## 适用\\n本条目用于自动化测试，内容为通用照护边界说明。\\n\\n## 观察项\\n- 保持口周清洁干燥\\n- "
+    },
+    {
+      "id": "A-08",
+      "module": "运营端",
+      "name": "Agent 调用日志",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [{\"id\": 384, \"session_id\": 188, \"agent_id\": \"safety_agent\", \"provider\": \"mock\", \"model\": \"deepseek-flash\", \"status\": \"ok\", \"latency_ms\": 1968, \"conflict_flag\": false, \"input_digest\": \"901db248e0cbc1ffe611ea600871f422dbd47a67999ba780cff306c50c886767\", \"input_summary\": \"2岁宝宝第3次提问怎么办（额度验证9073"
+    },
+    {
+      "id": "A-09",
+      "module": "运营端",
+      "name": "反馈列表",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [{\"id\": 3, \"feedback_no\": \"FB20261020133627B78332\", \"user_id\": 50, \"content\": \"E2E测试反馈：希望增加辅食专题\", \"char_len\": 16, \"linked_session_id\": null, \"image_count\": 0, \"audit_status\": \"passed\", \"status\": \"replied\", \"created_at\": \"2026-10-20T13:36:27.724900+00:00\", \"replied_at\": \"2026-10-21T13:18:54"
+    },
+    {
+      "id": "A-10",
+      "module": "运营端",
+      "name": "举报列表",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [{\"id\": 2, \"report_no\": \"RP202610201335481CE6A4\", \"object_type\": \"answer\", \"object_id\": \"22763c39-5a15-48ac-a07a-37079931c9fb\", \"category\": \"harmful_to_minor\", \"involves_minor\": true, \"sla_due_at\": \"2026-10-21T13:35:48.242770+00:00\", \"action\": null, \"reported\": false, \"receipt_sent\": false"
+    },
+    {
+      "id": "A-11",
+      "module": "运营端",
+      "name": "风险事件",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [{\"id\": 21, \"event_no\": \"RISK202610222038195347\", \"user_id_hash\": \"68519a9eca55c68c72658a2a1716aac3788c289859d46d6f5c3f14760fa37c9e\", \"session_id\": 177, \"category_code\": \"child_selfharm\", \"level\": \"L1\", \"score_band\": \"rule_hit\", \"source_scene\": \"qa\", \"body_emitted\": false, \"disposal_result"
+    },
+    {
+      "id": "A-12",
+      "module": "运营端",
+      "name": "权利请求",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [{\"id\": 7, \"request_no\": \"RT20261022123908FA9770\", \"user_id\": 172, \"request_type\": \"export\", \"status\": \"submitted\", \"reject_reason_code\": null, \"delivery_method\": \"download\", \"sla_due_at\": \"2026-11-06T12:39:08.271820+00:00\", \"export_file_url\": null, \"export_expire_at\": null, \"export_downlo"
+    },
+    {
+      "id": "A-13",
+      "module": "运营端",
+      "name": "渠道清单",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [{\"channel_code\": \"police\", \"channel_name\": \"报警求助\", \"category\": \"psychological\", \"category_label\": \"心理援助\", \"phone_number\": \"110\", \"phone_masked\": false, \"script\": \"请告知对方您的位置与当前情况。\", \"region\": \"全国\", \"service_hours\": \"7×24\", \"applicable_categories\": [\"child_abuse\", \"child_selfharm\"], \"status"
+    },
+    {
+      "id": "A-14",
+      "module": "运营端",
+      "name": "分级规则",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [{\"rule_id\": \"fever_infant_lt3m\", \"scene\": \"fever\", \"domain\": \"child\", \"title\": \"3 月龄以下婴儿发热（≥37.5℃）必须立即就医\", \"age_min_months\": 0, \"age_max_months\": 2, \"conditions\": {\"temp_min\": 37.5, \"any_keywords\": [\"发烧\", \"发热\", \"体温\", \"低烧\", \"高烧\", \"烧到\"]}, \"level\": \"red\", \"priority\": 1000, \"basis\": \"3 月龄以下婴儿"
+    },
+    {
+      "id": "A-15",
+      "module": "运营端",
+      "name": "配置列表",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [{\"config_type\": \"agent_weight\", \"config_key\": \"agent_weights\", \"version\": 3, \"status\": \"active\", \"snapshot\": {\"weights\": {\"pet\": 0.5, \"child\": 0.5}, \"safety_pinned\": true}, \"effective_at\": \"2026-10-21T14:24:03.038910+00:00\", \"reason\": \"回归验证后恢复默认权重\", \"operator_id\": 1}, {\"config_type\": \"lex"
+    },
+    {
+      "id": "A-16",
+      "module": "运营端",
+      "name": "审计日志",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [{\"id\": 40, \"action\": \"agent_weight_update\", \"object_type\": \"config_version\", \"object_id\": \"agent_weights\", \"operator_role\": \"super_admin\", \"reason\": \"回归验证后恢复默认权重\", \"result\": \"ok\", \"confirm_used\": true, \"before_keys\": [\"weights\"], \"after_keys\": [\"version\", \"weights\"], \"created_at\": \"2026-1"
+    },
+    {
+      "id": "A-17",
+      "module": "运营端",
+      "name": "专题内容",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [{\"topic_code\": \"topic_pregnancy_pet\", \"title\": \"孕期 + 养宠共存指南\", \"domain\": \"cross\", \"summary\": \"弓形虫风险的真实口径、孕期日常接触边界、产前准备与环境调整。\", \"price_micro\": 9900000, \"product_code\": \"member_monthly\", \"redflag_first\": true, \"redflag_blocks\": [{\"key\": \"redflags\", \"title\": \"先看红旗\", \"content\": \"孕期出现发热、皮疹、淋巴结肿"
+    },
+    {
+      "id": "A-18",
+      "module": "运营端",
+      "name": "工具内容",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [{\"tool_code\": \"tool_fever_checklist\", \"title\": \"发烧自查清单\", \"tool_type\": \"checklist\", \"domain\": \"child\", \"summary\": \"按顺序自查：体温读数、精神状态、饮水排尿、伴随症状\", \"kb_refs\": [\"kb_child_fever_01\"], \"content\": {\"steps\": [{\"key\": \"temp\", \"title\": \"测体温并记录\", \"detail\": \"用体温计测量并记录读数与时间，不要用「摸额头」替代。\"}, {\"key\": \"mental"
+    },
+    {
+      "id": "A-19",
+      "module": "运营端",
+      "name": "产品与订单",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [{\"product_code\": \"member_monthly\", \"name\": \"Babe宝伴会员月卡\", \"price_micro\": 19900000, \"duration_days\": 30, \"platform_scope\": [\"android\", \"web\"], \"status\": \"on\"}]}"
+    },
+    {
+      "id": "A-20",
+      "module": "运营端",
+      "name": "退款申请",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"items\": [], \"total\": 0, \"page\": 1, \"page_size\": 20}"
+    },
+    {
+      "id": "A-21",
+      "module": "运营端",
+      "name": "提醒统计",
+      "status": "通过",
+      "detail": "http=200 code=0 data={\"total\": 309, \"by_type\": {\"report\": 144, \"weekly_q\": 144, \"vaccine\": 18, \"checkup\": 3}, \"by_status\": {\"pending\": 286, \"skipped\": 22, \"sent\": 1}, \"delivered_by_channel\": {\"subscribe_message\": 0, \"inbox\": 309}, \"send_fail\": 0, \"privacy_note\": \"统计不含任何问答原文与档案明细（对齐 §9.5）\"}"
+    },
+    {
+      "id": "A-22",
+      "module": "运营端",
+      "name": "运营角色最小权限（配置拒绝/门禁按 content:view 放行）",
+      "status": "通过",
+      "detail": "configs=403/1103 gates=200/0 （门禁接口按 content:view 授权，运营角色可读）"
+    }
+  ]
+}

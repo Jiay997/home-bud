@@ -1,7 +1,10 @@
 ﻿# =====================================================================
-# 小光景 - 提交前质量门禁脚本 (ci_gate.ps1)
-# 功能：按序执行 契约校验(contract_check) -> 后端测试(pytest) -> 可选举项：
-#       -WithBuild 前端构建(npm run build)；-WithE2E 端到端 API 模拟测试
+# Babe宝伴 - 提交前质量门禁脚本 (ci_gate.ps1)
+# 功能：按序执行
+#       契约校验(contract_check) -> 拟人化文案扫描(RQ-02 fail-closed)
+#       -> 渠道硬编码号码扫描(DR-26) -> 后端测试(pytest)
+#       -> 可选举项：-WithBuild 前端构建(npm run build)；
+#          -WithE2E 端到端 API 模拟测试
 #       （需前后端服务已在运行：scripts\start.ps1；e2e 为真实 LLM 模式，耗时且
 #       消耗模型额度）。任一环节失败即中止后续步骤，并在汇总后以退出码 1 结束；
 #       全通过退出码 0——可直接挂入 CI 流水线或本地提交前检查。
@@ -22,7 +25,8 @@ param(
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $backend = Join-Path $root "backend"
-$frontend = Join-Path $root "frontend"
+$clientDir = Join-Path $root "client"
+$adminDir = Join-Path $root "admin-web"
 
 # ---------- Python 解释器探测（与 start.ps1 同序：系统 Python 优先，venv 兜底） ----------
 $pyCandidates = @(
@@ -56,12 +60,12 @@ function Report-Step {
     $script:steps += ("{0}：{1}" -f $Name, $(if ($Code -eq 0) { "PASS" } else { "FAIL(exit $Code)" }))
 }
 
-Write-Host "小光景质量门禁：契约校验 + 后端测试$(if ($WithBuild) { ' + 前端构建' })$(if ($WithE2E) { ' + E2E 模拟' })"
+Write-Host "Babe宝伴质量门禁：契约校验 + 后端测试$(if ($WithBuild) { ' + 前端构建' })$(if ($WithE2E) { ' + E2E 模拟' })"
 Write-Host "Python: $py"
 
 # ---------- 第 1 步：契约校验（前端调用 × OpenAPI，漂移即失败） ----------
 Write-Host ""
-Write-Host "[1] 契约校验（frontend/src/api/*.ts × app.openapi()）" -ForegroundColor Cyan
+Write-Host "[1] 契约校验（admin-web + client 的 src/api/*.ts × app.openapi()）" -ForegroundColor Cyan
 $sw = [System.Diagnostics.Stopwatch]::StartNew()
 Push-Location $backend
 & $py scripts/contract_check.py
@@ -70,9 +74,31 @@ Pop-Location
 $sw.Stop()
 Report-Step "契约校验" $code ([math]::Round($sw.Elapsed.TotalSeconds, 1))
 
-# ---------- 第 2 步：后端测试（pytest，默认全量 tests/） ----------
+# ---------- 第 2 步：拟人化文案扫描（RQ-02 / NFR-C14，fail-closed） ----------
 Write-Host ""
-Write-Host "[2] 后端测试（python -m pytest $PytestArgs）" -ForegroundColor Cyan
+Write-Host "[2] 拟人化文案扫描（RQ-02 / NFR-C14：零命中 + 变体注入捕获）" -ForegroundColor Cyan
+$sw = [System.Diagnostics.Stopwatch]::StartNew()
+Push-Location $backend
+& $py scripts/copy_compliance_check.py
+$code = $LASTEXITCODE
+Pop-Location
+$sw.Stop()
+Report-Step "拟人化文案扫描" $code ([math]::Round($sw.Elapsed.TotalSeconds, 1))
+
+# ---------- 第 3 步：渠道硬编码号码扫描（RQ-03 / DR-26） ----------
+Write-Host ""
+Write-Host "[3] 渠道硬编码号码扫描（DR-26：号码仅存危机渠道清单表）" -ForegroundColor Cyan
+$sw = [System.Diagnostics.Stopwatch]::StartNew()
+Push-Location $backend
+& $py scripts/check_hardcoded_phones.py
+$code = $LASTEXITCODE
+Pop-Location
+$sw.Stop()
+Report-Step "渠道号码扫描" $code ([math]::Round($sw.Elapsed.TotalSeconds, 1))
+
+# ---------- 第 4 步：后端测试（pytest，默认全量 tests/） ----------
+Write-Host ""
+Write-Host "[4] 后端测试（python -m pytest $PytestArgs）" -ForegroundColor Cyan
 $sw = [System.Diagnostics.Stopwatch]::StartNew()
 Push-Location $backend
 & $py -m pytest ($PytestArgs -split "\s+")
@@ -81,22 +107,28 @@ Pop-Location
 $sw.Stop()
 Report-Step "后端测试" $code ([math]::Round($sw.Elapsed.TotalSeconds, 1))
 
-# ---------- 第 3 步（可选）：前端构建 ----------
+# ---------- 第 5 步（可选）：前端构建 ----------
 if ($WithBuild -and $failed) {
     $steps += "前端构建：SKIP（前置失败）"
 } elseif ($WithBuild) {
     Write-Host ""
-    Write-Host "[3] 前端构建（npm run build）" -ForegroundColor Cyan
+    Write-Host "[5] 前端构建（client H5 + admin-web）" -ForegroundColor Cyan
     $sw = [System.Diagnostics.Stopwatch]::StartNew()
-    Push-Location $frontend
-    & cmd.exe /c "npm run build"
+    Push-Location $clientDir
+    & cmd.exe /c "npm run build:h5"
     $code = $LASTEXITCODE
     Pop-Location
+    if ($code -eq 0) {
+        Push-Location $adminDir
+        & cmd.exe /c "npm run build"
+        $code = $LASTEXITCODE
+        Pop-Location
+    }
     $sw.Stop()
     Report-Step "前端构建" $code ([math]::Round($sw.Elapsed.TotalSeconds, 1))
 }
 
-# ---------- 第 4 步（可选）：端到端 API 模拟（需服务在跑） ----------
+# ---------- 第 6 步（可选）：端到端 API 模拟（需服务在跑） ----------
 if ($WithE2E -and $failed) {
     $steps += "E2E 模拟：SKIP（前置失败）"
 } elseif ($WithE2E) {

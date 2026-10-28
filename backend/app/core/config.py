@@ -43,6 +43,13 @@ class Settings(BaseSettings):
     zhipu_api_key: str = ""
     embedding_dimensions: int = 2048
 
+    # --- 检索相关性下限（缺陷 D7：低相关召回抑制） ---
+    # 混合打分（0.6×余弦 + 0.4×关键词）低于该值的条目视为未命中，
+    # 避免语义无关条目被当作命中返回、并使「专业咨询提示」永不触发。
+    # 实测：正常命中约 0.12-0.35，噪声召回约 0-0.03；生产真实 embedding 下
+    # 可用环境变量 RETRIEVAL_MIN_RELEVANCE 直接调参，无需改代码。
+    retrieval_min_relevance: float = 0.10
+
     # --- JWT ---
     jwt_secret: str = "change-me-strong-jwt-secret"
     jwt_issuer: str = "jiaban"
@@ -65,7 +72,6 @@ class Settings(BaseSettings):
 
     # --- 缓存后端（spec D2：可选 Redis，缺省回退进程内） ---
     redis_url: str = ""  # 形如 redis://localhost:6379/0；空 = 进程内缓存
-
     # --- 向量库（spec milvus-vector-store：独立向量库 Milvus standalone） ---
     # 空 = 主通道禁用（检索走 hashing 降级链）；compose 注入 http://milvus:19530，
     # 本地开发 backend/.env 用 http://localhost:19531（宿主端口避让映射）
@@ -105,6 +111,34 @@ class Settings(BaseSettings):
 
     # --- 服务 ---
     app_port: int = 8000
+
+    # --- V3.1 合规与留存参数（PRD V3.1 §3.1 / §3.8 / §3.5 / §3.6） ---
+    # 生成式 AI 服务备案号（随显式标识文案一并展示；未配置时标识照常展示）
+    ai_filing_no: str = ""
+    # 触达频控：单用户每周订阅消息上限（AC-RQ08-4 默认 ≤2 条）
+    reminder_weekly_cap: int = 2
+    # 成长周报发送时间：周日 20:00（AC-RQ08-5）
+    reminder_weekly_report_weekday: int = 6  # Python weekday：周一=0，周日=6
+    reminder_weekly_report_hour: int = 20
+    # 每周一问发送时间：周三 10:00（PRD §5.6 默认，可配）
+    reminder_weekly_q_weekday: int = 2
+    reminder_weekly_q_hour: int = 10
+    # 里程碑提醒提前天数（PRD §5.6「节点前 3 天」）
+    reminder_lead_days: int = 3
+    # 订阅消息模板（D14 报备后回填；空表示走站内补达兜底，不发送外部订阅消息）
+    reminder_template_vaccine: str = ""
+    reminder_template_report: str = ""
+    reminder_template_weekly_q: str = ""
+    # 夜间就医提示时段（RQ-06 AC-RQ06-7：22:00–6:00）
+    triage_night_start_hour: int = 22
+    triage_night_end_hour: int = 6
+    # 图片提问（RQ-05）：单次上传张数上限与 24h 删除口径
+    photo_qa_max_count: int = 3
+    photo_qa_ttl_hours: int = 24
+    # 分享长图缓存时长（AC-RQ09-3 同会话复用 24h 渲染物）
+    share_render_cache_hours: int = 24
+    # LBS 就近转介（RQ-04）：默认关闭（D11 位置能力与 Q-52 POI 口径未定稿）
+    referral_enabled: bool = False
 
     # --- 模型白名单（spec D2：启动时校验，未登记 provider 拒绝启动） ---
     @property
